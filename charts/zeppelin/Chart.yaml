@@ -6,11 +6,11 @@ description: A Helm chart for Kubernetes
 type: application
 version: 0.1.1
 appVersion: "0.9.0"
-#dependencies:
-#  - name: common
-#    repository: https://charts.bitnami.com/bitnami
-#    tags:
-#      - bitnami-common
-#    version: 1.x.x
+dependencies:
+  - name: common
+    repository: https://charts.bitnami.com/bitnami
+    tags:
+      - bitnami-common
+    version: 1.x.x
 engine: gotpl
 home: https://github.com/ebuildy/helm-data-lake

@@ -104,3 +104,4 @@ sparkEventLogStorage:
   oracleUserId: ""
   oracleApiKeyFingerprint: ""
   oracleNamespace: ""
+  
