@@ -1,8 +1,8 @@
-{{- if .Values.networkPolicy.enabled | default false }}
+{{- if eq .Values.app.kind "spark" }}
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: {{ template "zeppelin.fullname" . }}-spark-int
+  name: {{ template "zeppelin.fullname" . }}-spark
   labels:
     {{- include "zeppelin.labels" . | nindent 4 }}
   {{- with .Values.ingress.annotations }}
@@ -13,26 +13,10 @@ spec:
   podSelector:
     matchLabels:
       {{- include "zeppelin.selectorLabels" . | nindent 6 }}
-      app.kubernetes.io/component: interpreter
-      org.apache.zeppelin/interpreter: spark
   policyTypes:
   - Ingress
   - Egress
   ingress:
-  # accept traffic from zeppelin to thrift port
-  - from:
-    - podSelector:
-        matchLabels:
-          {{- include "zeppelin.selectorLabels" . | nindent 10 }}
-    ports:
-    - protocol: TCP
-      port: thrift
-  # accept traffic on webui
-  - ports:
-    - protocol: TCP
-      port: webui
-    - protocol: TCP
-      port: interpreter
   # accept all traffic from Spark cluster
   - from:
     - podSelector:
@@ -48,12 +32,4 @@ spec:
           app.kubernetes.io/component: master
           app.kubernetes.io/instance: spark-cluster
           app.kubernetes.io/name: spark
-  # communicate with Zeppelin RPC
-  - to:
-    - podSelector:
-        matchLabels:
-          {{- include "zeppelin.selectorLabels" . | nindent 10 }}
-    ports:
-    - protocol: TCP
-      port: {{ .Values.service.rpcPort }}
 {{- end }}

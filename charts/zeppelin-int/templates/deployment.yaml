@@ -1,17 +1,14 @@
-{{- if .Values.sparkInterpreter.enabled | default false }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "zeppelin.fullname" . }}-spark-int
+  name: {{ include "zeppelin.fullname" . }}
   labels:
     {{- include "zeppelin.labels" . | nindent 4 }}
 spec:
-  replicas: 1
+  replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
       {{- include "zeppelin.selectorLabels" . | nindent 6 }}
-      app.kubernetes.io/component: interpreter
-      org.apache.zeppelin/interpreter: spark
   template:
     metadata:
       {{- with .Values.podAnnotations }}
@@ -23,8 +20,6 @@ spec:
         {{- with.Values.podLabels }}
           {{- toYaml . | nindent 8 }}
         {{- end }}
-        app.kubernetes.io/component: interpreter
-        org.apache.zeppelin/interpreter: spark
         spark.apache.org/cluster: allow
         interpreterGroupId: 2CXX5TW2H
         interpreterSettingName: spark
@@ -43,8 +38,6 @@ spec:
             items:
             - key: log4j.properties
               path: log4j.properties
-            - key: shiro.ini.template
-              path: shiro.ini.template
         - name: site-config
           configMap:
             name: {{ include "zeppelin.fullname" . }}-site-config
@@ -73,19 +66,20 @@ spec:
           emptyDir: {}
         - name: zep-logs
           emptyDir: {}
-        - name: spark-home
+        - name: intp-artifacts
           emptyDir: {}
         - name: spark-hive-warehouse
           emptyDir: {}
         - name: etc-hack
           emptyDir: {}
       initContainers:
-      - name: {{ .Chart.Name }}-copy-spark-home
+      {{- if .Values.artifacts.enabled }}
+      - name: {{ .Chart.Name }}-copy-dir
         securityContext:
           {{- toYaml .Values.securityContext | nindent 12 }}
-        image: bitnami/spark:2.4.5
-        imagePullPolicy: {{ .Values.image.pullPolicy }}
-        command: ["sh", "-c", "cp -r /opt/bitnami/spark/* /spark/"]
+        image: {{ .Values.artifacts.image.repository }}:{{ .Values.artifacts.image.tag | default .Chart.AppVersion }}"
+        imagePullPolicy: {{ .Values.artifacts.image.pullPolicy }}
+        command: ["sh", "-c", "cp -r {{ .Values.artifacts.dir_to_copy }}/* /intp-art/"]
         resources:
           requests:
             cpu: 10m
@@ -94,8 +88,9 @@ spec:
             cpu: 50m
             memory: 32Mi
         volumeMounts:
-        - name: spark-home
-          mountPath: /spark
+        - name: intp-artifacts
+          mountPath: /intp-art
+      {{- end }}
       - name: {{ .Chart.Name }}-init-config
         securityContext:
           {{- toYaml .Values.securityContext | nindent 12 }}
@@ -171,9 +166,9 @@ spec:
           - "-r"
           - "10000:10010"
           - "-c"
-          - "{{ include "zeppelin.fullname" . }}"
+          - "{{ .Values.zeppelin.host }}"
           - "-p"
-          - "{{ .Values.service.rpcPort }}"
+          - "{{ .Values.zeppelin.rpcPort }}"
           - "-i"
           - "spark-2CXX5TW2H"
           - "-l"
@@ -182,13 +177,13 @@ spec:
           - "spark"
         ports:
           - name: interpreter
-            containerPort: {{ .Values.sparkInterpreter.interpreter.port }}
+            containerPort: {{ .Values.service.interpreter.port }}
             protocol: TCP
           - name: thrift
-            containerPort: {{ .Values.sparkInterpreter.thrift.port }}
+            containerPort: {{ .Values.service.thrift.port }}
             protocol: TCP
           - name: webui
-            containerPort: {{ .Values.sparkInterpreter.webui.port }}
+            containerPort: {{ .Values.service.webui.port }}
             protocol: TCP
         livenessProbe:
           tcpSocket:
@@ -206,13 +201,11 @@ spec:
           {{- toYaml .Values.resources | nindent 10 }}
         env:
         - name: ZEPPELIN_MEM
-          value:  {{ .Values.zeppelin.server.jvmMemOptions }}
+          value:  {{ .Values.app.jvmMemOptions }}
         - name: ZEPPELIN_INTP_MEM
-          value:  {{ .Values.zeppelin.interpreter.jvmMemOptions }}
+          value:  {{ .Values.app.jvmMemOptions }}
         - name: ZEPPELIN_RUN_MODE
           value: local
-        - name: ZEPPELIN_K8S_SPARK_CONTAINER_IMAGE
-          value: "bitnami/spark:2.4.5"
         - name: POD_UID
           valueFrom:
             fieldRef:
@@ -230,8 +223,10 @@ spec:
               fieldPath: status.podIP
         - name: SERVICE_DOMAIN
           value: {{ .Values.zeppelin.serviceDomain }}
+        {{- if eq .Values.app.kind "spark" }}
         - name: SPARK_HOME
-          value: /spark
+          value: /intp-art
+        {{- end }}
         volumeMounts:
         - name: zep-tmp
           mountPath: /tmp
@@ -239,8 +234,10 @@ spec:
           mountPath: /opt/zeppelin/conf
         - name: zep-logs
           mountPath: /opt/zeppelin/logs
-        - name: spark-home
-          mountPath: /spark
+        {{- if .Values.artifacts.enabled }}
+        - name: intp-artifacts
+          mountPath: /intp-art
+        {{- end }}
         - name: spark-hive-warehouse
           mountPath: /opt/zeppelin/spark-warehouse
         - name: etc-hack
@@ -258,4 +255,3 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-{{- end }}
