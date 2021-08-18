@@ -23,4 +23,4 @@ sources:
   - https://github.com/bitnami/bitnami-docker-spark
   - https://spark.apache.org/
   - https://github.com/ebuildy/helm-data-lake
-version: 0.1.0
+version: 6.0.0
