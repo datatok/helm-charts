@@ -82,7 +82,7 @@ zeppelin:
     jvmMemOptions: -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -XX:MaxRAMFraction=1 -Xms512m -Xmx512m -XX:MaxMetaspaceSize=512m
 
 sparkInterpreter:
-  enabled: true
+  enabled: false
 
   interpreter:
     port: 8080
