@@ -1,9 +1,0 @@
-ingress:
-  enabled: true
-  certManager: true
-  hostname: spark.dev-steam.c2.par1.kube.qwant.ninja
-  tls: true
-  secretName: spark-cluster-ing
-
-  worker:
-    hostname: spark-worker.dev-steam.c2.par1.kube.qwant.ninja
