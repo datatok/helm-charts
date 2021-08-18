@@ -1,0 +1,29 @@
+{{- if .Values.serviceAccount.rbac.create -}}
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: {{ include "zeppelin.fullname" . }}-role
+  labels:
+    {{- include "zeppelin.labels" . | nindent 4 }}
+rules:
+- apiGroups: [""]
+  resources: ["pods", "services"]
+  verbs: ["create", "get", "update", "patch", "list", "delete", "watch"]
+- apiGroups: ["rbac.authorization.k8s.io"]
+  resources: ["roles", "rolebindings"]
+  verbs: ["bind", "create", "get", "update", "patch", "list", "delete", "watch"]
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: {{ include "zeppelin.fullname" . }}-role-binding
+  labels:
+    {{- include "zeppelin.labels" . | nindent 4 }}
+subjects:
+- kind: ServiceAccount
+  name: {{ include "zeppelin.serviceAccountName" . }}
+roleRef:
+  kind: Role
+  name: {{ include "zeppelin.fullname" . }}-role
+  apiGroup: rbac.authorization.k8s.io
+{{- end }}

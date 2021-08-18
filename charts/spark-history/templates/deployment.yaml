@@ -1,0 +1,120 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "spark-history.fullname" . }}
+  labels:
+    {{- include "spark-history.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "spark-history.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "spark-history.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "spark-history.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      volumes:
+        - name: spark-logs
+          emptyDir: {}
+        - name: tmp
+          emptyDir: {}
+        - name: etc-hack
+          emptyDir: {}
+      initContainers:
+      - name: {{ .Chart.Name }}-fix-user
+        securityContext:
+          {{- toYaml .Values.securityContext | nindent 12 }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        command:
+        - '/bin/sh'
+        - '-c'
+        - >
+          myuid=$(id -u)
+          mygid=$(id -g)
+          uidentry=$(getent passwd $myuid)
+
+          cp /etc/passwd /opt/my-etc/passwd
+          
+          if [ -z "$uidentry" ] ; then
+              if [ -w /opt/my-etc/passwd ] ; then
+                  echo "$myuid:x:$myuid:$mygid:spark uid:${PWD}:/bin/false" >> /opt/my-etc/passwd
+              else
+                  echo "Container ENTRYPOINT failed to add passwd entry for spark UID"
+              fi
+          fi
+        resources:
+          requests:
+            cpu: 10m
+            memory: 16Mi
+          limits:
+            cpu: 50m
+            memory: 32Mi
+        volumeMounts:
+        - name: etc-hack
+          mountPath: /opt/my-etc
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command:
+            - '/opt/bitnami/spark/sbin/start-history-server.sh'
+          env:
+            - name: SPARK_NO_DAEMONIZE
+              value: "true"
+            - name: SPARK_PID_DIR
+              value: "/tmp"
+            - name: SPARK_USER
+              value: spark
+            - name: SPARK_HISTORY_OPTS
+              value: "-Dspark.eventLog.enabled=true -Dspark.eventLog.dir=/opt/bitnami/spark/logs -Dspark.history.fs.logDirectory=/opt/bitnami/spark/logs"
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.port }}
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+          - name: tmp
+            mountPath: /tmp
+          - name: spark-logs
+            mountPath: /opt/bitnami/spark/logs
+          - name: etc-hack
+            mountPath: /etc/passwd
+            subPath: passwd
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
