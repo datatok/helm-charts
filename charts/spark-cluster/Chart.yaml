@@ -10,7 +10,7 @@ dependencies:
     version: 1.x.x
 description: Spark is a fast and general-purpose cluster computing system.
 engine: gotpl
-home: https://github.com/bitnami/charts/tree/master/bitnami/spark
+home: https://github.com/ebuildy/helm-data-lake
 icon: https://bitnami.com/assets/stacks/spark/img/spark-stack-220x234.png
 keywords:
   - apache
@@ -22,4 +22,5 @@ name: spark
 sources:
   - https://github.com/bitnami/bitnami-docker-spark
   - https://spark.apache.org/
-version: 5.7.1
+  - https://github.com/ebuildy/helm-data-lake
+version: 0.1.0
