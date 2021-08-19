@@ -38,6 +38,9 @@ networkPolicy:
   extraEgressRules: []
   extraIngressRules: []
 
+extraVolumes: []
+extraVolumeMounts: []
+
 service:
   type: ClusterIP
   interpreter:
@@ -77,15 +80,12 @@ tolerations: []
 
 affinity: {}
 
+fixUser: true
+
 artifacts:
-  enabled: true
-
-  image:
-    repository: bitnami/spark
-    tag: 2.4.5
-    pullPolicy: IfNotPresent
-
-  copyDirectory: /opt/bitnami/spark
+  enabled: false
+  image: {}
+  copyDirectory: ""
 
 app:
   kind: spark

@@ -1,9 +1,0 @@
-kind: ConfigMap
-apiVersion: v1
-metadata:
-  name: {{ include "zeppelin.fullname" . }}-interpreter-spec
-  labels:
-    {{- include "zeppelin.labels" . | nindent 4 }}
-data:
-  100-interpreter-spec.yaml: |-
-    {{ .Files.Get "files/interpreter-spec.yaml" | nindent 4 }}

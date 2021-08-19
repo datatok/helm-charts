@@ -18,9 +18,8 @@ spec:
       labels:
         {{- include "zeppelin.selectorLabels" . | nindent 8 }}
         {{- with.Values.podLabels }}
-          {{- toYaml . | nindent 8 }}
+        {{- toYaml . | nindent 8 }}
         {{- end }}
-        spark.apache.org/cluster: allow
         interpreterGroupId: 2CXX5TW2H
         interpreterSettingName: spark
     spec:
@@ -68,19 +67,22 @@ spec:
           emptyDir: {}
         - name: intp-artifacts
           emptyDir: {}
-        - name: spark-hive-warehouse
-          emptyDir: {}
+        {{- if .Values.fixUser }}
         - name: etc-hack
           emptyDir: {}
+        {{- end }}
+        {{- with .Values.extraVolumes }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
       initContainers:
       {{- if .Values.artifacts.enabled }}
-      - name: {{ .Chart.Name }}-copy-dir
-        securityContext:
-          {{- toYaml .Values.securityContext | nindent 12 }}
+      - name: {{ .Chart.Name }}-artifacts
+        securityContext: &containerSecurityContext
+          {{- toYaml .Values.securityContext | nindent 10 }}
         image: {{ .Values.artifacts.image.repository }}:{{ .Values.artifacts.image.tag | default .Chart.AppVersion }}"
         imagePullPolicy: {{ .Values.artifacts.image.pullPolicy }}
-        command: ["sh", "-c", "cp -r {{ .Values.artifacts.dir_to_copy }}/* /intp-art/"]
-        resources:
+        command: ["sh", "-c", "cp -r {{ .Values.artifacts.copyDirectory }}/* /intp-art/"]
+        resources: &initContainerResources
           requests:
             cpu: 10m
             memory: 16Mi
@@ -93,7 +95,7 @@ spec:
       {{- end }}
       - name: {{ .Chart.Name }}-init-config
         securityContext:
-          {{- toYaml .Values.securityContext | nindent 12 }}
+          <<: *containerSecurityContext
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         command:
@@ -101,13 +103,8 @@ spec:
         - '-c'
         - >
           cp conf/* prepared_conf;
-        resources:
-          requests:
-            cpu: 10m
-            memory: 16Mi
-          limits:
-            cpu: 50m
-            memory: 32Mi
+        resources: 
+          <<: *initContainerResources
         volumeMounts:
         - name: zep-conf
           mountPath: /opt/zeppelin/prepared_conf
@@ -120,9 +117,10 @@ spec:
         - name: interpreter-config
           mountPath: /opt/zeppelin/conf/interpreter.json
           subPath: interpreter.json
+      {{- if .Values.fixUser }}
       - name: {{ .Chart.Name }}-fix-user
         securityContext:
-          {{- toYaml .Values.securityContext | nindent 12 }}
+          <<: *containerSecurityContext
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         command:
@@ -143,19 +141,15 @@ spec:
               fi
           fi
         resources:
-          requests:
-            cpu: 10m
-            memory: 16Mi
-          limits:
-            cpu: 50m
-            memory: 32Mi
+          <<: *initContainerResources
         volumeMounts:
         - name: etc-hack
           mountPath: /opt/my-etc
+      {{- end }}
       containers:
       - name: {{ .Chart.Name }}
         securityContext:
-          {{- toYaml .Values.securityContext | nindent 10 }}
+          <<: *containerSecurityContext
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         #  Process is launched: [/opt/zeppelin/bin/interpreter.sh, -d, /opt/zeppelin/interpreter/spark, -c, 10.233.82.61, -p, 38853, -r, :, -i, spark-2GE1SVH8A, -l, /opt/zeppelin/local-repo/spark, -g, spark]
@@ -216,16 +210,16 @@ spec:
             fieldRef:
               apiVersion: v1
               fieldPath: metadata.name
-        - name: SPARK_LOCAL_HOSTNAME
-          valueFrom:
-            fieldRef:
-              apiVersion: v1
-              fieldPath: status.podIP
         - name: SERVICE_DOMAIN
           value: {{ .Values.zeppelin.serviceDomain }}
         {{- if eq .Values.app.kind "spark" }}
         - name: SPARK_HOME
           value: /intp-art
+        - name: SPARK_LOCAL_HOSTNAME
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: status.podIP
         {{- end }}
         volumeMounts:
         - name: zep-tmp
@@ -238,11 +232,14 @@ spec:
         - name: intp-artifacts
           mountPath: /intp-art
         {{- end }}
-        - name: spark-hive-warehouse
-          mountPath: /opt/zeppelin/spark-warehouse
+        {{- if .Values.fixUser }}
         - name: etc-hack
           mountPath: /etc/passwd
           subPath: passwd
+        {{- end }}
+        {{- with .Values.extraVolumeMounts }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

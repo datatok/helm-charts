@@ -31,6 +31,9 @@ spec:
       port: webui
     - protocol: TCP
       port: interpreter
+  {{- with .Values.networkPolicy.extraIngressRules }}
+  {{- toYaml . | nindent 2 }}
+  {{- end }}
   egress:
   # communicate with Zeppelin RPC
   - to:
@@ -40,4 +43,7 @@ spec:
     ports:
     - protocol: TCP
       port: {{ .Values.zeppelin.rpcPort }}
+  {{- with .Values.networkPolicy.extraEgressRules }}
+  {{- toYaml . | nindent 2 }}
+  {{- end }}
 {{- end }}

@@ -10,11 +10,11 @@ nameOverride: ""
 fullnameOverride: ""
 
 serviceAccount:
-  create: true
+  create: false
   annotations: {}
   name: "zep"
   rbac:
-    create: true
+    create: false
 
 podAnnotations: {}
 
@@ -73,23 +73,15 @@ tolerations: []
 
 affinity: {}
 
-zeppelin:
-  
+zeppelin:  
   server:
     jvmMemOptions: -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -XX:MaxRAMFraction=1 -Xms512m -Xmx512m -XX:MaxMetaspaceSize=512m
 
-  interpreter:
-    jvmMemOptions: -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -XX:MaxRAMFraction=1 -Xms512m -Xmx512m -XX:MaxMetaspaceSize=512m
-
-sparkInterpreter:
-  enabled: false
-
-  interpreter:
-    port: 8080
-  thrift:
-    port: 10000
-  webui:
-    port: 4040
+interpreter:
+  labels:
+    app.kubernetes.io/name: zeppelin-int
+    app.kubernetes.io/component: interpreter
+  thriftPort: 10000
 
 logging:
   level: INFO

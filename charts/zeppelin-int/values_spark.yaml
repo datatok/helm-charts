@@ -1,0 +1,37 @@
+podLabels:
+  spark.apache.org/cluster: allow
+
+networkPolicy:
+  enabled: true
+  extraEgressRules:
+  - to:
+    - podSelector:
+        matchLabels:
+          app.kubernetes.io/component: master
+          app.kubernetes.io/instance: spark-cluster
+          app.kubernetes.io/name: spark
+  extraIngressRules:
+  - from:
+    - podSelector:
+        matchLabels:
+          app.kubernetes.io/component: master
+          app.kubernetes.io/instance: spark-cluster
+          app.kubernetes.io/name: spark
+
+extraVolumes:
+- name: spark-hive-warehouse
+  emptyDir: {}
+
+extraVolumeMounts:
+- name: spark-hive-warehouse
+  mountPath: /opt/zeppelin/spark-warehouse
+
+artifacts:
+  enabled: true
+
+  image:
+    repository: bitnami/spark
+    tag: 2.4.5
+    pullPolicy: IfNotPresent
+
+  copyDirectory: /opt/bitnami/spark

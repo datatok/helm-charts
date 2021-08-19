@@ -31,7 +31,14 @@ spec:
     - protocol: TCP
       port: {{ .Values.service.rpcPort }}
     - protocol: TCP
-      port: 10000
+      port: {{ .Values.interpreter.thriftPort }}
+    from:
+    - podSelector:
+        matchLabels:
+          {{ toYaml .Values.interpreter.labels | nindent 10 }}
+  {{- with .Values.networkPolicy.extraIngressRules }}
+  {{- toYaml . | nindent 2 }}
+  {{- end }}
   egress:
   - ports:
     - protocol: TCP
@@ -40,14 +47,12 @@ spec:
     - protocol: TCP
       port: {{ .Values.service.rpcPort }}
     - protocol: TCP
-      port: 10000
-  - to:
+      port: {{ .Values.interpreter.thriftPort }}
+    to:
     - podSelector:
         matchLabels:
-          {{- include "zeppelin.selectorLabels" . | nindent 10 }}
-    - podSelector:
-        matchLabels:
-          app.kubernetes.io/component: master
-          app.kubernetes.io/instance: spark-cluster
-          app.kubernetes.io/name: spark
+          {{ toYaml .Values.interpreter.labels | nindent 10 }}
+  {{- with .Values.networkPolicy.extraEgressRules }}
+  {{- toYaml . | nindent 2 }}
+  {{- end }}
 {{- end }}
