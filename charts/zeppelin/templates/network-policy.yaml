@@ -17,41 +17,40 @@ spec:
   - Ingress
   - Egress
   ingress:
-  - from:
-    - podSelector:
-        matchLabels:
-          {{- include "zeppelin.selectorLabels" . | nindent 10 }}
+  # Zeppelin server
   - ports:
     - protocol: TCP
-      port: 8080
+      port: {{ .Values.service.port }}
+  {{- if .Values.sparkEmbedded.enabled }}
+  # Spark web UI
   - ports:
     - protocol: TCP
-      port: 12321
+      port: 4040
+  {{- end }}
+  {{- if .Values.zeppelin.interpreter.enabled }}
+  # Zeppelin RPC API
   - ports:
     - protocol: TCP
       port: {{ .Values.service.rpcPort }}
-    - protocol: TCP
-      port: {{ .Values.interpreter.thriftPort }}
     from:
     - podSelector:
         matchLabels:
-          {{ toYaml .Values.interpreter.labels | nindent 10 }}
+          zeppelin.apache.org/{{ template "zeppelin.fullname" . }}-interpreter: "true"
+  {{- end }}
   {{- with .Values.networkPolicy.extraIngressRules }}
   {{- toYaml . | nindent 2 }}
   {{- end }}
   egress:
+  {{- if .Values.zeppelin.interpreter.enabled }}
+  # Zeppelin interpreter thrift
   - ports:
     - protocol: TCP
-      port: 12321
-  - ports:
-    - protocol: TCP
-      port: {{ .Values.service.rpcPort }}
-    - protocol: TCP
-      port: {{ .Values.interpreter.thriftPort }}
+      port: {{ .Values.zeppelin.interpreter.thriftPort }}
     to:
     - podSelector:
         matchLabels:
-          {{ toYaml .Values.interpreter.labels | nindent 10 }}
+          zeppelin.apache.org/{{ template "zeppelin.fullname" . }}-interpreter: "true"
+  {{- end }}
   {{- with .Values.networkPolicy.extraEgressRules }}
   {{- toYaml . | nindent 2 }}
   {{- end }}

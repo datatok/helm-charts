@@ -73,29 +73,42 @@ tolerations: []
 
 affinity: {}
 
-zeppelin:  
+zeppelin:
   server:
     jvmMemOptions: -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -XX:MaxRAMFraction=1 -Xms512m -Xmx512m -XX:MaxMetaspaceSize=512m
 
-interpreter:
-  labels:
-    app.kubernetes.io/name: zeppelin-int
-    app.kubernetes.io/component: interpreter
-  thriftPort: 10000
+  interpreter:
+    enabled: true
+    thriftPort: 10000
 
 logging:
   level: INFO
   syslog: {}
     #level: INFO
-    #host: 
-    #port: 
+    #host:
+    #port:
     #facility:
     #pattern:
 
 notebookStorage:
-  type: ""
-  path: ""
+  type: "git"
+  repository: "https://gitlab-ci-token:HcgZR6s7JcAvesHMEnbj@git.qwant.ninja/product/analytic/data-lake/notebook.git"
+  token: ""
 
-spark:
-  type: local
+
+sparkExternal:
+  enabled: false
+  master: spark://spark-master:7077
+
+sparkEmbedded:
+  enabled: true
+  image:
+    registry: docker.io
+    repository: bitnami/spark
+    pullPolicy: IfNotPresent
+    tag: 2.4.5
+  copyDirectory: /opt/bitnami/spark
+  portWebUI: 4040
+  ingress:
+    enabled: false
   master: local[*] # k8s://https://kubernetes:443

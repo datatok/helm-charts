@@ -15,6 +15,11 @@ spec:
     targetPort: rpc
     protocol: TCP
     name: rpc
+  {{- if .Values.sparkEmbedded.enabled }}
+  - port: {{ .Values.sparkEmbedded.portWebUI }}
+    targetPort: spark-ui
+    protocol: TCP
+    name: spark-ui
+  {{- end }}
   selector:
     {{- include "zeppelin.selectorLabels" . | nindent 4 }}
-    app.kubernetes.io/component: notebook

@@ -28,6 +28,7 @@ spec:
       serviceAccountName: {{ include "zeppelin.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      enableServiceLinks: false
       volumes:
         - name: config
           configMap:
@@ -65,10 +66,34 @@ spec:
           emptyDir: {}
         - name: etc-hack
           emptyDir: {}
+        {{- if .Values.sparkEmbedded.enabled }}
+        - name: spark-home
+          emptyDir: {}
+        {{- end }}
       initContainers:
+      {{- if .Values.sparkEmbedded.enabled }}
+      - name: {{ .Chart.Name }}-spark-init
+        securityContext: &containerSecurityContext
+          {{- toYaml .Values.securityContext | nindent 12 }}
+        {{- with .Values.sparkEmbedded.image }}
+        image: "{{ .registry }}/{{ .repository }}:{{ .tag }}"
+        imagePullPolicy: {{ .pullPolicy }}
+        {{- end }}
+        command: ["sh", "-c", "cp -r {{ .Values.sparkEmbedded.copyDirectory }}/* /spark/"]
+        resources: &initContainerResources
+          requests:
+            cpu: 10m
+            memory: 16Mi
+          limits:
+            cpu: 50m
+            memory: 64Mi
+        volumeMounts:
+        - name: spark-home
+          mountPath: /spark
+      {{- end }}
       - name: {{ .Chart.Name }}-init-config
         securityContext:
-          {{- toYaml .Values.securityContext | nindent 12 }}
+          <<: *containerSecurityContext
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         command:
@@ -76,13 +101,8 @@ spec:
         - '-c'
         - >
           cp conf/* prepared_conf;
-        resources: &initContainerResources
-          requests:
-            cpu: 10m
-            memory: 16Mi
-          limits:
-            cpu: 50m
-            memory: 32Mi
+        resources:
+          <<: *initContainerResources
         volumeMounts:
         - name: zep-conf
           mountPath: /opt/zeppelin/prepared_conf
@@ -103,16 +123,16 @@ spec:
         command:
         - '/bin/sh'
         - '-c'
-        - >
+        - |+
           myuid=$(id -u)
           mygid=$(id -g)
           uidentry=$(getent passwd $myuid)
 
           cp /etc/passwd /opt/my-etc/passwd
-          
+
           if [ -z "$uidentry" ] ; then
               if [ -w /opt/my-etc/passwd ] ; then
-                  echo "$myuid:x:$myuid:$mygid:zeppelin uid:${PWD}:/bin/false" >> /opt/my-etc/passwd
+                  echo "zeppelin:x:$myuid:$mygid:Zeppelin user:${PWD}:/bin/false" >> /opt/my-etc/passwd
               else
                   echo "Container ENTRYPOINT failed to add passwd entry for zeppelin UID"
               fi
@@ -122,10 +142,34 @@ spec:
         volumeMounts:
         - name: etc-hack
           mountPath: /opt/my-etc
+      {{- if eq .Values.notebookStorage.type "git" }}
+      - name: {{ .Chart.Name }}-git-init
+        securityContext:
+          <<: *containerSecurityContext
+        image: "bitnami/git:2-debian-10"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        workingDir: /opt/zeppelin/notebook
+        command:
+        - '/bin/sh'
+        - '-c'
+        - |+
+          git clone {{ .Values.notebookStorage.repository }} .
+          git config user.name "datahub zeppelin"
+          git config user.email "z.datahub@qwant.com"
+          git config pull.ff only
+        resources:
+          <<: *initContainerResources
+        volumeMounts:
+        - name: zep-notebooks
+          mountPath: /opt/zeppelin/notebook
+        env:
+        - name: GIT_SSL_NO_VERIFY
+          value: "true"
+      {{- end }}
       containers:
         - name: {{ .Chart.Name }}
           securityContext:
-            {{- toYaml .Values.securityContext | nindent 12 }}
+            <<: *containerSecurityContext
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
@@ -135,6 +179,11 @@ spec:
           - name: rpc
             containerPort: {{ .Values.service.rpcPort }}
             protocol: TCP
+          {{- if .Values.sparkEmbedded.enabled }}
+          - name: spark-ui
+            containerPort: {{ .Values.sparkEmbedded.portWebUI }}
+            protocol: TCP
+          {{- end }}
           livenessProbe:
             httpGet:
               path: /
@@ -149,13 +198,12 @@ spec:
             timeoutSeconds: 1
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+          workingDir: /opt/zeppelin
           env:
           - name: ZEPPELIN_WAR_TEMPDIR
             value: webapps/tmp_dir
           - name: ZEPPELIN_MEM
             value:  {{ .Values.zeppelin.server.jvmMemOptions }}
-          - name: ZEPPELIN_RUN_MODE
-            value: local
           - name: POD_UID
             valueFrom:
               fieldRef:
@@ -168,6 +216,20 @@ spec:
                 fieldPath: metadata.name
           - name: SERVICE_DOMAIN
             value: {{ .Values.zeppelin.serviceDomain }}
+          {{- if .Values.sparkEmbedded.enabled }}
+          - name: SPARK_HOME
+            value: /spark
+          - name: SPARK_LOCAL_HOSTNAME
+            valueFrom:
+              fieldRef:
+                apiVersion: v1
+                fieldPath: status.podIP
+          - name: ZEPPELIN_RUN_MODE
+            value: local
+          {{- end }}
+          {{- with .Values.extraEnvVars }}
+            {{- toYaml . | nindent 10 }}
+          {{- end }}
           volumeMounts:
           - name: zep-tmp
             mountPath: /tmp
@@ -182,6 +244,10 @@ spec:
           - name: etc-hack
             mountPath: /etc/passwd
             subPath: passwd
+          {{- if .Values.sparkEmbedded.enabled }}
+          - name: spark-home
+            mountPath: /spark
+          {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

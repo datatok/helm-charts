@@ -1,3 +1,16 @@
+{{- $sparkMaster := "local[*]" -}}
+{{- $sparkDeployMode := "client" -}}
+{{- $sparkExecutorInstances := 1 -}}
+{{- if .Values.sparkEmbedded.enabled -}}
+{{- $sparkMaster := .Values.sparkEmbedded.master -}}
+{{- $sparkDeployMode := "client" -}}
+{{- $sparkExecutorInstances := 1 -}}
+{{- end -}}
+{{- if .Values.sparkExternal.enabled -}}
+{{- $sparkMaster := .Values.sparkExternal.master -}}
+{{- $sparkDeployMode := .Values.sparkExternal.deployMode | default "client" -}}
+{{- $sparkExecutorInstances := .Values.sparkExternal.executor.instances -}}
+{{- end -}}
 kind: ConfigMap
 apiVersion: v1
 metadata:
@@ -98,12 +111,12 @@ data:
             },
             "spark.submit.deployMode": {
               "name": "spark.submit.deployMode",
-              "value": "cluster",
+              "value": "{{ $sparkDeployMode }}",
               "type": "string"
             },
             "spark.executor.instances": {
               "name": "spark.executor.instances",
-              "value": "2",
+              "value": "{{ $sparkExecutorInstances }}",
               "type": "number"
             },
             "zeppelin.spark.importImplicit": {
@@ -123,7 +136,7 @@ data:
             },
             "master": {
               "name": "master",
-              "value": "{{ .Values.spark.master }}",
+              "value": "{{ $sparkMaster }}",
               "type": "string"
             },
             "zeppelin.pyspark.python": {
@@ -230,61 +243,6 @@ data:
             "port": -1,
             "perNote": "isolated",
             "perUser": "",
-            "isExistingProcess": false,
-            "setPermission": false,
-            "owners": [],
-            "isUserImpersonate": false
-          }
-        },
-        "2CYVXG82Y": {
-          "id": "2CYVXG82Y",
-          "name": "angular",
-          "group": "angular",
-          "properties": {},
-          "status": "READY",
-          "interpreterGroup": [
-            {
-              "name": "angular",
-              "class": "org.apache.zeppelin.angular.AngularInterpreter",
-              "defaultInterpreter": false,
-              "editor": {
-                "editOnDblClick": true
-              }
-            }
-          ],
-          "dependencies": [],
-          "option": {
-            "remote": true,
-            "port": -1,
-            "isExistingProcess": false,
-            "setPermission": false,
-            "owners": [],
-            "isUserImpersonate": false
-          }
-        },
-        "2D1B3T53H": {
-          "id": "2D1B3T53H",
-          "name": "groovy",
-          "group": "groovy",
-          "properties": {
-            "GROOVY_CLASSES": {
-              "name": "GROOVY_CLASSES",
-              "value": "",
-              "type": "textarea"
-            }
-          },
-          "status": "READY",
-          "interpreterGroup": [
-            {
-              "name": "groovy",
-              "class": "org.apache.zeppelin.groovy.GroovyInterpreter",
-              "defaultInterpreter": false
-            }
-          ],
-          "dependencies": [],
-          "option": {
-            "remote": true,
-            "port": -1,
             "isExistingProcess": false,
             "setPermission": false,
             "owners": [],
