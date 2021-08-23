@@ -30,7 +30,48 @@ entries:
     urls:
     - https://github.com/ebuildy/helm-data-lake/releases/download/spark-6.0.1/spark-6.0.1.tgz
     version: 6.0.1
+  spark-master:
+  - apiVersion: v2
+    appVersion: 2.4.5
+    created: "2021-08-23T17:33:28.576610672Z"
+    dependencies:
+    - name: common
+      repository: https://charts.bitnami.com/bitnami
+      tags:
+      - bitnami-common
+      version: 1.x.x
+    description: Deploy Apache Spark cluster, master node
+    digest: bbdeea9f870de330747e15285ab5d9e10a728b4325a498805b47d0ae391dbaa5
+    name: spark-master
+    type: application
+    urls:
+    - https://github.com/ebuildy/helm-data-lake/releases/download/spark-master-0.1.0/spark-master-0.1.0.tgz
+    version: 0.1.0
+  spark-worker:
+  - apiVersion: v2
+    appVersion: 2.4.5
+    created: "2021-08-23T17:33:28.768238655Z"
+    description: A Helm chart for Kubernetes
+    digest: cba5ebfb7b5149e361f37f172fae281f60f2136b93c51562ce2799bfa5f5ab80
+    name: spark-worker
+    type: application
+    urls:
+    - https://github.com/ebuildy/helm-data-lake/releases/download/spark-worker-0.1.0/spark-worker-0.1.0.tgz
+    version: 0.1.0
   zeppelin:
+  - annotations:
+      category: Analytics
+    apiVersion: v2
+    appVersion: 0.9.0
+    created: "2021-08-23T17:33:28.956273859Z"
+    description: A Helm chart for Kubernetes
+    digest: 66633ae28568bf95075cebb0b1c9f58bcefdb372a0b116bd1643e755970dd465
+    home: https://github.com/ebuildy/helm-data-lake
+    name: zeppelin
+    type: application
+    urls:
+    - https://github.com/ebuildy/helm-data-lake/releases/download/zeppelin-0.1.4/zeppelin-0.1.4.tgz
+    version: 0.1.4
   - annotations:
       category: Analytics
     apiVersion: v2
@@ -74,6 +115,19 @@ entries:
       category: Analytics
     apiVersion: v2
     appVersion: 0.9.0
+    created: "2021-08-23T17:33:29.153121812Z"
+    description: Run Apache Zeppelin interpreter
+    digest: 3d177feb3b8e95755fa1751cc5503074a0e0b3cb114c20de63f92e6752b28264
+    home: https://github.com/ebuildy/helm-data-lake
+    name: zeppelin-int
+    type: application
+    urls:
+    - https://github.com/ebuildy/helm-data-lake/releases/download/zeppelin-int-0.1.3/zeppelin-int-0.1.3.tgz
+    version: 0.1.3
+  - annotations:
+      category: Analytics
+    apiVersion: v2
+    appVersion: 0.9.0
     created: "2021-08-19T08:56:40.602759478Z"
     dependencies:
     - name: common
@@ -89,4 +143,4 @@ entries:
     urls:
     - https://github.com/ebuildy/helm-data-lake/releases/download/zeppelin-int-0.1.2/zeppelin-int-0.1.2.tgz
     version: 0.1.2
-generated: "2021-08-19T08:56:40.603047188Z"
+generated: "2021-08-23T17:33:29.153135612Z"
