@@ -91,7 +91,7 @@ spec:
         - name: spark-home
           mountPath: /spark
       {{- end }}
-      - name: {{ .Chart.Name }}-init-config
+      - name: {{ .Chart.Name }}-config-init
         securityContext:
           <<: *containerSecurityContext
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
@@ -153,7 +153,7 @@ spec:
         - '/bin/sh'
         - '-c'
         - |+
-          git clone {{ .Values.notebookStorage.repository }} .
+          git clone ${REPO_URL} .
           git config user.name "datahub zeppelin"
           git config user.email "z.datahub@qwant.com"
           git config pull.ff only
@@ -165,6 +165,11 @@ spec:
         env:
         - name: GIT_SSL_NO_VERIFY
           value: "true"
+        - name: REPO_URL
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.notebookStorage.repositorySecret }}
+              key: url
       {{- end }}
       containers:
         - name: {{ .Chart.Name }}
