@@ -1,0 +1,218 @@
+# Default values for spark-master.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+app:
+  clusterName: spark
+  ## @param app.configurationConfigMap Set a custom configuration by using an existing configMap with the configuration file.
+  ##
+  configurationConfigMap: ""
+  ## @param app.webPort Specify the port where the web interface will listen on the master
+  ##
+  webPort: 8080
+  ## @param app.clusterPort Specify the port where the master listens to communicate with workers
+  ##
+  clusterPort: 7077
+  ## @param app.hostAliases Deployment pod host aliases
+  ## https://kubernetes.io/docs/concepts/services-networking/add-entries-to-pod-etc-hosts-with-host-aliases/
+  ##
+  hostAliases: []
+  ## @param master.daemonMemoryLimit Set the memory limit for the master daemon
+  ##
+  daemonMemoryLimit: ""
+  ## @param master.configOptions Use a string to set the config options for in the form "-Dx=y"
+  ##
+  configOptions: ""
+
+image:
+  registry: docker.io
+  repository: bitnami/spark
+  pullPolicy: IfNotPresent
+  tag: 2.4.5
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+networkPolicy:
+  enabled: false
+
+podAnnotations: {}
+
+podSecurityContext: {}
+  # fsGroup: 1001
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # allowPrivilegeEscalation: false
+  # runAsNonRoot: true
+  # runAsUser: 1001
+
+service:
+  type: ClusterIP
+  ## @param service.clusterPort Spark cluster port
+  ##
+  clusterPort: 7077
+  ## @param service.webPort Spark client port
+  ##
+  webPort: 80
+  ## Specify the nodePort(s) value(s) for the LoadBalancer and NodePort service types.
+  ## ref: https://kubernetes.io/docs/concepts/services-networking/service/#type-nodeport
+  ## @param service.nodePorts.cluster Kubernetes cluster node port
+  ## @param service.nodePorts.web Kubernetes web node port
+  ##
+  nodePorts:
+    cluster: ""
+    web: ""
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: chart-example.local
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+livenessProbe:
+  enabled: true
+  initialDelaySeconds: 180
+  periodSeconds: 20
+  timeoutSeconds: 5
+  failureThreshold: 6
+  successThreshold: 1
+
+readinessProbe:
+  enabled: true
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 6
+  successThreshold: 1
+
+## Enable diagnostic mode in the deployment
+##
+diagnosticMode:
+  ## @param diagnosticMode.enabled Enable diagnostic mode (all probes will be disabled and the command will be overridden)
+  ##
+  enabled: false
+  ## @param diagnosticMode.command Command to override all containers in the deployment
+  ##
+  command:
+    - sleep
+  ## @param diagnosticMode.args Args to override all containers in the deployment
+  ##
+  args:
+    - infinity
+
+
+## Metrics configuration
+##
+metrics:
+  ## @param metrics.enabled Start a side-car prometheus exporter
+  ##
+  enabled: false
+  ## @param metrics.masterAnnotations [object] Annotations for the Prometheus metrics on master nodes
+  ##
+  annotations:
+    prometheus.io/scrape: 'true'
+    prometheus.io/path: '/metrics/'
+    prometheus.io/port: '{{ .Values.master.webPort }}'
+
+  ## Prometheus Service Monitor
+  ## ref: https://github.com/coreos/prometheus-operator
+  ##      https://github.com/coreos/prometheus-operator/blob/master/Documentation/api.md#endpoint
+  ##
+  podMonitor:
+    ## @param metrics.podMonitor.enabled If the operator is installed in your cluster, set to true to create a PodMonitor Resource for scraping metrics using PrometheusOperator
+    ##
+    enabled: false
+    ## @param metrics.podMonitor.extraMetricsEndpoints Add metrics endpoints for monitoring the jobs running in the worker nodes
+    ## ref: https://github.com/prometheus-operator/prometheus-operator/blob/master/Documentation/api.md#podmetricsendpoint
+    ## e.g:
+    ## - port: myapp
+    ##   path: /metrics/
+    ##
+    extraMetricsEndpoints: []
+    ## @param metrics.podMonitor.namespace Specify the namespace in which the podMonitor resource will be created
+    ##
+    namespace: ""
+    ## @param metrics.podMonitor.interval Specify the interval at which metrics should be scraped
+    ##
+    interval: 30s
+    ## @param metrics.podMonitor.scrapeTimeout Specify the timeout after which the scrape is ended
+    ## e.g:
+    ## scrapeTimeout: 30s
+    ##
+    scrapeTimeout: ""
+    ## @param metrics.podMonitor.additionalLabels Additional labels that can be used so PodMonitors will be discovered by Prometheus
+    ## ref: https://github.com/coreos/prometheus-operator/blob/master/Documentation/api.md#prometheusspec
+    ##
+    additionalLabels: {}
+  ## Custom PrometheusRule to be defined
+  ## The value is evaluated as a template, so, for example, the value can depend on .Release or .Chart
+  ## ref: https://github.com/coreos/prometheus-operator#customresourcedefinitions
+  ##
+  prometheusRule:
+    ## @param metrics.prometheusRule.enabled Set this to true to create prometheusRules for Prometheus
+    ##
+    enabled: false
+    ## @param metrics.prometheusRule.namespace Namespace where the prometheusRules resource should be created
+    ##
+    namespace: ""
+    ## @param metrics.prometheusRule.additionalLabels Additional labels that can be used so prometheusRules will be discovered by Prometheus
+    ##
+    additionalLabels: {}
+    ## @param metrics.prometheusRule.rules Custom Prometheus [rules](https://prometheus.io/docs/prometheus/latest/configuration/alerting_rules/)
+    ## These are just examples rules, please adapt them to your needs.
+    ## Make sure to constraint the rules to the current postgresql service.
+    ## rules:
+    ##   - alert: HugeReplicationLag
+    ##     expr: pg_replication_lag{service="{{ template "postgresql.fullname" . }}-metrics"} / 3600 > 1
+    ##     for: 1m
+    ##     labels:
+    ##       severity: critical
+    ##     annotations:
+    ##       description: replication for {{ template "postgresql.fullname" . }} PostgreSQL is lagging by {{ "{{ $value }}" }} hour(s).
+    ##       summary: PostgreSQL replication is lagging by {{ "{{ $value }}" }} hour(s).
+    ##
+    rules: []

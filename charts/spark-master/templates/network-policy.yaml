@@ -1,0 +1,31 @@
+{{- if .Values.networkPolicy.enabled | default false }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "spark-master.fullname" . }}
+  labels:
+    {{- include "spark-master.labels" . | nindent 4 }}
+spec:
+  podSelector:
+    matchLabels: {{- include "spark-master.selectorLabels" . | nindent 6 }}
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  - from:
+    # accept workers
+    - podSelector:
+        matchLabels:
+          {{ include "spark.labelSparkRole" . -}}: worker
+    # accept drivers / clients
+    - podSelector:
+        matchLabels:
+          {{ include "spark.labelSparkRole" . -}}: driver
+          {{ include "spark.labelSparkRole" . -}}: client
+    ports:
+    - protocol: TCP
+      port: {{ .Values.app.clusterPort }}
+  - ports:
+    - protocol: TCP
+      port: {{ .Values.app.webPort }}
+{{- end }}

@@ -1,3 +1,6 @@
 charts/zeppelin_old
 charts/zeppelin_old
 values_qwant.yaml
+charts/spark-master/charts
+charts/spark-master/charts
+charts/spark-worker/charts

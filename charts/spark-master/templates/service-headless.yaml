@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "spark-master.fullname" . }}-headless
+  labels:
+    {{- include "spark-master.labels" . | nindent 4 }}
+spec:
+  type: ClusterIP
+  clusterIP: None
+  selector:
+    {{- include "spark-master.selectorLabels" . | nindent 4 }}
