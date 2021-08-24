@@ -27,12 +27,12 @@ data:
 
     <configuration>
 
+    {{- range $k,$v := .Values.zeppelin.config }}
     <property>
-      <name>zeppelin.server.addr</name>
-      <value>0.0.0.0</value>
-      <description>Server address</description>
+      <name>{{$k}}</name>
+      <value>{{$v}}</value>
     </property>
-
+    {{- end }}
     <property>
       <name>zeppelin.server.rpc.hostName</name>
       <value>{{ template "zeppelin.fullname" . }}</value>
@@ -48,7 +48,7 @@ data:
 
     <property>
       <name>zeppelin.server.port</name>
-      <value>{{ .Values.service.internalPort }}</value>
+      <value>{{ .Values.service.port }}</value>
       <description>Server port.</description>
     </property>
 
@@ -68,24 +68,6 @@ data:
       <name>zeppelin.war.tempdir</name>
       <value>webapps</value>
       <description>Location of jetty temporary directory</description>
-    </property>
-
-    <property>
-      <name>zeppelin.notebook.dir</name>
-      <value>notebook</value>
-      <description>path or URI for notebook persist</description>
-    </property>
-
-    <property>
-      <name>zeppelin.notebook.homescreen</name>
-      <value></value>
-      <description>id of notebook to be displayed in homescreen. ex) 2A94M5J1Z Empty value displays default home screen</description>
-    </property>
-
-    <property>
-      <name>zeppelin.notebook.homescreen.hide</name>
-      <value>false</value>
-      <description>hide homescreen notebook from list when this value set to true</description>
     </property>
 
     {{- if eq .Values.notebookStorage.type "s3" }}
@@ -184,13 +166,13 @@ data:
 
     <property>
       <name>zeppelin.interpreters</name>
-      <value>org.apache.zeppelin.spark.SparkInterpreter,org.apache.zeppelin.spark.PySparkInterpreter,org.apache.zeppelin.rinterpreter.RRepl,org.apache.zeppelin.rinterpreter.KnitR,org.apache.zeppelin.spark.SparkRInterpreter,org.apache.zeppelin.spark.SparkSqlInterpreter,org.apache.zeppelin.spark.DepInterpreter,org.apache.zeppelin.markdown.Markdown,org.apache.zeppelin.angular.AngularInterpreter,org.apache.zeppelin.shell.ShellInterpreter,org.apache.zeppelin.file.HDFSFileInterpreter,org.apache.zeppelin.flink.FlinkInterpreter,,org.apache.zeppelin.python.PythonInterpreter,org.apache.zeppelin.python.PythonInterpreterPandasSql,org.apache.zeppelin.python.PythonCondaInterpreter,org.apache.zeppelin.python.PythonDockerInterpreter,org.apache.zeppelin.lens.LensInterpreter,org.apache.zeppelin.ignite.IgniteInterpreter,org.apache.zeppelin.ignite.IgniteSqlInterpreter,org.apache.zeppelin.cassandra.CassandraInterpreter,org.apache.zeppelin.geode.GeodeOqlInterpreter,org.apache.zeppelin.jdbc.JDBCInterpreter,org.apache.zeppelin.kylin.KylinInterpreter,org.apache.zeppelin.elasticsearch.ElasticsearchInterpreter,org.apache.zeppelin.scalding.ScaldingInterpreter,org.apache.zeppelin.alluxio.AlluxioInterpreter,org.apache.zeppelin.hbase.HbaseInterpreter,org.apache.zeppelin.livy.LivySparkInterpreter,org.apache.zeppelin.livy.LivyPySparkInterpreter,org.apache.zeppelin.livy.LivyPySpark3Interpreter,org.apache.zeppelin.livy.LivySparkRInterpreter,org.apache.zeppelin.livy.LivySparkSQLInterpreter,org.apache.zeppelin.bigquery.BigQueryInterpreter,org.apache.zeppelin.beam.BeamInterpreter,org.apache.zeppelin.pig.PigInterpreter,org.apache.zeppelin.pig.PigQueryInterpreter,org.apache.zeppelin.scio.ScioInterpreter,org.apache.zeppelin.groovy.GroovyInterpreter</value>
+      <value>org.apache.zeppelin.spark.SparkInterpreter,org.apache.zeppelin.spark.PySparkInterpreter,org.apache.zeppelin.spark.SparkSqlInterpreter,org.apache.zeppelin.spark.DepInterpreter,org.apache.zeppelin.markdown.Markdown,org.apache.zeppelin.shell.ShellInterpreter,org.apache.zeppelin.file.HDFSFileInterpreter,org.apache.zeppelin.python.PythonInterpreter,org.apache.zeppelin.python.PythonInterpreterPandasSql,org.apache.zeppelin.python.PythonCondaInterpreter,org.apache.zeppelin.python.PythonDockerInterpreter,org.apache.zeppelin.jdbc.JDBCInterpreter,org.apache.zeppelin.elasticsearch.ElasticsearchInterpreter</value>
       <description>Comma separated interpreter configurations. First interpreter become a default</description>
     </property>
 
     <property>
       <name>zeppelin.interpreter.group.order</name>
-      <value>spark,md,angular,sh,livy,alluxio,file,psql,flink,python,ignite,lens,cassandra,geode,kylin,elasticsearch,scalding,jdbc,hbase,bigquery,beam,groovy</value>
+      <value>spark,md,angular,sh,file,psql,python,elasticsearch,jdbc</value>
       <description></description>
     </property>
 
@@ -198,12 +180,6 @@ data:
       <name>zeppelin.interpreter.connect.timeout</name>
       <value>{{ .Values.interpreterConnectTimeout }}</value>
       <description>Interpreter process connect timeout in msec.</description>
-    </property>
-
-    <property>
-      <name>zeppelin.interpreter.output.limit</name>
-      <value>102400</value>
-      <description>Output message from interpreter exceeding the limit will be truncated</description>
     </property>
 
     <property>

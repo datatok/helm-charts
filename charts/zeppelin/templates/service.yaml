@@ -15,8 +15,8 @@ spec:
     targetPort: rpc
     protocol: TCP
     name: rpc
-  {{- if .Values.sparkEmbedded.enabled }}
-  - port: {{ .Values.sparkEmbedded.portWebUI }}
+  {{- if eq .Values.spark.driver.mode "local" }}
+  - port: {{ .Values.spark.driver.uiPort }}
     targetPort: spark-ui
     protocol: TCP
     name: spark-ui

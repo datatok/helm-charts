@@ -66,12 +66,16 @@ spec:
           emptyDir: {}
         - name: etc-hack
           emptyDir: {}
-        {{- if .Values.sparkEmbedded.enabled }}
+        {{- if eq .Values.spark.driver.mode "local" }}
         - name: spark-home
+          emptyDir: {}
+        - name: spark-hive-warehouse
+          emptyDir: {}
+        - name: spark-derby-home
           emptyDir: {}
         {{- end }}
       initContainers:
-      {{- if .Values.sparkEmbedded.enabled }}
+      {{- if eq .Values.spark.driver.mode "local" }}
       - name: {{ .Chart.Name }}-spark-init
         securityContext: &containerSecurityContext
           {{- toYaml .Values.securityContext | nindent 12 }}
@@ -184,9 +188,9 @@ spec:
           - name: rpc
             containerPort: {{ .Values.service.rpcPort }}
             protocol: TCP
-          {{- if .Values.sparkEmbedded.enabled }}
+          {{- if eq .Values.spark.driver.mode "local" }}
           - name: spark-ui
-            containerPort: {{ .Values.sparkEmbedded.portWebUI }}
+            containerPort: {{ .Values.spark.driver.uiPort }}
             protocol: TCP
           {{- end }}
           livenessProbe:
@@ -249,9 +253,13 @@ spec:
           - name: etc-hack
             mountPath: /etc/passwd
             subPath: passwd
-          {{- if .Values.sparkEmbedded.enabled }}
+          {{- if eq .Values.spark.driver.mode "local" }}
           - name: spark-home
             mountPath: /spark
+          - name: spark-hive-warehouse
+            mountPath: /opt/zeppelin/hive-warehouse
+          - name: spark-derby-home
+            mountPath: /opt/zeppelin/derby
           {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:

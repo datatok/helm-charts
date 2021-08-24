@@ -1,3 +1,4 @@
+# -- Pod replica count
 replicaCount: 1
 
 image:
@@ -5,6 +6,7 @@ image:
   tag: 0.9.0
   pullPolicy: IfNotPresent
 
+# -- To use private images
 imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
@@ -12,7 +14,7 @@ fullnameOverride: ""
 serviceAccount:
   create: false
   annotations: {}
-  name: "zep"
+  name: "default"
   rbac:
     create: false
 
@@ -20,32 +22,42 @@ podAnnotations: {}
 
 podLabels: {}
 
-podSecurityContext:
-  runAsNonRoot: true
-  runAsUser: 1000
-  runAsGroup: 1000
-  fsGroup: 1000
+# -- see https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
+podSecurityContext: {}
+#  runAsNonRoot: true
+#  runAsUser: 1000
+#  runAsGroup: 1000
+#  fsGroup: 1000
 
-securityContext:
-  capabilities:
-    drop:
-     - ALL
-  allowPrivilegeEscalation: false
-  readOnlyRootFilesystem: true
+# -- see https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
+securityContext: {}
+#  capabilities:
+#    drop:
+#     - ALL
+#  allowPrivilegeEscalation: false
+#  readOnlyRootFilesystem: true
 
 networkPolicy:
+  # -- enable network policy
   enabled: false
+  # -- add extra NP egress rules
   extraEgressRules: []
+  # -- add extra NP ingress rules
   extraIngressRules: []
 
 service:
   type: ClusterIP
+  # -- HTTP server port
   port: 8080
+  # -- RPC port, to register interpreter
   rpcPort: 38853
 
 ingress:
+  # -- Enable Zeppelin server ingress
   enabled: false
-  className: ""
+  # -- Base URL to serve Zeppelin
+  baseUrl: ""
+  # -- Annotations to use cert-manager and sticky sessions
   annotations: {}
     # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
@@ -63,13 +75,14 @@ ingress:
   #    hosts:
   #      - chart-example.local
 
-resources:
-  limits:
-    cpu: 1000m
-    memory: 1024Mi
-  requests:
-    cpu: 100m
-    memory: 256Mi
+# -- Resources, dont be greedy for memory, this is java :-) 
+resources: {}
+#  limits:
+#    cpu: 1000m
+#    memory: 1024Mi
+#  requests:
+#    cpu: 100m
+#    memory: 256Mi
 
 nodeSelector: {}
 
@@ -78,7 +91,19 @@ tolerations: []
 affinity: {}
 
 zeppelin:
+  config:
+    # -- IP to listen to (usually 0.0.0.0)
+    zeppelin.server.addr: 0.0.0.0
+    # -- notebooks storage dir
+    zeppelin.notebook.dir: notebook
+    # -- id of notebook to be displayed in homescreen. ex) 2A94M5J1Z Empty value displays default home screen
+    zeppelin.notebook.homescreen: ""
+    # -- hide homescreen notebook from list when this value set to true
+    zeppelin.notebook.homescreen.hide: false
+    # -- Output message from interpreter exceeding the limit will be truncated
+    zeppelin.interpreter.output.limit: 102400
   server:
+    # -- Zeppelin Java process memory options
     jvmMemOptions: -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -XX:MaxRAMFraction=1 -Xms512m -Xmx512m -XX:MaxMetaspaceSize=512m
 
   interpreter:
@@ -95,22 +120,50 @@ logging:
     #pattern:
 
 notebookStorage:
+  # -- Kind of storage for notebook
   type: git
+  # -- if type is `git` , use this secret to get the repository URL (usually the URL contains an access token)
   repositorySecret: git-data-lake
+
+##
+# Several ways to run spark notebook code:
+# - driver (aka Zep' interpreter Spark application) can run 
+#   - within zeppelin pod (mode `local`)
+#   - as a separate Deployment (mode `external`, see zeppelin-int Helm chart)
+# - worker(s) can run:
+#   - zeppelin pod (`embedded` mode)
+#   - zeppelin interpreter pod (`local` mode)
+#   - Spark cluster
+#   - k8s
+##
+spark:
+  driver:
+    # -- driver mode, `local` will run Zeppelin Spark interpreter in the same container, `external` will connect to an interpreter running in another pod
+    mode: local # external
+    # -- if mode is `local`, Spark UI port, usually 4040
+    uiPort: 4040
+    # -- if mode is `local`, create an ingress to access to Spark UI
+    ingress:
+      enabled: false
+  worker:
+    mode: embedded # local / cluster / k8s
+  # -- Spark configuration
+  config:
+    spark.hadoop.hive.metastore.uris: thrift://10.100.42.1:9083
+    spark.executor.memory: 1G
+    zeppelin.spark.concurrentSQL: "true"
+    spark.app.name: zep
 
 sparkExternal:
   enabled: false
   master: spark://spark-master:7077
 
+# -- if driver mode is `local`, set which Spark image (version) to use to copy Spark home
 sparkEmbedded:
-  enabled: true
   image:
     registry: docker.io
     repository: bitnami/spark
     pullPolicy: IfNotPresent
     tag: 2.4.5
   copyDirectory: /opt/bitnami/spark
-  portWebUI: 4040
-  ingress:
-    enabled: false
   master: local[*] # k8s://https://kubernetes:443

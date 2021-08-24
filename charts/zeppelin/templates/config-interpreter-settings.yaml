@@ -79,11 +79,13 @@ data:
           "name": "spark",
           "group": "spark",
           "properties": {
-            "spark.executor.memory": {
-              "name": "spark.executor.memory",
-              "value": "",
+            {{- range $k, $v := .Values.spark.config }}
+            "{{ $k }}": {
+              "name": "{{$k}}",
+              "value": "{{$v}}",
               "type": "string"
             },
+            {{- end }}
             "zeppelin.spark.concurrentSQL": {
               "name": "zeppelin.spark.concurrentSQL",
               "value": false,
@@ -97,11 +99,6 @@ data:
             "zeppelin.R.cmd": {
               "name": "zeppelin.R.cmd",
               "value": "R",
-              "type": "string"
-            },
-            "spark.app.name": {
-              "name": "spark.app.name",
-              "value": "zri",
               "type": "string"
             },
             "zeppelin.R.image.width": {

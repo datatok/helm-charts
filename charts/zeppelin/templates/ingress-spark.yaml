@@ -1,7 +1,7 @@
-{{- if and .Values.sparkEmbedded.enabled .Values.sparkEmbedded.ingress.enabled  -}}
+{{- if and (eq .Values.spark.driver.mode "local") .Values.spark.driver.ingress.enabled  -}}
 {{- $fullName := include "zeppelin.fullname" . -}}
-{{- $svcPort := .Values.sparkEmbedded.portWebUI -}}
-{{- $ingress := .Values.sparkEmbedded.ingress -}}
+{{- $svcPort := .Values.spark.driver.uiPort -}}
+{{- $ingress := .Values.spark.driver.ingress -}}
 {{- if and $ingress.className (not (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion)) }}
   {{- if not (hasKey $ingress.annotations "kubernetes.io/ingress.class") }}
   {{- $_ := set $ingress.annotations "kubernetes.io/ingress.class" $ingress.className}}

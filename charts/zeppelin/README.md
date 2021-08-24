@@ -1,10 +1,10 @@
 # zeppelin
 
-![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.9.0](https://img.shields.io/badge/AppVersion-0.9.0-informational?style=flat-square)
+![Version: 0.1.6](https://img.shields.io/badge/Version-0.1.6-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.9.0](https://img.shields.io/badge/AppVersion-0.9.0-informational?style=flat-square)
 
 A Helm chart for Kubernetes
 
-**Homepage:** <https://github.com/ebuildy/zeppelin-helm>
+**Homepage:** <https://github.com/ebuildy/helm-data-lake>
 
 ## Values
 
@@ -15,10 +15,10 @@ A Helm chart for Kubernetes
 | image.pullPolicy | string | `"IfNotPresent"` |  |
 | image.repository | string | `"apache/zeppelin"` |  |
 | image.tag | string | `"0.9.0"` |  |
-| imagePullSecrets | list | `[]` |  |
-| ingress.annotations | object | `{}` |  |
-| ingress.className | string | `""` |  |
-| ingress.enabled | bool | `false` |  |
+| imagePullSecrets | list | `[]` | To use private images |
+| ingress.annotations | object | `{}` | Annotations to use cert-manager and sticky sessions |
+| ingress.baseUrl | string | `""` | Base URL to serve Zeppelin |
+| ingress.enabled | bool | `false` | Enable Zeppelin server ingress |
 | ingress.hosts[0].host | string | `"chart-example.local"` |  |
 | ingress.hosts[0].paths[0].path | string | `"/"` |  |
 | ingress.hosts[0].paths[0].pathType | string | `"ImplementationSpecific"` |  |
@@ -26,42 +26,42 @@ A Helm chart for Kubernetes
 | logging.level | string | `"INFO"` |  |
 | logging.syslog | object | `{}` |  |
 | nameOverride | string | `""` |  |
-| networkPolicy.enabled | bool | `false` |  |
-| networkPolicy.extraEgressRules | list | `[]` |  |
-| networkPolicy.extraIngressRules | list | `[]` |  |
+| networkPolicy.enabled | bool | `false` | enable network policy |
+| networkPolicy.extraEgressRules | list | `[]` | add extra NP egress rules |
+| networkPolicy.extraIngressRules | list | `[]` | add extra NP ingress rules |
 | nodeSelector | object | `{}` |  |
-| notebookStorage.path | string | `""` |  |
-| notebookStorage.type | string | `""` |  |
+| notebookStorage.repositorySecret | string | `"git-data-lake"` | if type is `git` , use this secret to get the repository URL (usually the URL contains an access token) |
+| notebookStorage.type | string | `"git"` | Kind of storage for notebook |
 | podAnnotations | object | `{}` |  |
 | podLabels | object | `{}` |  |
-| podSecurityContext.fsGroup | int | `1000` |  |
-| podSecurityContext.runAsGroup | int | `1000` |  |
-| podSecurityContext.runAsNonRoot | bool | `true` |  |
-| podSecurityContext.runAsUser | int | `1000` |  |
-| replicaCount | int | `1` |  |
-| resources.limits.cpu | string | `"1000m"` |  |
-| resources.limits.memory | string | `"1024Mi"` |  |
-| resources.requests.cpu | string | `"100m"` |  |
-| resources.requests.memory | string | `"256Mi"` |  |
-| securityContext.allowPrivilegeEscalation | bool | `false` |  |
-| securityContext.capabilities.drop[0] | string | `"ALL"` |  |
-| securityContext.readOnlyRootFilesystem | bool | `true` |  |
-| service.port | int | `8080` |  |
-| service.rpcPort | int | `38853` |  |
+| podSecurityContext | object | `{}` | see https://kubernetes.io/docs/tasks/configure-pod-container/security-context/ |
+| replicaCount | int | `1` | Pod replica count |
+| resources | object | `{}` | Resources, dont be greedy for memory, this is java :-)  |
+| securityContext | object | `{}` | see https://kubernetes.io/docs/tasks/configure-pod-container/security-context/ |
+| service.port | int | `8080` | HTTP server port |
+| service.rpcPort | int | `38853` | RPC port, to register interpreter |
 | service.type | string | `"ClusterIP"` |  |
 | serviceAccount.annotations | object | `{}` |  |
-| serviceAccount.create | bool | `true` |  |
-| serviceAccount.name | string | `"zep"` |  |
-| serviceAccount.rbac.create | bool | `true` |  |
-| spark.master | string | `"local[*]"` |  |
-| spark.type | string | `"local"` |  |
-| sparkInterpreter.enabled | bool | `true` |  |
-| sparkInterpreter.interpreter.port | int | `8080` |  |
-| sparkInterpreter.thrift.port | int | `10000` |  |
-| sparkInterpreter.webui.port | int | `4040` |  |
+| serviceAccount.create | bool | `false` |  |
+| serviceAccount.name | string | `"default"` |  |
+| serviceAccount.rbac.create | bool | `false` |  |
+| spark.config | object | `{"spark.app.name":"zep","spark.executor.memory":"1G","spark.hadoop.hive.metastore.uris":"thrift://10.100.42.1:9083","zeppelin.spark.concurrentSQL":"true"}` | Spark configuration |
+| spark.driver.ingress | object | `{"enabled":false}` | if mode is `local`, create an ingress to access to Spark UI |
+| spark.driver.mode | string | `"local"` | driver mode, `local` will run Zeppelin Spark interpreter in the same container, `external` will connect to an interpreter running in another pod |
+| spark.driver.uiPort | int | `4040` | if mode is `local`, Spark UI port, usually 4040 |
+| spark.worker.mode | string | `"embedded"` |  |
+| sparkEmbedded | object | `{"copyDirectory":"/opt/bitnami/spark","image":{"pullPolicy":"IfNotPresent","registry":"docker.io","repository":"bitnami/spark","tag":"2.4.5"},"master":"local[*]"}` | if driver mode is `local`, set which Spark image (version) to use to copy Spark home |
+| sparkExternal.enabled | bool | `false` |  |
+| sparkExternal.master | string | `"spark://spark-master:7077"` |  |
 | tolerations | list | `[]` |  |
-| zeppelin.interpreter.jvmMemOptions | string | `"-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -XX:MaxRAMFraction=1 -Xms512m -Xmx512m -XX:MaxMetaspaceSize=512m"` |  |
-| zeppelin.server.jvmMemOptions | string | `"-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -XX:MaxRAMFraction=1 -Xms512m -Xmx512m -XX:MaxMetaspaceSize=512m"` |  |
+| zeppelin.config."zeppelin.interpreter.output.limit" | int | `102400` | Output message from interpreter exceeding the limit will be truncated |
+| zeppelin.config."zeppelin.notebook.dir" | string | `"notebook"` | notebooks storage dir |
+| zeppelin.config."zeppelin.notebook.homescreen" | string | `""` | id of notebook to be displayed in homescreen. ex) 2A94M5J1Z Empty value displays default home screen |
+| zeppelin.config."zeppelin.notebook.homescreen.hide" | bool | `false` | hide homescreen notebook from list when this value set to true |
+| zeppelin.config."zeppelin.server.addr" | string | `"0.0.0.0"` | IP to listen to (usually 0.0.0.0) |
+| zeppelin.interpreter.enabled | bool | `true` |  |
+| zeppelin.interpreter.thriftPort | int | `10000` |  |
+| zeppelin.server.jvmMemOptions | string | `"-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -XX:MaxRAMFraction=1 -Xms512m -Xmx512m -XX:MaxMetaspaceSize=512m"` | Zeppelin Java process memory options |
 
 ----------------------------------------------
 Autogenerated from chart metadata using [helm-docs v1.5.0](https://github.com/norwoodj/helm-docs/releases/v1.5.0)
