@@ -78,29 +78,9 @@ spec:
           emptyDir: {}
         {{- end }}
       initContainers:
-      {{- if eq .Values.spark.driver.mode "local" }}
-      - name: {{ .Chart.Name }}-spark-init
+      - name: {{ .Chart.Name }}-config-init
         securityContext: &containerSecurityContext
           {{- toYaml .Values.securityContext | nindent 12 }}
-        {{- with .Values.sparkEmbedded.image }}
-        image: "{{ .registry }}/{{ .repository }}:{{ .tag }}"
-        imagePullPolicy: {{ .pullPolicy }}
-        {{- end }}
-        command: ["sh", "-c", "cp -r {{ .Values.sparkEmbedded.copyDirectory }}/* /spark/"]
-        resources: &initContainerResources
-          requests:
-            cpu: 10m
-            memory: 16Mi
-          limits:
-            cpu: 50m
-            memory: 64Mi
-        volumeMounts:
-        - name: spark-home
-          mountPath: /spark
-      {{- end }}
-      - name: {{ .Chart.Name }}-config-init
-        securityContext:
-          <<: *containerSecurityContext
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         command:
@@ -108,8 +88,13 @@ spec:
         - '-c'
         - >
           cp conf/* prepared_conf;
-        resources:
-          <<: *initContainerResources
+        resources: &initContainerResources
+          requests:
+            cpu: 10m
+            memory: 32Mi
+          limits:
+            cpu: 50m
+            memory: 64Mi
         volumeMounts:
         - name: zep-conf
           mountPath: /opt/zeppelin/prepared_conf
@@ -122,6 +107,21 @@ spec:
         - name: interpreter-config
           mountPath: /opt/zeppelin/conf/interpreter.json
           subPath: interpreter.json
+      {{- if eq .Values.spark.driver.mode "local" }}
+      - name: {{ .Chart.Name }}-spark-init
+        securityContext:
+          <<: *containerSecurityContext
+        {{- with .Values.spark.homeArtifacts.image }}
+        image: "{{ .registry }}/{{ .repository }}:{{ .tag }}"
+        imagePullPolicy: {{ .pullPolicy }}
+        {{- end }}
+        command: ["sh", "-c", "cp -r {{ .Values.spark.homeArtifacts.copyDirectory }}/* /spark/"]
+        resources:
+          <<: *initContainerResources
+        volumeMounts:
+        - name: spark-home
+          mountPath: /spark
+      {{- end }}
       - name: {{ .Chart.Name }}-fix-user
         securityContext:
           {{- toYaml .Values.securityContext | nindent 12 }}
@@ -228,7 +228,7 @@ spec:
                 fieldPath: metadata.name
           - name: SERVICE_DOMAIN
             value: {{ .Values.zeppelin.serviceDomain }}
-          {{- if .Values.sparkEmbedded.enabled }}
+          {{- if eq .Values.spark.driver.mode "local" }}
           - name: SPARK_HOME
             value: /spark
           - name: SPARK_LOCAL_HOSTNAME

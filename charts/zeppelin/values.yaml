@@ -145,25 +145,26 @@ spark:
     # -- if mode is `local`, create an ingress to access to Spark UI
     ingress:
       enabled: false
-  worker:
-    mode: embedded # local / cluster / k8s
+  executor:
+    # -- `local` will run executor in the same driver java process / cluster / k8s
+    mode: local
+    # -- if mode is not local, full master URL
+    masterURL: ""
+    # -- if mode is not local, deploy mode (client / cluster)
+    deployMode: client
+    # -- if mode is not local, how many executors to deploy
+    count: 2
   # -- Spark configuration
   config: {}
   #  spark.hadoop.hive.metastore.uris: thrift://XXXX:9083
   #  spark.executor.memory: 1G
   #  zeppelin.spark.concurrentSQL: "true"
   #  spark.app.name: zep
-
-sparkExternal:
-  enabled: false
-  master: spark://spark-master:7077
-
-# -- if driver mode is `local`, set which Spark image (version) to use to copy Spark home
-sparkEmbedded:
-  image:
-    registry: docker.io
-    repository: bitnami/spark
-    pullPolicy: IfNotPresent
-    tag: 2.4.5
-  copyDirectory: /opt/bitnami/spark
-  master: local[*] # k8s://https://kubernetes:443
+  # -- if driver mode is `local`, set which Spark image (version) to use to copy Spark home
+  homeArtifacts:
+    image:
+      registry: docker.io
+      repository: bitnami/spark
+      pullPolicy: IfNotPresent
+      tag: 2.4.5
+    copyDirectory: /opt/bitnami/spark

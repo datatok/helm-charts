@@ -1,14 +1,14 @@
 {{- $sparkMaster := "local[*]" -}}
 {{- $sparkDeployMode := "client" -}}
 {{- $sparkExecutorInstances := 1 -}}
-{{- if .Values.sparkEmbedded.enabled -}}
-{{- $sparkMaster := .Values.sparkEmbedded.master -}}
+{{- if eq .Values.spark.executor.mode "local" -}}
+{{- $sparkMaster := "local[*]" -}}
 {{- $sparkDeployMode := "client" -}}
 {{- $sparkExecutorInstances := 1 -}}
 {{- end -}}
-{{- if .Values.sparkExternal.enabled -}}
-{{- $sparkMaster := .Values.sparkExternal.master -}}
-{{- $sparkDeployMode := .Values.sparkExternal.deployMode | default "client" -}}
+{{- if eq .Values.spark.executor.mode "cluster" -}}
+{{- $sparkMaster := .Values.spark.executor.masterURL -}}
+{{- $sparkDeployMode := .Values.spark.executor.deployMode | default "client" -}}
 {{- $sparkExecutorInstances := .Values.sparkExternal.executor.instances -}}
 {{- end -}}
 kind: ConfigMap
