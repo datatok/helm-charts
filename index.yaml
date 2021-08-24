@@ -63,6 +63,19 @@ entries:
       category: Analytics
     apiVersion: v2
     appVersion: 0.9.0
+    created: "2021-08-24T06:51:17.165572727Z"
+    description: A Helm chart for Kubernetes
+    digest: b0727d68139127b9247e723d136e81f0c10181004f480279348aa9451e756c10
+    home: https://github.com/ebuildy/helm-data-lake
+    name: zeppelin
+    type: application
+    urls:
+    - https://github.com/ebuildy/helm-data-lake/releases/download/zeppelin-0.1.6/zeppelin-0.1.6.tgz
+    version: 0.1.6
+  - annotations:
+      category: Analytics
+    apiVersion: v2
+    appVersion: 0.9.0
     created: "2021-08-23T19:33:49.1889584Z"
     description: A Helm chart for Kubernetes
     digest: c6f1323411b448ffd9f2936d18378d35e49b079d6298f4cc2d971984c7274c90
@@ -156,4 +169,4 @@ entries:
     urls:
     - https://github.com/ebuildy/helm-data-lake/releases/download/zeppelin-int-0.1.2/zeppelin-int-0.1.2.tgz
     version: 0.1.2
-generated: "2021-08-23T19:33:49.1889741Z"
+generated: "2021-08-24T06:51:17.165594427Z"
