@@ -11,14 +11,17 @@ spec:
       {{- include "zeppelin.selectorLabels" . | nindent 6 }}
   template:
     metadata:
-      {{- with .Values.podAnnotations }}
       annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/config-basics.yaml") . | sha256sum }}
+        checksum/config-zep: {{ include (print $.Template.BasePath "/config-zeppelin-site.yaml") . | sha256sum }}
+        checksum/config-int: {{ include (print $.Template.BasePath "/config-interpreter-settings.yaml") . | sha256sum }}
+        {{- with .Values.podAnnotations}}
         {{- toYaml . | nindent 8 }}
-      {{- end }}
+        {{- end }}
       labels:
         {{- include "zeppelin.selectorLabels" . | nindent 8 }}
-        {{- with.Values.podLabels }}
-          {{- toYaml . | nindent 8 }}
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
         {{- end }}
     spec:
       {{- with .Values.imagePullSecrets }}

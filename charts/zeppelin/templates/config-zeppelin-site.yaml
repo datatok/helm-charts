@@ -45,7 +45,6 @@ data:
       <description>RPC Server address port</description>
     </property>
 
-
     <property>
       <name>zeppelin.server.port</name>
       <value>{{ .Values.service.port }}</value>
@@ -56,18 +55,6 @@ data:
       <name>zeppelin.server.ssl.port</name>
       <value>8443</value>
       <description>Server ssl port. (used when ssl property is set to true)</description>
-    </property>
-
-    <property>
-      <name>zeppelin.server.context.path</name>
-      <value>{{- if .Values.ingress.enabled }}{{ .Values.ingress.baseUrl }}{{- end }}</value>
-      <description>Context Path of the Web Application</description>
-    </property>
-
-    <property>
-      <name>zeppelin.war.tempdir</name>
-      <value>webapps</value>
-      <description>Location of jetty temporary directory</description>
     </property>
 
     {{- if eq .Values.notebookStorage.type "s3" }}

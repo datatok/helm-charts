@@ -55,8 +55,6 @@ service:
 ingress:
   # -- Enable Zeppelin server ingress
   enabled: false
-  # -- Base URL to serve Zeppelin
-  baseUrl: ""
   # -- Annotations to use cert-manager and sticky sessions
   annotations: {}
     # kubernetes.io/ingress.class: nginx
@@ -92,10 +90,12 @@ affinity: {}
 
 zeppelin:
   config:
-    # -- IP to listen to (usually 0.0.0.0)
+    # -- IP to listen to (usually `0.0.0.0`)
     zeppelin.server.addr: 0.0.0.0
     # -- notebooks storage dir
     zeppelin.notebook.dir: notebook
+    # -- Context Path of the Web Application (usually `/`)
+    zeppelin.server.context.path: /
     # -- id of notebook to be displayed in homescreen. ex) 2A94M5J1Z Empty value displays default home screen
     zeppelin.notebook.homescreen: ""
     # -- hide homescreen notebook from list when this value set to true
@@ -148,11 +148,11 @@ spark:
   worker:
     mode: embedded # local / cluster / k8s
   # -- Spark configuration
-  config:
-    spark.hadoop.hive.metastore.uris: thrift://10.100.42.1:9083
-    spark.executor.memory: 1G
-    zeppelin.spark.concurrentSQL: "true"
-    spark.app.name: zep
+  config: {}
+  #  spark.hadoop.hive.metastore.uris: thrift://XXXX:9083
+  #  spark.executor.memory: 1G
+  #  zeppelin.spark.concurrentSQL: "true"
+  #  spark.app.name: zep
 
 sparkExternal:
   enabled: false

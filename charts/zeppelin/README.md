@@ -1,6 +1,6 @@
 # zeppelin
 
-![Version: 0.1.6](https://img.shields.io/badge/Version-0.1.6-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.9.0](https://img.shields.io/badge/AppVersion-0.9.0-informational?style=flat-square)
+![Version: 0.1.7](https://img.shields.io/badge/Version-0.1.7-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.9.0](https://img.shields.io/badge/AppVersion-0.9.0-informational?style=flat-square)
 
 A Helm chart for Kubernetes
 
@@ -17,7 +17,6 @@ A Helm chart for Kubernetes
 | image.tag | string | `"0.9.0"` |  |
 | imagePullSecrets | list | `[]` | To use private images |
 | ingress.annotations | object | `{}` | Annotations to use cert-manager and sticky sessions |
-| ingress.baseUrl | string | `""` | Base URL to serve Zeppelin |
 | ingress.enabled | bool | `false` | Enable Zeppelin server ingress |
 | ingress.hosts[0].host | string | `"chart-example.local"` |  |
 | ingress.hosts[0].paths[0].path | string | `"/"` |  |
@@ -45,7 +44,7 @@ A Helm chart for Kubernetes
 | serviceAccount.create | bool | `false` |  |
 | serviceAccount.name | string | `"default"` |  |
 | serviceAccount.rbac.create | bool | `false` |  |
-| spark.config | object | `{"spark.app.name":"zep","spark.executor.memory":"1G","spark.hadoop.hive.metastore.uris":"thrift://10.100.42.1:9083","zeppelin.spark.concurrentSQL":"true"}` | Spark configuration |
+| spark.config | object | `{}` | Spark configuration |
 | spark.driver.ingress | object | `{"enabled":false}` | if mode is `local`, create an ingress to access to Spark UI |
 | spark.driver.mode | string | `"local"` | driver mode, `local` will run Zeppelin Spark interpreter in the same container, `external` will connect to an interpreter running in another pod |
 | spark.driver.uiPort | int | `4040` | if mode is `local`, Spark UI port, usually 4040 |
@@ -58,7 +57,8 @@ A Helm chart for Kubernetes
 | zeppelin.config."zeppelin.notebook.dir" | string | `"notebook"` | notebooks storage dir |
 | zeppelin.config."zeppelin.notebook.homescreen" | string | `""` | id of notebook to be displayed in homescreen. ex) 2A94M5J1Z Empty value displays default home screen |
 | zeppelin.config."zeppelin.notebook.homescreen.hide" | bool | `false` | hide homescreen notebook from list when this value set to true |
-| zeppelin.config."zeppelin.server.addr" | string | `"0.0.0.0"` | IP to listen to (usually 0.0.0.0) |
+| zeppelin.config."zeppelin.server.addr" | string | `"0.0.0.0"` | IP to listen to (usually `0.0.0.0`) |
+| zeppelin.config."zeppelin.server.context.path" | string | `"/"` | Context Path of the Web Application (usually `/`) |
 | zeppelin.interpreter.enabled | bool | `true` |  |
 | zeppelin.interpreter.thriftPort | int | `10000` |  |
 | zeppelin.server.jvmMemOptions | string | `"-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -XX:MaxRAMFraction=1 -Xms512m -Xmx512m -XX:MaxMetaspaceSize=512m"` | Zeppelin Java process memory options |
