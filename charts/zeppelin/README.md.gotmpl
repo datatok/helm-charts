@@ -1,0 +1,66 @@
+{{ template "chart.header" . }}
+{{ template "chart.deprecationWarning" . }}
+
+{{ template "chart.badgesSection" . }}
+
+{{ template "chart.description" . }}
+
+{{ template "chart.homepageLine" . }}
+
+## Examples
+
+* Deploy with Spark fully embedded (driver+worker): [examples/zep+spark-embedded](../../examples/zep+spark-embedded)
+
+## Spark deploy architectures
+
+Spark have 3 components:
+* driver = the java zeppelin interpreter application
+* master (aka cluster manager)
+* worker = where the code is executed
+
+![spark cluster components](/docs/spark-cluster.png) 
+
+More details at https://spark.apache.org/docs/latest/cluster-overview.html.
+
+All components can run in the same java process / container or can run separately.
+
+There are severals ways to run Spark:
+
+** run driver within zeppelin container ** (stable)
+
+Aka `local` mode, the easiest way to run Spark, no network-policy between zeppelin and spark interpreter.
+
+![zeppelin spark embedded](/docs/zep-1.png)
+
+** run executor within zeppelin container ** (stable)
+
+If driver is running within zeppelin container, use `local` executor (aka master = local[X]) in order to run everything in the same java process.
+Here , executor = driver (= zeppelin interpreter java application), be sure to give enough memory for zeppelin + spark.
+
+![zeppelin spark embedded](/docs/zep-1.png)
+
+** run driver in a separate container ** (beta)
+
+K8S zeppelin mode is broken (https://github.com/apache/zeppelin/pull/4192). 
+As a workaround, we can deploy the zep'spark interpreter with the Helm chart [charts/zeppelin-int](../zeppelin-int).
+
+![zeppelin spark separately](/docs/zep-2.png)
+
+** run executors within an external Spark cluster ** (beta)
+
+With `spark-master` and `spark-worker` Helm chart, you can deploy a Spark cluster.
+Setting master = spark://my-spark-master:7077 will run executor(s) in this cluster.
+
+![zeppelin spark separately](/docs/zep-3.png)
+
+** run executors using K8S master ** (not tested)
+
+Spark provide natif K8S support https://spark.apache.org/docs/latest/running-on-kubernetes.html 
+
+{{ template "chart.maintainersSection" . }}
+
+{{ template "chart.sourcesSection" . }}
+
+{{ template "chart.requirementsSection" . }}
+
+{{ template "chart.valuesSection" . }}

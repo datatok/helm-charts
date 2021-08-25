@@ -2,9 +2,17 @@ annotations:
   category: Analytics
 apiVersion: v2
 name: zeppelin
-description: A Helm chart for Kubernetes
+description: Apache Zeppelin with Apache Spark
 type: application
 version: 0.1.8
-appVersion: "0.9.0"
+appVersion: 0.9.0
 engine: gotpl
 home: https://github.com/ebuildy/helm-data-lake
+maintainers:
+- name: Thomas Decaux
+  email: ebuildy@gmail.com
+keywords:
+- zeppelin
+- data-lake
+- big-data
+- spark

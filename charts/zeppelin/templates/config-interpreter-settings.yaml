@@ -2,7 +2,7 @@
 {{- $sparkDeployMode := "client" -}}
 {{- $sparkExecutorInstances := 1 -}}
 {{- if eq .Values.spark.executor.mode "local" -}}
-{{- $sparkMaster := "local[*]" -}}
+{{- $sparkMaster := printf "local[%s]" .Values.spark.executor.cores -}}
 {{- $sparkDeployMode := "client" -}}
 {{- $sparkExecutorInstances := 1 -}}
 {{- end -}}

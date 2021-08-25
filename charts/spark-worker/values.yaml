@@ -1,7 +1,3 @@
-# Default values for spark-worker.
-# This is a YAML-formatted file.
-# Declare variables to be passed into your templates.
-
 replicaCount: 1
 
 image:
@@ -9,13 +5,16 @@ image:
   repository: bitnami/spark
   pullPolicy: IfNotPresent
   tag: 2.4.5
-  debug: true
+  debug: false
 
 app:
+  # -- Used for network policy, must be the same declared on spark master release
   clusterName: spark
   
   master:
+    # -- Master service name
     host: spark-master
+    # -- Master service port (usually `7077`)
     port: 7077
   ## @param worker.configurationConfigMap Set a custom configuration by using an existing configMap with the configuration file.
   ##
@@ -213,7 +212,7 @@ metrics:
   annotations:
     prometheus.io/scrape: 'true'
     prometheus.io/path: '/metrics/'
-    prometheus.io/port: '{{ .Values.master.webPort }}'
+    prometheus.io/port: '{{ .Values.service.webPort }}'
 
   ## Prometheus Service Monitor
   ## ref: https://github.com/coreos/prometheus-operator

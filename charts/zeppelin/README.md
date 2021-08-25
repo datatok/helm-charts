@@ -1,10 +1,66 @@
 # zeppelin
 
-![Version: 0.1.7](https://img.shields.io/badge/Version-0.1.7-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.9.0](https://img.shields.io/badge/AppVersion-0.9.0-informational?style=flat-square)
+![Version: 0.1.8](https://img.shields.io/badge/Version-0.1.8-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.9.0](https://img.shields.io/badge/AppVersion-0.9.0-informational?style=flat-square)
 
-A Helm chart for Kubernetes
+Apache Zeppelin with Apache Spark
 
 **Homepage:** <https://github.com/ebuildy/helm-data-lake>
+
+## Examples
+
+* Deploy with Spark fully embedded (driver+worker): [examples/zep+spark-embedded](../../examples/zep+spark-embedded)
+
+## Spark deploy architectures
+
+Spark have 3 components:
+* driver = the java zeppelin interpreter application
+* master (aka cluster manager)
+* worker = where the code is executed
+
+![spark cluster components](/docs/spark-cluster.png)
+
+More details at https://spark.apache.org/docs/latest/cluster-overview.html.
+
+All components can run in the same java process / container or can run separately.
+
+There are severals ways to run Spark:
+
+** run driver within zeppelin container ** (stable)
+
+Aka `local` mode, the easiest way to run Spark, no network-policy between zeppelin and spark interpreter.
+
+![zeppelin spark embedded](/docs/zep-1.png)
+
+** run executor within zeppelin container ** (stable)
+
+If driver is running within zeppelin container, use `local` executor (aka master = local[X]) in order to run everything in the same java process.
+Here , executor = driver (= zeppelin interpreter java application), be sure to give enough memory for zeppelin + spark.
+
+![zeppelin spark embedded](/docs/zep-1.png)
+
+** run driver in a separate container ** (beta)
+
+K8S zeppelin mode is broken (https://github.com/apache/zeppelin/pull/4192).
+As a workaround, we can deploy the zep'spark interpreter with the Helm chart [charts/zeppelin-int](../zeppelin-int).
+
+![zeppelin spark separately](/docs/zep-2.png)
+
+** run executors within an external Spark cluster ** (beta)
+
+With `spark-master` and `spark-worker` Helm chart, you can deploy a Spark cluster.
+Setting master = spark://my-spark-master:7077 will run executor(s) in this cluster.
+
+![zeppelin spark separately](/docs/zep-3.png)
+
+** run executors using K8S master ** (not tested)
+
+Spark provide natif K8S support https://spark.apache.org/docs/latest/running-on-kubernetes.html
+
+## Maintainers
+
+| Name | Email | Url |
+| ---- | ------ | --- |
+| Thomas Decaux | ebuildy@gmail.com |  |
 
 ## Values
 
@@ -48,10 +104,16 @@ A Helm chart for Kubernetes
 | spark.driver.ingress | object | `{"enabled":false}` | if mode is `local`, create an ingress to access to Spark UI |
 | spark.driver.mode | string | `"local"` | driver mode, `local` will run Zeppelin Spark interpreter in the same container, `external` will connect to an interpreter running in another pod |
 | spark.driver.uiPort | int | `4040` | if mode is `local`, Spark UI port, usually 4040 |
-| spark.worker.mode | string | `"embedded"` |  |
-| sparkEmbedded | object | `{"copyDirectory":"/opt/bitnami/spark","image":{"pullPolicy":"IfNotPresent","registry":"docker.io","repository":"bitnami/spark","tag":"2.4.5"},"master":"local[*]"}` | if driver mode is `local`, set which Spark image (version) to use to copy Spark home |
-| sparkExternal.enabled | bool | `false` |  |
-| sparkExternal.master | string | `"spark://spark-master:7077"` |  |
+| spark.executor.cores | string | `"*"` | how many cores (* to use all CPUs) -- in `local` mode, this is equivalent to master = local[cores] |
+| spark.executor.count | int | `2` | if mode is not local, how many executors to deploy |
+| spark.executor.deployMode | string | `"client"` | if mode is not local, deploy mode (client / cluster) |
+| spark.executor.masterURL | string | `""` | if mode is not local, full master URL |
+| spark.executor.mode | string | `"local"` | `local` will run executor in the same driver java process / cluster / k8s |
+| spark.homeArtifacts.copyDirectory | string | `"/opt/bitnami/spark"` |  |
+| spark.homeArtifacts.image.pullPolicy | string | `"IfNotPresent"` |  |
+| spark.homeArtifacts.image.registry | string | `"docker.io"` |  |
+| spark.homeArtifacts.image.repository | string | `"bitnami/spark"` |  |
+| spark.homeArtifacts.image.tag | string | `"2.4.5"` |  |
 | tolerations | list | `[]` |  |
 | zeppelin.config."zeppelin.interpreter.output.limit" | int | `102400` | Output message from interpreter exceeding the limit will be truncated |
 | zeppelin.config."zeppelin.notebook.dir" | string | `"notebook"` | notebooks storage dir |
@@ -62,6 +124,3 @@ A Helm chart for Kubernetes
 | zeppelin.interpreter.enabled | bool | `true` |  |
 | zeppelin.interpreter.thriftPort | int | `10000` |  |
 | zeppelin.server.jvmMemOptions | string | `"-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -XX:MaxRAMFraction=1 -Xms512m -Xmx512m -XX:MaxMetaspaceSize=512m"` | Zeppelin Java process memory options |
-
-----------------------------------------------
-Autogenerated from chart metadata using [helm-docs v1.5.0](https://github.com/norwoodj/helm-docs/releases/v1.5.0)

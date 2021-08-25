@@ -154,12 +154,16 @@ spark:
     deployMode: client
     # -- if mode is not local, how many executors to deploy
     count: 2
+    # -- how many cores (* to use all CPUs)
+    # -- in `local` mode, this is equivalent to master = local[cores]
+    cores: "*"
   # -- Spark configuration
   config: {}
   #  spark.hadoop.hive.metastore.uris: thrift://XXXX:9083
   #  spark.executor.memory: 1G
   #  zeppelin.spark.concurrentSQL: "true"
   #  spark.app.name: zep
+  #  zeppelin.spark.enableSupportedVersionCheck: false
   # -- if driver mode is `local`, set which Spark image (version) to use to copy Spark home
   homeArtifacts:
     image:
