@@ -1,0 +1,114 @@
+zeppelin:
+
+  ingress:
+    enabled: true
+    # use cert-manager
+    annotations:
+      kubernetes.io/ingress.class: nginx
+      kubernetes.io/tls-acme: "true"
+      cert-manager.io/common-name: zep.my-k8s.io
+    hosts:
+      - host: zep.my-k8s.io
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+    tls:
+      - secretName: zep-https-tls
+        hosts:
+          - zep.my-k8s.io
+
+  podLabels:
+    # to access to elasticsearch
+    X.com/fw.es.datahub: allow
+    # to access to HDFS
+    X.com/fw.es.hadoop: allow
+    # to save notebooks
+    X.com/fw.gitlab: allow
+
+  extraEnvVars:
+  # dont mess with TLS
+  - name: GIT_SSL_NO_VERIFY
+    value: "true"
+  # setup spark
+  - name: SPARK_SUBMIT_OPTIONS
+    value: "--driver-memory 10G --executor-cores 6"
+
+  zeppelin:
+    serviceDomain: zep.my-k8s.io
+
+  # use git to store notebooks
+  notebookStorage:
+    type: git
+    repositorySecret: git-data-lake
+
+  podSecurityContext:
+    runAsNonRoot: true
+    runAsUser: 1000
+    runAsGroup: 1000
+    fsGroup: 1000
+
+  securityContext:
+    capabilities:
+      drop:
+      - ALL
+    allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
+
+  resources:
+    limits:
+      cpu: 2
+      memory: 14Gi
+    requests:
+      cpu: 100m
+      memory: 12Gi
+
+  spark:
+    driver:
+      mode: local
+      uiPort: 4040
+      ingress:
+        enabled: true
+        annotations:
+          kubernetes.io/ingress.class: nginx
+          kubernetes.io/tls-acme: "true"
+          cert-manager.io/common-name: zep-spark.my-k8s.io
+        hosts:
+          - host: zep-spark.my-k8s.io
+            paths:
+              - path: /
+                pathType: ImplementationSpecific
+        tls:
+          - secretName: zep-spark-int-https-tls
+            hosts:
+              - zep-spark.my-k8s.io
+    executor:
+      mode: local
+      deployMode: client
+      cores: 6
+    # -- Spark configuration
+    config:
+      spark.hadoop.hive.metastore.uris: thrift://X.X.X.X:9083
+      spark.hive.metastore.uris: thrift://X.X.X.X:9083
+      spark.executor.memory: 10G
+      spark.driver.cores: 6
+      # decrease shuffle partitions from 200 by default
+      spark.sql.shuffle.partitions: 10
+      zeppelin.spark.concurrentSQL: "true"
+      # as we use Spark 3, disable version check
+      zeppelin.spark.enableSupportedVersionCheck: "false"
+      spark.eventLog.enabled: "false"
+      spark.app.name: zep
+      spark.hadoop.fs.defaultFS: hdfs://X.X.X.X:8020
+      spark.hadoop.dfs.nameservices: X.X.X.X:8020
+
+    # let's use Spark 3!
+    homeArtifacts:
+      image:
+        registry: docker.io
+        repository: bitnami/spark
+        pullPolicy: IfNotPresent
+        tag: 3.1.2
+      copyDirectory: /opt/bitnami/spark
+
+  networkPolicy:
+    enabled: true
