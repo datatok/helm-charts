@@ -234,7 +234,15 @@ data:
               }
             }
           ],
-          "dependencies": [],
+          "dependencies": [
+            {{- $first := true}}
+            {{- range $k := .Values.spark.dependencies }}
+            {
+              "groupArtifactVersion": "{{$k.uri}}",
+              "local": false
+            }{{if $first}}{{$first = false}}{{else}},{{end}}
+            {{- end }}
+          ],
           "option": {
             "remote": true,
             "port": -1,

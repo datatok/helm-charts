@@ -76,6 +76,10 @@ spec:
           emptyDir: {}
         - name: spark-derby-home
           emptyDir: {}
+        - name: zep-repo
+          emptyDir: {}
+        - name: zep-ivy
+          emptyDir: {}
         {{- end }}
       initContainers:
       - name: {{ .Chart.Name }}-config-init
@@ -263,6 +267,10 @@ spec:
             mountPath: /opt/zeppelin/hive-warehouse
           - name: spark-derby-home
             mountPath: /opt/zeppelin/derby
+          - name: zep-repo
+            mountPath: /opt/zeppelin/local-repo
+          - name: zep-ivy
+            mountPath: /opt/zeppelin/.ivy2
           {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
