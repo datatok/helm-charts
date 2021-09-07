@@ -1,0 +1,52 @@
+apiVersion: rabbitmq.com/v1beta1
+kind: RabbitmqCluster
+metadata:
+  name:  {{ include "rabbitmq.fullname" . }}
+  labels:
+    {{- include "rabbitmq.labels" . | nindent 4 }}
+{{- with .Values.cluster.annotations }}
+  annotations:
+{{- toYaml . | nindent 2 }}
+{{- end }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+  {{- with .Values.imagePullSecrets }}
+  imagePullSecrets:
+    {{- toYaml . | nindent 8 }}
+  {{- end }}
+  service:
+    type: {{ .Values.service.type }}
+    {{- with .Values.service.annotations }}
+    annotations:
+      {{- toYaml . | nindent 6 }}
+    {{- end }}
+  {{- if .Values.persistence.enabled | default false }}
+  persistence:
+    storageClassName: {{ .Values.persistence.storageClassName }}
+    storage: {{ .Values.persistence.storage }}
+  {{- end }}
+  resources:
+    {{- toYaml .Values.resources | nindent 4 }}
+  {{- if or .Values.rabbitmq.additionalConfig .Values.rabbitmq.advancedConfig .Values.rabbitmq.additionalPlugins }}
+  rabbitmq:
+    {{- with .Values.rabbitmq.additionalConfig }}
+    additionalConfig:
+      {{ .  | nindent 12 }}
+    {{- end }}
+    {{- with .Values.rabbitmq.advancedConfig }}
+    advancedConfig:
+      {{ . }}
+    {{- end }}
+    {{- with .Values.rabbitmq.additionalPlugins }}
+    additionalPlugins:
+      {{ . }}
+    {{- end }}
+  {{- end }}
+  {{- with .Values.cluster.override }}
+  override:
+    {{ . | toYaml | nindent 4 }}
+  {{- end }}
+  {{- with .Values.cluster.extraSpec }}
+    {{ . }}
+  {{- end }}

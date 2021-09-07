@@ -1,0 +1,13 @@
+{{- range $i, $vhost := .Values.rabbitmq.vhosts }}
+apiVersion: rabbitmq.com/v1beta1
+kind: Vhost
+metadata:
+  name: {{ include "rabbitmq.fullname" $ }}-{{ $vhost }}
+  labels:
+    {{- include "rabbitmq.labels" $ | nindent 4 }}
+spec:
+  name: {{ $vhost }}
+  rabbitmqClusterReference:
+    name: {{ include "rabbitmq.fullname" $ }}
+---
+{{- end }}

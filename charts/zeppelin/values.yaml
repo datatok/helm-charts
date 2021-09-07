@@ -172,3 +172,11 @@ spark:
       pullPolicy: IfNotPresent
       tag: 2.4.5
     copyDirectory: /opt/bitnami/spark
+
+  # -- download dependencies via an init container to use proxy only for this
+  dependencies: {}
+  #  packages:
+  #  - org.elasticsearch:elasticsearch-spark-20_2.10:7.14.0
+  #  proxy:
+  #    host: 10.100.X.X
+  #    port: 8080

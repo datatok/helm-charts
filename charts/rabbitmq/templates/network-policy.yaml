@@ -1,0 +1,58 @@
+{{- if .Values.networkPolicy.enabled | default false }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ template "rabbitmq.fullname" . }}
+  labels:
+    {{- include "rabbitmq.labels" . | nindent 4 }}
+spec:
+  podSelector:
+    matchLabels:
+      {{- include "rabbitmq.selectorLabels" . | nindent 6 }}
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  # API port
+  - ports:
+    - port: 15672
+      protocol: TCP
+    from:
+    # operators
+    - namespaceSelector:
+        matchLabels:
+          name: {{ .Values.operator.namespace }}
+    {{- if and .Values.ingress.enabled .Values.ingress.podSelector }}
+    # ingress
+    - {{- .Values.ingress.podSelector | toYaml | nindent 6 }}
+    {{- end }}
+  # all traffic for clustering
+  - from:
+    - podSelector:
+        matchLabels:
+          {{- include "rabbitmq.selectorLabels" . | nindent 10 }}
+  # monitoring
+  - ports:
+    - port: 15972
+      protocol: TCP
+  # client AMQP
+  - ports:
+    - port: 5672
+      protocol: TCP
+    {{- if .Values.networkPolicy.clientPodSelector }}
+    from:
+    - {{- .Values.networkPolicy.clientPodSelector | toYaml | nindent 6 }}
+    {{- end }}
+  {{- with .Values.networkPolicy.extraIngressRules }}
+  {{- toYaml . | nindent 2 }}
+  {{- end }}
+  egress:
+  # all traffic for clustering
+  - to:
+    - podSelector:
+        matchLabels:
+          {{- include "rabbitmq.selectorLabels" . | nindent 10 }}
+  {{- with .Values.networkPolicy.extraEgressRules }}
+  {{- toYaml . | nindent 2 }}
+  {{- end }}
+{{- end }}

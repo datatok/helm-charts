@@ -1,0 +1,13 @@
+{{- range $i, $binding := .Values.rabbitmq.bindings }}
+apiVersion: rabbitmq.com/v1beta1
+kind: Binding
+metadata:
+  name: {{ include "rabbitmq.fullname" $ }}-{{ $binding.name }}
+  labels:
+    {{- include "rabbitmq.labels" $ | nindent 4 }}
+spec:
+  {{- $binding.spec | toYaml | nindent 2 }}
+  rabbitmqClusterReference:
+    name: {{ include "rabbitmq.fullname" $ }}
+---
+{{- end }}

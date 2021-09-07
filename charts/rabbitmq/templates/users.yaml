@@ -1,0 +1,23 @@
+{{- range $i, $user := .Values.rabbitmq.users }}
+apiVersion: rabbitmq.com/v1beta1
+kind: User
+metadata:
+  {{- if $user.secret }}
+  name: {{ include "rabbitmq.fullname" $ }}-{{ $user.name }}
+  {{- else }}
+  name: {{ $user.name }}
+  {{- end }}
+  labels:
+    {{- include "rabbitmq.labels" $ | nindent 4 }}
+spec:
+  {{- with $user.spec }}
+  {{- . | toYaml | nindent 2 }}
+  {{- end }}
+  rabbitmqClusterReference:
+    name: {{ include "rabbitmq.fullname" $ }}
+  {{- with $user.secret }}
+  importCredentialsSecret:
+    name: {{ . }}
+  {{- end }}
+---
+{{- end }}

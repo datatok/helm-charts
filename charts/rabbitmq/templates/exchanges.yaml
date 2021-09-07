@@ -1,0 +1,14 @@
+{{- range $i, $exchange := .Values.rabbitmq.exchanges }}
+apiVersion: rabbitmq.com/v1beta1
+kind: Exchange
+metadata:
+  name: {{ include "rabbitmq.fullname" $ }}-{{ $exchange.name }}
+  labels:
+    {{- include "rabbitmq.labels" $ | nindent 4 }}
+spec:
+  name: {{ $exchange.name }}
+  {{- $exchange.spec | toYaml | nindent 2 }}
+  rabbitmqClusterReference:
+    name: {{ include "rabbitmq.fullname" $ }}
+---
+{{- end }}

@@ -125,6 +125,26 @@ spec:
         volumeMounts:
         - name: spark-home
           mountPath: /spark
+      {{- with .Values.spark.dependencies }}
+      - name: {{ .Chart.Name }}-spark-dependencies
+        securityContext:
+          <<: *containerSecurityContext
+        {{- with .Values.spark.homeArtifacts.image }}
+        image: "{{ .registry }}/{{ .repository }}:{{ .tag }}"
+        imagePullPolicy: {{ .pullPolicy }}
+        {{- end }}
+        command:
+        - sh
+        - "-c"
+        - >+
+          
+        resources:
+          <<: *initContainerResources
+        - name: zep-repo
+          mountPath: /opt/zeppelin/local-repo
+        - name: zep-ivy
+          mountPath: /opt/zeppelin/.ivy2
+      {{- end }}
       {{- end }}
       - name: {{ .Chart.Name }}-fix-user
         securityContext:
