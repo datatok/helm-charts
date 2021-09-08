@@ -1,0 +1,55 @@
+{{ template "chart.header" . }}
+{{ template "chart.deprecationWarning" . }}
+
+{{ template "chart.badgesSection" . }}
+
+{{ template "chart.description" . }}
+
+{{ template "chart.homepageLine" . }}
+
+## Features
+
+This Helm chart allow to deploy:
+
+* RabbitMQ cluster via the operator
+* RabbitMQ resources (queue, user, exchanges, ...) via the operator
+* K8S Ingress to the management web UI
+* right networkPolicy
+
+## Requirements
+
+**you need official operator from RabbitMQ:**
+
+* RabbitMQ cluster operator: https://www.rabbitmq.com/kubernetes/operator/install-operator.html
+* RabbitMQ messaging topology operator: https://www.rabbitmq.com/kubernetes/operator/install-topology-operator.html
+
+(extra networkPolicy can be needed)
+
+## Examples
+
+* Deploy with users defined as secrets: [examples/rabbitmq+secret](examples/rabbitmq+secret)
+* Deploy under polaris constraints [examples/rabbitmq+polaris](examples/rabbitmq+polaris)
+
+## Immutability
+
+Lot of CRD fields are immutable , this will give error like:
+
+```
+Error: UPGRADE FAILED: cannot patch "XXX" with kind Binding: admission webhook "vbinding.kb.io" denied the request: Binding.rabbitmq.com "XXX" is invalid: spec.source: Invalid value: "logstash": source cannot be updated
+```
+
+To fix it, you can manually remove the CRD (<!> this will remove RabbitMQ object as well <!>).
+Or just change CRD name, Helm will automatically remove the CRD and deploy the new one.
+
+## Documentation
+
+Most of ``values.yaml`` fields are applied "as is" to RabbitMQ CRD resources,
+so you can follow RabbitMQ documentation at https://www.rabbitmq.com/kubernetes/operator/operator-overview.html.
+
+{{ template "chart.maintainersSection" . }}
+
+{{ template "chart.sourcesSection" . }}
+
+{{ template "chart.requirementsSection" . }}
+
+{{ template "chart.valuesSection" . }}

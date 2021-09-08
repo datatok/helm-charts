@@ -1,0 +1,96 @@
+replicaCount: 3
+
+image:
+  repository: rabbitmq
+  pullPolicy: IfNotPresent
+  tag: ""
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+service:
+  type: ClusterIP
+  annotations: {}
+  #  service.beta.kubernetes.io/aws-load-balancer-internal: 0.0.0.0/0
+
+ingress:
+  enabled: true
+  podSelector:
+    namespaceSelector:
+      matchLabels:
+        name: nginx-ingress
+  className: ""
+  annotations:
+    kubernetes.io/tls-acme: "true"
+    cert-manager.io/common-name: my-rabbit.com
+    nginx.ingress.kubernetes.io/affinity: cookie
+    nginx.ingress.kubernetes.io/affinity-mode: persistent
+    nginx.ingress.kubernetes.io/session-cookie-name: infra-ingress-session
+  hosts:
+    - host: my-rabbit.com
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls:
+  - secretName: hot-entry-ingress-tls
+    hosts:
+    - my-rabbit.com
+
+networkPolicy:
+  # -- enable network policy
+  enabled: true
+  clientPodSelector: {}
+  #  podSelector:
+  #    matchLabels:
+  #      rabbitmq.com/cluster-datahub-entry-client: allow
+  # -- add extra NP egress rules
+  extraEgressRules: []
+  # -- add extra NP ingress rules
+  extraIngressRules: []
+
+resources:
+  requests:
+    cpu: 50m
+    memory: 512Mi
+  limits:
+    cpu: 50m
+    memory: 512Mi
+
+rabbitmq:
+  additionalConfig: ""
+  advancedConfig: ""
+  additionalPlugins: {}
+
+  vhosts: []
+
+  queues:
+  - name: events
+    spec:
+      durable: true
+
+  exchanges:
+  - name: logstash
+    spec:
+      type: direct
+      autoDelete: false
+      durable: true
+
+  bindings:
+  - name: logstash-events
+    spec:
+      source: logstash
+      destination: events
+      destinationType: queue
+
+  permissions:
+  - name: logstash
+    spec:
+      user: logstash
+      vhost: /
+      permissions:
+        read: ".*"
+
+  users:
+  - name: logstash
+    secret: rabbitmq-user-logstash

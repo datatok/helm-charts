@@ -7,9 +7,47 @@ metadata:
   annotations:
     "helm.sh/hook": test
 spec:
+  securityContext:
+    fsGroup: 1000
+    runAsUser: 1000
   containers:
-    - name: wget
-      image: busybox
-      command: ['wget']
-      args: ['{{ include "rabbitmq.fullname" . }}:{{ .Values.service.port }}']
+    - name: amqp
+      image: subzerocloud/amqptools:v0.0.3
+      command:
+      - sh
+      - "-c"
+      - >+
+        echo "Hello world!" | amqpsend {{ (index .Values.rabbitmq.exchanges 0).name }} v1
+      env:
+      - name: AMQP_HOST
+        value: "{{ include "rabbitmq.fullname" . }}"
+      - name: AMQP_PORT
+        value: "5672"
+      - name: AMQP_QUEUE
+        value: "{{ (index .Values.rabbitmq.queues 0).name }}"
+      - name: AMQP_USER
+        valueFrom:
+          secretKeyRef:
+            name: {{ include "rabbitmq.fullname" . }}-default-user
+            key: username
+      - name: AMQP_PASSWORD
+        valueFrom:
+          secretKeyRef:
+            name: {{ include "rabbitmq.fullname" . }}-default-user
+            key: password
+      securityContext:
+        allowPrivilegeEscalation: false
+        capabilities:
+            drop:
+            - ALL
+        readOnlyRootFilesystem: true
+        runAsNonRoot: true
+        runAsUser: 1000
+      resources:
+        requests:
+          cpu: 10m
+          memory: 16Mi
+        limits:
+          cpu: 25m
+          memory: 32Mi
   restartPolicy: Never

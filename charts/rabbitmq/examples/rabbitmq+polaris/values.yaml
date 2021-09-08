@@ -1,0 +1,81 @@
+networkPolicy:
+  # -- enable network policy
+  enabled: true
+  clientPodSelector: {}
+  #  podSelector:
+  #    matchLabels:
+  #      rabbitmq.com/cluster-datahub-entry-client: allow
+  # -- add extra NP egress rules
+  extraEgressRules: []
+  # -- add extra NP ingress rules
+  extraIngressRules: []
+
+resources:
+  requests:
+    cpu: 50m
+    memory: 512Mi
+  limits:
+    cpu: 50m
+    memory: 512Mi
+
+cluster:
+  annotations: {}
+  extraSpec: {}
+
+  override:
+    statefulSet:
+      spec:
+        template:
+          metadata:
+            labels:
+              XXXX.com/fw.kubernetes: allow
+          spec:
+            securityContext:
+              fsGroup: 1000
+              runAsUser: 1000
+            volumes:
+            - name: rabbitmq-config
+              emptyDir: {}
+            - name: rabbitmq-log
+              emptyDir: {}
+            initContainers:
+            - name: setup-container
+              command:
+                - sh
+                - '-c'
+                - >-
+                  cp /tmp/erlang-cookie-secret/.erlang.cookie
+                  /var/lib/rabbitmq/.erlang.cookie && chmod 600
+                  /var/lib/rabbitmq/.erlang.cookie ; cp
+                  /tmp/rabbitmq-plugins/enabled_plugins /operator/enabled_plugins ; echo
+                  '[default]' > /var/lib/rabbitmq/.rabbitmqadmin.conf && sed -e
+                  's/default_user/username/' -e 's/default_pass/password/'
+                  /tmp/default_user.conf >> /var/lib/rabbitmq/.rabbitmqadmin.conf &&
+                  chmod 600 /var/lib/rabbitmq/.rabbitmqadmin.conf;
+                  cp -r /etc/rabbitmq/. /etc/rabbitmq2
+              securityContext:
+                allowPrivilegeEscalation: false
+                capabilities:
+                    drop:
+                    - ALL
+                readOnlyRootFilesystem: true
+                runAsNonRoot: true
+                runAsUser: 1000
+              volumeMounts:
+              - name: rabbitmq-config
+                mountPath: /etc/rabbitmq2
+            containers:
+            - name: rabbitmq
+              securityContext:
+                allowPrivilegeEscalation: false
+                capabilities:
+                    drop:
+                    - ALL
+                readOnlyRootFilesystem: true
+                runAsNonRoot: true
+                runAsUser: 1000
+              volumeMounts:
+              - name: rabbitmq-config
+                mountPath: /etc/rabbitmq
+              - name: rabbitmq-log
+                mountPath: /var/log/rabbitmq
