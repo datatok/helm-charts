@@ -31,12 +31,12 @@ spec:
   {{- if or .Values.rabbitmq.additionalConfig .Values.rabbitmq.advancedConfig .Values.rabbitmq.additionalPlugins }}
   rabbitmq:
     {{- with .Values.rabbitmq.additionalConfig }}
-    additionalConfig:
-      {{ .  | nindent 12 }}
+    additionalConfig: |
+      {{ . | nindent 6 }}
     {{- end }}
     {{- with .Values.rabbitmq.advancedConfig }}
-    advancedConfig:
-      {{ . }}
+    advancedConfig: |
+      {{ . | nindent 6 }}
     {{- end }}
     {{- with .Values.rabbitmq.additionalPlugins }}
     additionalPlugins:
