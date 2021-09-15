@@ -3,6 +3,16 @@ entries:
   rabbitmq:
   - apiVersion: v2
     appVersion: 3.9.5-management
+    created: "2021-09-15T16:05:45.135520029Z"
+    description: Deploy rabbitMQ with official K8S operators
+    digest: 5bfe6bfac7522445e41b16ec13be350ddc5d3c94b4e0d669d59646fdced89edf
+    name: rabbitmq
+    type: application
+    urls:
+    - https://github.com/ebuildy/helm-data-lake/releases/download/rabbitmq-0.1.2/rabbitmq-0.1.2.tgz
+    version: 0.1.2
+  - apiVersion: v2
+    appVersion: 3.9.5-management
     created: "2021-09-08T08:01:26.859498308Z"
     description: Deploy rabbitMQ with official K8S operators
     digest: fe11323e200f9c026128de99f1a8af8306595acd2e41612e540573e7acf55b6a
@@ -253,4 +263,4 @@ entries:
     urls:
     - https://github.com/ebuildy/helm-data-lake/releases/download/zeppelin-int-0.1.2/zeppelin-int-0.1.2.tgz
     version: 0.1.2
-generated: "2021-09-08T08:01:26.860357619Z"
+generated: "2021-09-15T16:05:45.135545929Z"
