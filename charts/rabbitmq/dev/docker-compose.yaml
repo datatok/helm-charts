@@ -1,0 +1,14 @@
+version: "2"
+
+services:
+
+  rabbitmq:
+    build: .
+    read_only: true
+    volumes:
+    - ./advanced.config:/etc/rabbitmq/advanced.config:ro
+    - ./rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf:ro
+    - ./ca.crt:/etc/rabbitmq/ca.crt:ro
+    - /var/log/rabbitmq
+    ports:
+    - 15672:15672

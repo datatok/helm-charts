@@ -63,7 +63,7 @@ persistence:
 rabbitmq:
   additionalConfig: ""
   advancedConfig: ""
-  additionalPlugins: {}
+  additionalPlugins: []
 
   vhosts:
   - test

@@ -1,0 +1,146 @@
+replicaCount: 3
+
+image:
+  repository: rabbitmq
+  pullPolicy: IfNotPresent
+  tag: ""
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+service:
+  type: ClusterIP
+  annotations: {}
+  #  service.beta.kubernetes.io/aws-load-balancer-internal: 0.0.0.0/0
+
+resources:
+  requests:
+    cpu: 50m
+    memory: 512Mi
+  limits:
+    cpu: 50m
+    memory: 512Mi
+
+persistence:
+  enabled: false
+  storageClassName: fast
+  storage: 20Gi
+
+rabbitmq:
+  additionalConfig: |
+    # try LDAP first
+    auth_backends.1 = ldap
+    # fall back to the internal database
+    auth_backends.2 = internal
+
+    auth_ldap.servers.1 = XXXXXXX
+    auth_ldap.port      = 636
+    auth_ldap.use_ssl   = true
+    auth_ldap.timeout   = 5000
+    auth_ldap.log       = network_unsafe
+    auth_ldap.ssl_options.verify = verify_none
+
+  additionalPlugins:
+  - rabbitmq_auth_backend_ldap
+
+cluster:
+  annotations: {}
+  extraSpec: {}
+
+  override:
+    statefulSet:
+      spec:
+        template:
+          metadata:
+            labels:
+              XXX.com/fw.kubernetes: allow
+              XXX.com/fw.ldap: allow
+          spec:
+            securityContext:
+              fsGroup: 1000
+              runAsUser: 1000
+            volumes:
+            - name: rabbitmq-config
+              emptyDir: {}
+            - name: rabbitmq-log
+              emptyDir: {}
+            initContainers:
+            - name: setup-container
+              command:
+                - sh
+                - '-c'
+                - >-
+                  cp /tmp/erlang-cookie-secret/.erlang.cookie
+                  /var/lib/rabbitmq/.erlang.cookie && chmod 600
+                  /var/lib/rabbitmq/.erlang.cookie ; cp
+                  /tmp/rabbitmq-plugins/enabled_plugins /operator/enabled_plugins ; echo
+                  '[default]' > /var/lib/rabbitmq/.rabbitmqadmin.conf && sed -e
+                  's/default_user/username/' -e 's/default_pass/password/'
+                  /tmp/default_user.conf >> /var/lib/rabbitmq/.rabbitmqadmin.conf &&
+                  chmod 600 /var/lib/rabbitmq/.rabbitmqadmin.conf;
+                  cp -r /etc/rabbitmq/. /etc/rabbitmq2
+              securityContext:
+                allowPrivilegeEscalation: false
+                capabilities:
+                    drop:
+                    - ALL
+                readOnlyRootFilesystem: true
+                runAsNonRoot: true
+                runAsUser: 1000
+              volumeMounts:
+              - name: rabbitmq-config
+                mountPath: /etc/rabbitmq2
+            - name: ldap-configure
+              image: bhgedigital/envsubst:v1.0-alpine3.6
+              command:
+                - sh
+                - '-c'
+                - |
+                  echo '
+                    [
+                      {rabbitmq_auth_backend_ldap, [
+                        {dn_lookup_attribute, "sAMAccountName"},
+                        {dn_lookup_base,      "OU=people,DC=ad,DC=XXXX,DC=com"},
+                        {dn_lookup_bind,      {"${LDAP_USER_BIND_DN}", "${LDAP_USER_BIND_PASSWORD}"}},
+                        {tag_queries,         [{administrator, {in_group, "CN=XXXX,OU=groups,DC=ad,DC=XXXX,DC=com", "member"}},
+                                               {management,    {constant, true}}]}
+                       ]}
+                    ].' | envsubst > /etc/rabbitmq/advanced.config
+              securityContext:
+                allowPrivilegeEscalation: false
+                capabilities:
+                    drop:
+                    - ALL
+                readOnlyRootFilesystem: true
+                runAsNonRoot: true
+                runAsUser: 1000
+              volumeMounts:
+              - name: rabbitmq-config
+                mountPath: /etc/rabbitmq
+              env:
+              - name: LDAP_USER_BIND_DN
+                valueFrom:
+                  secretKeyRef:
+                    name: rabbitmq-ldap
+                    key: user_bind_dn
+              - name: LDAP_USER_BIND_PASSWORD
+                valueFrom:
+                  secretKeyRef:
+                    name: rabbitmq-ldap
+                    key: user_bind_password
+            containers:
+            - name: rabbitmq
+              securityContext:
+                allowPrivilegeEscalation: false
+                capabilities:
+                    drop:
+                    - ALL
+                readOnlyRootFilesystem: true
+                runAsNonRoot: true
+                runAsUser: 1000
+              volumeMounts:
+              - name: rabbitmq-log
+                mountPath: /var/log/rabbitmq
+              - name: rabbitmq-config
+                mountPath: /etc/rabbitmq
