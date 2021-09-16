@@ -10,9 +10,14 @@ nameOverride: ""
 fullnameOverride: ""
 
 service:
+  # -- service type
   type: ClusterIP
+  # -- service annotations
   annotations: {}
   #  service.beta.kubernetes.io/aws-load-balancer-internal: 0.0.0.0/0
+  # -- add extra fields to service definition
+  extra: {}
+  #  loadBalancerIP: X.X.X.X
 
 ingress:
   enabled: false
@@ -65,17 +70,17 @@ rabbitmq:
   advancedConfig: ""
   additionalPlugins: []
 
-  vhosts:
-  - test
+  vhosts: []
+  # - test
 
   # -- Define queues (name is the real queue name)
-  queues:
+  queues: []
   #- name: events
   #  spec:
   #    durable: true
 
   # -- Define exchanges (name is the real exchange name)
-  exchanges:
+  exchanges: []
   #- name: fanout
   #  spec:
   #    type: fanout
@@ -83,7 +88,7 @@ rabbitmq:
   #    durable: true
 
   # -- Define bindings (name only for K8S object)
-  bindings:
+  bindings: []
   #- name: events
   #  spec:
   #    source: fanout
@@ -91,7 +96,7 @@ rabbitmq:
   #    destinationType: queue
 
   # -- Define permissions (name only for K8S object)
-  permissions:
+  permissions: []
   #- name: user1
   #  spec:
   #    user: "user1"
@@ -101,7 +106,7 @@ rabbitmq:
   #      read: ".*"
 
   # -- Define users (name only for K8S object)
-  users:
+  users: []
   #- name: user1
   #  spec:
   #    tags: ["monitoring"]

@@ -21,13 +21,18 @@ spec:
     annotations:
       {{- toYaml . | nindent 6 }}
     {{- end }}
+    {{- with .Values.service.extra }}
+      {{- toYaml . | nindent 4 }}
+    {{- end }}
   {{- if .Values.persistence.enabled | default false }}
   persistence:
     storageClassName: {{ .Values.persistence.storageClassName }}
     storage: {{ .Values.persistence.storage }}
   {{- end }}
+  {{- with .Values.resources }}
   resources:
-    {{- toYaml .Values.resources | nindent 4 }}
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
   {{- if or .Values.rabbitmq.additionalConfig .Values.rabbitmq.advancedConfig .Values.rabbitmq.additionalPlugins }}
   rabbitmq:
     {{- with .Values.rabbitmq.additionalConfig }}

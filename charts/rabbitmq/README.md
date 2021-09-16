@@ -1,6 +1,6 @@
 # rabbitmq
 
-![Version: 0.1.1](https://img.shields.io/badge/Version-0.1.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 3.9.5-management](https://img.shields.io/badge/AppVersion-3.9.5--management-informational?style=flat-square)
+![Version: 0.1.3](https://img.shields.io/badge/Version-0.1.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 3.9.5-management](https://img.shields.io/badge/AppVersion-3.9.5--management-informational?style=flat-square)
 
 Deploy rabbitMQ with official K8S operators
 
@@ -73,15 +73,16 @@ so you can follow RabbitMQ documentation at https://www.rabbitmq.com/kubernetes/
 | persistence.storage | string | `"20Gi"` |  |
 | persistence.storageClassName | string | `"fast"` |  |
 | rabbitmq.additionalConfig | string | `""` |  |
-| rabbitmq.additionalPlugins | object | `{}` |  |
+| rabbitmq.additionalPlugins | list | `[]` |  |
 | rabbitmq.advancedConfig | string | `""` |  |
-| rabbitmq.bindings | string | `nil` | Define bindings (name only for K8S object) |
-| rabbitmq.exchanges | string | `nil` | Define exchanges (name is the real exchange name) |
-| rabbitmq.permissions | string | `nil` | Define permissions (name only for K8S object) |
-| rabbitmq.queues | string | `nil` | Define queues (name is the real queue name) |
-| rabbitmq.users | string | `nil` | Define users (name only for K8S object) |
-| rabbitmq.vhosts[0] | string | `"test"` |  |
+| rabbitmq.bindings | list | `[]` | Define bindings (name only for K8S object) |
+| rabbitmq.exchanges | list | `[]` | Define exchanges (name is the real exchange name) |
+| rabbitmq.permissions | list | `[]` | Define permissions (name only for K8S object) |
+| rabbitmq.queues | list | `[]` | Define queues (name is the real queue name) |
+| rabbitmq.users | list | `[]` | Define users (name only for K8S object) |
+| rabbitmq.vhosts | list | `[]` |  |
 | replicaCount | int | `3` |  |
 | resources | string | `nil` |  |
-| service.annotations | object | `{}` |  |
-| service.type | string | `"ClusterIP"` |  |
+| service.annotations | object | `{}` | service annotations |
+| service.extra | object | `{}` |  |
+| service.type | string | `"ClusterIP"` | service type |
