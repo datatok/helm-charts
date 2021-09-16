@@ -21,9 +21,6 @@ spec:
     annotations:
       {{- toYaml . | nindent 6 }}
     {{- end }}
-    {{- with .Values.service.extra }}
-      {{- toYaml . | nindent 4 }}
-    {{- end }}
   {{- if .Values.persistence.enabled | default false }}
   persistence:
     storageClassName: {{ .Values.persistence.storageClassName }}
