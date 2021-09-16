@@ -25,7 +25,7 @@ spec:
   persistence:
     storageClassName: {{ .Values.persistence.storageClassName }}
     storage: {{ .Values.persistence.storage }}
-  {{— else }}
+  {{- else }}
   persistence:
     storage: 0
   {{- end }}
