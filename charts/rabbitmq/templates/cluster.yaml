@@ -42,7 +42,7 @@ spec:
     {{- end }}
     {{- with .Values.rabbitmq.additionalPlugins }}
     additionalPlugins:
-      {{ . }}
+      {{- . | toYaml | nindent 6 }}
     {{- end }}
   {{- end }}
   {{- with .Values.cluster.override }}
