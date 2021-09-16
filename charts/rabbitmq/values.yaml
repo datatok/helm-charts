@@ -72,8 +72,11 @@ resources:
 #    memory: 1Gi
 
 persistence:
+  # -- will create a PVC
   enabled: false
+  # -- storage classe
   storageClassName: fast
+  # -- storage size
   storage: 20Gi
 
 rabbitmq:
