@@ -47,7 +47,7 @@ Selector labels
 */}}
 {{- define "rabbitmq.selectorLabels" -}}
 app.kubernetes.io/name: {{ include "rabbitmq.name" . }}
-app.kubernetes.io/instance: {{ .Release.Name }}
+app.kubernetes.io/component: rabbitmq
 {{- end }}
 
 {{/*
