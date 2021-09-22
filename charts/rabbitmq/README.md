@@ -1,6 +1,6 @@
 # rabbitmq
 
-![Version: 0.1.3](https://img.shields.io/badge/Version-0.1.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 3.9.5-management](https://img.shields.io/badge/AppVersion-3.9.5--management-informational?style=flat-square)
+![Version: 0.1.10](https://img.shields.io/badge/Version-0.1.10-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 3.9.5-management](https://img.shields.io/badge/AppVersion-3.9.5--management-informational?style=flat-square)
 
 Deploy rabbitMQ with official K8S operators
 
@@ -48,7 +48,7 @@ so you can follow RabbitMQ documentation at https://www.rabbitmq.com/kubernetes/
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | cluster.annotations | object | `{}` | cluster CRD annotations |
-| cluster.extraSpec | object | `{}` | cluster CRD extra spec |
+| cluster.extraSpec | object | `{}` |  |
 | cluster.override | object | `{}` | cluster CRD spec.override |
 | fullnameOverride | string | `""` |  |
 | image.pullPolicy | string | `"IfNotPresent"` |  |
@@ -63,15 +63,23 @@ so you can follow RabbitMQ documentation at https://www.rabbitmq.com/kubernetes/
 | ingress.hosts[0].paths[0].pathType | string | `"ImplementationSpecific"` |  |
 | ingress.podSelector | object | `{}` |  |
 | ingress.tls | list | `[]` |  |
+| metrics.serviceMonitor.additionalLabels | object | `{}` |  |
+| metrics.serviceMonitor.enabled | bool | `false` |  |
+| metrics.serviceMonitor.honorLabels | bool | `false` |  |
+| metrics.serviceMonitor.interval | string | `"30s"` |  |
+| metrics.serviceMonitor.metricRelabelings | list | `[]` |  |
+| metrics.serviceMonitor.namespace | string | `""` |  |
+| metrics.serviceMonitor.relabellings | list | `[]` |  |
+| metrics.serviceMonitor.scrapeTimeout | string | `""` |  |
 | nameOverride | string | `""` |  |
 | networkPolicy.clientPodSelector | object | `{}` | specify AMQP port selector (full open else) |
 | networkPolicy.enabled | bool | `false` | enable network policy |
 | networkPolicy.extraEgressRules | list | `[]` | add extra NP egress rules |
 | networkPolicy.extraIngressRules | list | `[]` | add extra NP ingress rules |
 | operator.namespace | string | `"rabbitmq-system"` | namespace where is the operator (used by network-policy) |
-| persistence.enabled | bool | `false` |  |
-| persistence.storage | string | `"20Gi"` |  |
-| persistence.storageClassName | string | `"fast"` |  |
+| persistence.enabled | bool | `false` | will create a PVC |
+| persistence.storage | string | `"20Gi"` | storage size |
+| persistence.storageClassName | string | `"fast"` | storage classe |
 | rabbitmq.additionalConfig | string | `""` |  |
 | rabbitmq.additionalPlugins | list | `[]` |  |
 | rabbitmq.advancedConfig | string | `""` |  |
@@ -84,5 +92,4 @@ so you can follow RabbitMQ documentation at https://www.rabbitmq.com/kubernetes/
 | replicaCount | int | `3` |  |
 | resources | string | `nil` |  |
 | service.annotations | object | `{}` | service annotations |
-| service.extra | object | `{}` |  |
 | service.type | string | `"ClusterIP"` | service type |
