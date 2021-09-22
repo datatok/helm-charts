@@ -16,20 +16,6 @@ service:
   annotations: {}
   #  service.beta.kubernetes.io/aws-load-balancer-internal: 0.0.0.0/0
 
-extraService:
-  # -- enable extra service
-  enabled: true
-  # -- service type
-  type: ClusterIP
-  # -- override chart name
-  nameOverride: ""
-  # -- service annotations
-  annotations: {}
-  #  service.beta.kubernetes.io/aws-load-balancer-internal: 0.0.0.0/0
-  # -- add extra fields to service definition
-  extra: {}
-  #  loadBalancerIP: X.X.X.X
-
 ingress:
   enabled: false
   podSelector: {}
@@ -135,5 +121,7 @@ cluster:
   annotations: {}
   # -- cluster CRD spec.override
   override: {}
+  # service: {}
+  # statefulSet: {}
   # -- cluster CRD extra spec
   extraSpec: {}
