@@ -33,7 +33,7 @@ spec:
           {{- include "rabbitmq.selectorLabels" . | nindent 10 }}
   # monitoring
   - ports:
-    - port: 15972
+    - port: 15692
       protocol: TCP
   # client AMQP
   - ports:
