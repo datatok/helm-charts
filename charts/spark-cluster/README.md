@@ -1,10 +1,10 @@
 # spark
 
-![Version: 5.7.1](https://img.shields.io/badge/Version-5.7.1-informational?style=flat-square) ![AppVersion: 2.4.5](https://img.shields.io/badge/AppVersion-2.4.5-informational?style=flat-square)
+![Version: 6.0.1](https://img.shields.io/badge/Version-6.0.1-informational?style=flat-square) ![AppVersion: 2.4.5](https://img.shields.io/badge/AppVersion-2.4.5-informational?style=flat-square)
 
 Spark is a fast and general-purpose cluster computing system.
 
-**Homepage:** <https://github.com/bitnami/charts/tree/master/bitnami/spark>
+**Homepage:** <https://github.com/ebuildy/helm-data-lake>
 
 ## Maintainers
 
@@ -16,6 +16,7 @@ Spark is a fast and general-purpose cluster computing system.
 
 * <https://github.com/bitnami/bitnami-docker-spark>
 * <https://spark.apache.org/>
+* <https://github.com/ebuildy/helm-data-lake>
 
 ## Requirements
 

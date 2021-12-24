@@ -1,6 +1,6 @@
 # zeppelin
 
-![Version: 0.1.8](https://img.shields.io/badge/Version-0.1.8-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.9.0](https://img.shields.io/badge/AppVersion-0.9.0-informational?style=flat-square)
+![Version: 0.2.0](https://img.shields.io/badge/Version-0.2.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.10.0](https://img.shields.io/badge/AppVersion-0.10.0-informational?style=flat-square)
 
 Apache Zeppelin with Apache Spark
 
@@ -101,6 +101,7 @@ Spark provide natif K8S support https://spark.apache.org/docs/latest/running-on-
 | serviceAccount.name | string | `"default"` |  |
 | serviceAccount.rbac.create | bool | `false` |  |
 | spark.config | object | `{}` | Spark configuration |
+| spark.dependencies | object | `{}` | download dependencies via an init container to use proxy only for this |
 | spark.driver.ingress | object | `{"enabled":false}` | if mode is `local`, create an ingress to access to Spark UI |
 | spark.driver.mode | string | `"local"` | driver mode, `local` will run Zeppelin Spark interpreter in the same container, `external` will connect to an interpreter running in another pod |
 | spark.driver.uiPort | int | `4040` | if mode is `local`, Spark UI port, usually 4040 |
