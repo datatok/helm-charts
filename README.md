@@ -1,32 +1,29 @@
-# helm-data-lake
-Helm chart to run Apache Zeppelin with Apache Spark
+# dataTok Helm charts
 
-Build your own data-lake! 
+High quality Helm charts to run data stuff on kubernetes! Even to build your own data-lake! 
 
-## Apache Spark
+* [RabbitMQ](./charts/rabbitmq)
+* [Apache Zeppelin](./charts/zeppelin)
+* [Apache Spark history](./charts/spark-history)
+* [Apache Spark cluster](./charts/spark-cluster)
+* [Apache Spark master](./charts/spark-master)
+* [Apache Spark worker](./charts/spark-work)
+* [elasticsearch provisionner](./charts/es-proviz)
 
-``spark-cluster`` Helm chart create a Spark cluster, with a master and X workers.
+## Usage
 
-## Zeppelin
+Add repository: **https://datatok.github.io/helm-charts/**
 
-``zeppelin`` Helm chart will run Zeppelin webui server.
-
-Spark interpreter will run as a separate pod, because it can crash (most of the time because OOM).
+```
+# charts.yaml
+apiVersion: v2
+name: conso-es-proviz
+type: application
+version: v0.0.1
+dependencies:
+-   name: es-proviz
+    repository: https://datatok.github.io/helm-charts/
+    version: 0.0.3
+```
 
 ## Troubleshoot
-
-### Hive integration
-
-To test Spark + Hive
-
-```
-$SPARK_HOME/bin/spark-shell --driver-java-options "-Dderby.system.home=/tmp/derby" --conf spark.hive.metastore.uris=thrift://10.100.XX.XX:9083 --conf spark.sql.warehouse.dir=/tmp
-
-val sqlContext = new org.apache.spark.sql.hive.HiveContext(sc)
-sqlContext.sql("show tables").show()
-
-spark.catalog.listDatabases().show()
-spark.catalog.listTables().show()
-```
-
-val spark = SparkSession.builder().appName("Spark Hive Example").master("local[*]").config("hive.metastore.uris", "thrift://localhost:9083").enableHiveSupport().getOrCreate()
