@@ -1,0 +1,107 @@
+{{- $elasticsearchURL := .Values.elasticsearchURL -}}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "es-proviz.fullname" . }}
+  labels:
+    {{- include "es-proviz.labels" . | nindent 4 }}
+spec:
+  {{- with .Values.extraJobSpec }}
+    {{- . | toYaml | nindent 2 }}
+  {{- end }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "es-proviz.selectorLabels" . | nindent 8 }}
+        {{- with .Values.podLabels }}
+          {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "es-proviz.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+      - name: {{ .Chart.Name }}
+        securityContext:
+          {{- toYaml .Values.securityContext | nindent 12 }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        command:
+        - sh
+        args:
+        - -c
+        - |
+          alias http={{ quote .Values.curlAlias }}
+
+          echo "Hello"
+          http {{ $elasticsearchURL }}
+
+          cd {{ .Values.actionResourcesDir }}
+
+          {{ range .Values.actions }}
+          echo ""
+          echo ""
+
+          {{ if eq .kind "index_template" }}
+          # https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-templates-v1.html
+          echo "Removing index template {{ .name }}"
+          http -XDELETE {{ $elasticsearchURL }}/_template/{{ .name }}
+          echo ""
+          echo "Deploy index template {{ .name }}"
+          http -XPUT -d @{{ include "es-proviz.actionFilename" . }} {{ $elasticsearchURL }}/_template/{{ .name }}
+          {{ else if eq .kind "livecycle_policy" }}
+          # https://www.elastic.co/guide/en/elasticsearch/reference/7.16/ilm-put-lifecycle.html
+          echo "Removing ILM policy {{ .name }}"
+          http -XDELETE {{ $elasticsearchURL }}/_ilm/policy/{{ .name }}
+          echo ""
+          echo "Deploy ILM policy {{ .name }}"
+          http -XPUT -d @{{ include "es-proviz.actionFilename" . }} {{ $elasticsearchURL }}/_ilm/policy/{{ .name }}
+          {{ else if eq .kind "snapshot_repository" }}
+          # https://www.elastic.co/guide/en/elasticsearch/reference/current/put-snapshot-repo-api.html
+          echo "Removing snapshot repository {{ .name }}"
+          http -XDELETE {{ $elasticsearchURL }}/_snapshot/{{ .name }}
+          echo ""
+          echo "Deploy snapshot repository {{ .name }}"
+          http -XPUT -d @{{ include "es-proviz.actionFilename" . }} {{ $elasticsearchURL }}/_snapshot/{{ .name }}
+          {{ else if eq .kind "slm_policy" }}
+          # https://www.elastic.co/guide/en/elasticsearch/reference/master/slm-api-put-policy.html
+          echo "Removing SLM policy {{ .name }}"
+          http -XDELETE {{ $elasticsearchURL }}/_slm/policy/{{ .name }}
+          echo ""
+          echo "Deploy SLM policy {{ .name }}"
+          http -XPUT -d @{{ include "es-proviz.actionFilename" . }} {{ $elasticsearchURL }}/_slm/policy/{{ .name }}
+          {{ else if eq .kind "role" }}
+          # https://www.elastic.co/guide/en/elasticsearch/reference/current/security-api-put-role.html
+          echo "Deploy role {{ .name }}"
+          http -XPUT -d @{{ include "es-proviz.actionFilename" . }} {{ $elasticsearchURL }}/_security/role/{{ .name }}
+          {{ else if eq .kind "user_password" }}
+          echo "Deploy user password {{ .name }}"
+          http -XPOST -d "{\"password\" : \"${{ (.spec | fromJson).passwordEnv }}\"}" {{ $elasticsearchURL }}/_security/user/${{ (.spec | fromJson).usernameEnv }}/_password
+          {{- end }}
+
+          {{- end }}
+        resources:
+          {{- toYaml .Values.resources | nindent 12 }}
+        {{- if .Values.actions }}
+        volumeMounts:
+          - name: script-files
+            mountPath: /opt/pagnol/files/
+        {{- end }}
+        {{- with .Values.extraEnvs }}
+        env: {{ . | toYaml | nindent 10}}
+        {{- end }}
+      restartPolicy: Never
+      {{- if .Values.actions }}
+      volumes:
+      - name: script-files
+        configMap:
+          name: {{ include "es-proviz.fullname" . }}
+      {{- end }}

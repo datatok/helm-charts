@@ -1,0 +1,19 @@
+1. Deploying on {{ .Values.elasticsearchURL }}:
+
+{{ range .Values.actions }}
+
+{{ if eq .kind "index_template" }}
+* index template {{ .name }}
+{{ else if eq .kind "livecycle_policy" }}
+* ILM policy {{ .name }}
+{{ else if eq .kind "snapshot_repository" }}
+* snapshot repository {{ .name }}
+{{ else if eq .kind "slm_policy" }}
+* SLM policy {{ .name }}
+{{ else if eq .kind "role" }}
+* role {{ .name }}
+{{ else if eq .kind "user_password" }}
+* user password {{ .name }}
+{{- end }}
+
+{{- end }}

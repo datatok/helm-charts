@@ -1,0 +1,101 @@
+image:
+  repository: curlimages/curl
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: ""
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: false
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podAnnotations: {}
+
+podLabels: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+extraEnvs:
+ # - name: HTTP_AUTH_USERNAME
+ #   valueFrom:
+ #     secretKeyRef:
+ #       key: username
+ #       name: hot-elastic-user-elastic
+ # - name: HTTP_AUTH_PASSWORD
+ #   valueFrom:
+ #     secretKeyRef:
+ #       key: password
+ #       name: hot-elastic-user-elastic
+
+##
+# Extra job spec - https://kubernetes.io/docs/concepts/workloads/controllers/job/
+##
+extraJobSpec: {}
+#  backoffLimit: 1
+
+##
+# directory to mount resources
+##
+actionResourcesDir: /opt/pagnol/files
+
+##
+# list of actions to do
+##
+actions:
+#- kind: snapshot_repository
+#  name: apm-s3
+#  spec: '{"type": "s3", "settings": {"bucket": "hot-apm-es", "client": "default",
+#    "max_restore_bytes_per_sec": "800mb", "max_snapshot_bytes_per_sec": "800mb"}}'
+
+##
+# The curl function
+##
+curlAlias: 'curl -sL -H "Content-type: application/json"'
+# curlAlias: 'curl -u ${HTTP_AUTH_USERNAME}:${HTTP_AUTH_PASSWORD} -sL --insecure -H "Content-type: application/json"'
+
+##
+# The elasticsearch service URL (with protocol + port)
+# Dont put auth info here!
+##
+elasticsearchURL: http://elasticsearch:9200
+
+##
+# To create a network-policy
+# - egress rule to elasticsearch
+##
+networkPolicyEgress:
+  enabled: true
+  port: 9200
+  to:
+  - podSelector:
+      matchLabels:
+        elastic.org/elasticsearch-cluster: hot

@@ -1,0 +1,12 @@
+{{- if .Values.actions }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "es-proviz.fullname" . }}
+  labels:
+    {{- include "es-proviz.labels" . | nindent 4 }}
+data:
+  {{- range $key, $val := .Values.actions }}
+  {{ include "es-proviz.actionFilename" $val }}: {{ $val.spec | quote }}
+  {{- end }}
+{{- end }}
