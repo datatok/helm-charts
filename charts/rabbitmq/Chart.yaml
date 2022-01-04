@@ -22,3 +22,8 @@ version: 0.1.12
 # follow Semantic Versioning. They should reflect the version the application is using.
 # It is recommended to use it with quotes.
 appVersion: "3.9.5-management"
+
+maintainers:
+- name: Thomas Decaux
+  email: ebuildy@gmail.com
+  url: https://twitter.com/ebuildy
