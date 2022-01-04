@@ -2,7 +2,7 @@
 apiVersion: rabbitmq.com/v1beta1
 kind: Binding
 metadata:
-  name: {{ include "rabbitmq.fullname" $ }}-{{ $binding.name }}
+  name: {{ printf "%s-%s" (include "rabbitmq.fullname" $) $binding.name | lower | replace "." "-" | replace "_" "-" | trunc 63 | trimSuffix "-" }}
   labels:
     {{- include "rabbitmq.labels" $ | nindent 4 }}
 spec:

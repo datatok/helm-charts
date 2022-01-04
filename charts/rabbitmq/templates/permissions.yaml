@@ -1,13 +1,13 @@
 {{- range $i, $permission := .Values.rabbitmq.permissions }}
+---
 apiVersion: rabbitmq.com/v1beta1
 kind: Permission
 metadata:
-  name: {{ include "rabbitmq.fullname" $ }}-{{ $permission.name }}
+  name: {{ printf "%s-%s" (include "rabbitmq.fullname" $) $permission.name | lower | replace "." "-" | replace "_" "-" | trunc 63 | trimSuffix "-" }}
   labels:
     {{- include "rabbitmq.labels" $ | nindent 4 }}
 spec:
   {{- $permission.spec | toYaml | nindent 2 }}
   rabbitmqClusterReference:
     name: {{ include "rabbitmq.fullname" $ }}
----
 {{- end }}

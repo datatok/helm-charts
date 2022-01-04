@@ -1,8 +1,9 @@
 {{- range $i, $queue := .Values.rabbitmq.queues }}
+---
 apiVersion: rabbitmq.com/v1beta1
 kind: Queue
 metadata:
-  name: {{ include "rabbitmq.fullname" $ }}-{{ $queue.name }}
+  name: {{ printf "%s-%s" (include "rabbitmq.fullname" $) $queue.name | lower | replace "." "-" | replace "_" "-" | trunc 63 | trimSuffix "-" }}
   labels:
     {{- include "rabbitmq.labels" $ | nindent 4 }}
 spec:
@@ -10,5 +11,4 @@ spec:
   {{- $queue.spec | toYaml | nindent 2 }}
   rabbitmqClusterReference:
     name: {{ include "rabbitmq.fullname" $ }}
----
 {{- end }}

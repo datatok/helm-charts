@@ -1,9 +1,10 @@
 {{- range $i, $user := .Values.rabbitmq.users }}
+---
 apiVersion: rabbitmq.com/v1beta1
 kind: User
 metadata:
   {{- if $user.secret }}
-  name: {{ include "rabbitmq.fullname" $ }}-{{ $user.name }}
+  name: {{ include "rabbitmq.fullname" $ }}-{{ $user.name | lower | replace "." "-" | replace "_" "-" | trunc 63 | trimSuffix "-" }}
   {{- else }}
   name: {{ $user.name }}
   {{- end }}
@@ -19,5 +20,4 @@ spec:
   importCredentialsSecret:
     name: {{ . }}
   {{- end }}
----
 {{- end }}

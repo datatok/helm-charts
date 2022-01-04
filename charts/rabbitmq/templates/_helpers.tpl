@@ -60,3 +60,7 @@ Create the name of the service account to use
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
+
+{{- define "rabbitmq.resourceName" -}}
+{{ . | replace "_" "-" | trunc 63 | trimSuffix "-" }}
+{{- end }}

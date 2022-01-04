@@ -2,7 +2,7 @@
 apiVersion: rabbitmq.com/v1beta1
 kind: Exchange
 metadata:
-  name: {{ include "rabbitmq.fullname" $ }}-{{ $exchange.name }}
+  name: {{ printf "%s-%s" (include "rabbitmq.fullname" $) $exchange.name | lower | replace "." "-" | replace "_" "-" | trunc 63 | trimSuffix "-" }}
   labels:
     {{- include "rabbitmq.labels" $ | nindent 4 }}
 spec:
