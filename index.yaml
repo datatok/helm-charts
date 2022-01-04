@@ -16,6 +16,20 @@ entries:
   rabbitmq:
   - apiVersion: v2
     appVersion: 3.9.5-management
+    created: "2022-01-04T08:34:44.426564875Z"
+    description: Deploy rabbitMQ with official K8S operators
+    digest: fa30f87193594a476be5bbb641511a449ab3d3064de1af55156870c9476c225c
+    maintainers:
+    - email: ebuildy@gmail.com
+      name: Thomas Decaux
+      url: https://twitter.com/ebuildy
+    name: rabbitmq
+    type: application
+    urls:
+    - https://github.com/datatok/helm-charts/releases/download/rabbitmq-0.1.12/rabbitmq-0.1.12.tgz
+    version: 0.1.12
+  - apiVersion: v2
+    appVersion: 3.9.5-management
     created: "2021-09-23T05:22:06.567210697Z"
     description: Deploy rabbitMQ with official K8S operators
     digest: 17f4d932aa07f9801cd6475413b27ff86af11df71ee691221ba4b5e7494c8829
@@ -366,4 +380,4 @@ entries:
     urls:
     - https://github.com/ebuildy/helm-data-lake/releases/download/zeppelin-int-0.1.2/zeppelin-int-0.1.2.tgz
     version: 0.1.2
-generated: "2021-12-24T15:56:28.108002224Z"
+generated: "2022-01-04T08:34:44.426640076Z"
