@@ -57,6 +57,7 @@ spec:
           echo ""
           echo "Deploy index template {{ .name }}"
           http -XPUT -d @{{ include "es-proviz.actionFilename" . }} {{ $elasticsearchURL }}/_template/{{ .name }}
+          
           {{ else if eq .kind "livecycle_policy" }}
           # https://www.elastic.co/guide/en/elasticsearch/reference/7.16/ilm-put-lifecycle.html
           echo "Removing ILM policy {{ .name }}"
@@ -64,6 +65,7 @@ spec:
           echo ""
           echo "Deploy ILM policy {{ .name }}"
           http -XPUT -d @{{ include "es-proviz.actionFilename" . }} {{ $elasticsearchURL }}/_ilm/policy/{{ .name }}
+          
           {{ else if eq .kind "snapshot_repository" }}
           # https://www.elastic.co/guide/en/elasticsearch/reference/current/put-snapshot-repo-api.html
           echo "Removing snapshot repository {{ .name }}"
@@ -71,6 +73,7 @@ spec:
           echo ""
           echo "Deploy snapshot repository {{ .name }}"
           http -XPUT -d @{{ include "es-proviz.actionFilename" . }} {{ $elasticsearchURL }}/_snapshot/{{ .name }}
+          
           {{ else if eq .kind "slm_policy" }}
           # https://www.elastic.co/guide/en/elasticsearch/reference/master/slm-api-put-policy.html
           echo "Removing SLM policy {{ .name }}"
@@ -78,17 +81,30 @@ spec:
           echo ""
           echo "Deploy SLM policy {{ .name }}"
           http -XPUT -d @{{ include "es-proviz.actionFilename" . }} {{ $elasticsearchURL }}/_slm/policy/{{ .name }}
+          
           {{ else if eq .kind "role" }}
           # https://www.elastic.co/guide/en/elasticsearch/reference/current/security-api-put-role.html
           echo "Deploy role {{ .name }}"
           http -XPUT -d @{{ include "es-proviz.actionFilename" . }} {{ $elasticsearchURL }}/_security/role/{{ .name }}
+          
           {{ else if eq .kind "role-mapping" }}
           # https://www.elastic.co/guide/en/elasticsearch/reference/7.16/security-api-put-role-mapping.html
           echo "Deploy role mapping {{ .name }}"
           http -XPUT -d @{{ include "es-proviz.actionFilename" . }} {{ $elasticsearchURL }}/_security/role_mapping/{{ .name }}
+          
+          {{ else if eq .kind "user" }}
+          # https://www.elastic.co/guide/en/elasticsearch/reference/current/security-api-put-user.html
+          echo "Deploy user {{ .name }}"
+          http -XPOST -d @{{ include "es-proviz.actionFilename" . }} {{ $elasticsearchURL }}/_security/user/{{ .name }}
+
           {{ else if eq .kind "user_password" }}
           echo "Deploy user password {{ .name }}"
+          http -XPOST -d @{{ include "es-proviz.actionFilename" . }} {{ $elasticsearchURL }}/_security/user/{{ .name }}/_password
+
+          {{ else if eq .kind "user_password_via_env" }}
+          echo "Deploy user password {{ .name }}"
           http -XPOST -d "{\"password\" : \"${{ (.spec | fromJson).passwordEnv }}\"}" {{ $elasticsearchURL }}/_security/user/${{ (.spec | fromJson).usernameEnv }}/_password
+          
           {{- end }}
 
           {{- end }}
