@@ -60,12 +60,9 @@ spec:
           echo "Hello"
           http {{ $elasticsearchURL }}
 
-          # Copy config-map resources
-          cp {{ .Values.actionResourcesDir }}/. .
-
           {{- if .Values.vault.enabled }}
           # Copy vault generated resources
-          cp {{ .Values.vault.volumePath }}/. .
+          cp -r {{ .Values.vault.volumePath }}/. .
           {{- end }}
 
           {{ range .Values.actions }}
@@ -135,7 +132,7 @@ spec:
         {{- if .Values.actions }}
         volumeMounts:
           - name: script-files
-            mountPath: {{ .Values.actionResourcesDir }}
+            mountPath: {{ .Values.workingDir }}
         {{- end }}
         {{- with .Values.extraEnvs }}
         env: {{ . | toYaml | nindent 10}}

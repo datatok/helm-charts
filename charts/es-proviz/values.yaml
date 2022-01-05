@@ -63,15 +63,10 @@ extraJobSpec: {}
 #  backoffLimit: 1
 
 ##
-# directory to mount resources
-##
-actionResourcesDir: /opt/datatok/es-proviz/files
-
-##
 # working dir to run curl
 # mount a emptyDir volume or by vault
 ##
-workingDir: /opt/datatok/es-proviz/tmp
+workingDir: /opt/datatok/es-proviz/files
 
 vault:
   enabled: false
