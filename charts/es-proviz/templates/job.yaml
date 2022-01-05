@@ -82,6 +82,10 @@ spec:
           # https://www.elastic.co/guide/en/elasticsearch/reference/current/security-api-put-role.html
           echo "Deploy role {{ .name }}"
           http -XPUT -d @{{ include "es-proviz.actionFilename" . }} {{ $elasticsearchURL }}/_security/role/{{ .name }}
+          {{ else if eq .kind "role-mapping" }}
+          # https://www.elastic.co/guide/en/elasticsearch/reference/7.16/security-api-put-role-mapping.html
+          echo "Deploy role mapping {{ .name }}"
+          http -XPUT -d @{{ include "es-proviz.actionFilename" . }} {{ $elasticsearchURL }}/_security/role_mapping/{{ .name }}
           {{ else if eq .kind "user_password" }}
           echo "Deploy user password {{ .name }}"
           http -XPOST -d "{\"password\" : \"${{ (.spec | fromJson).passwordEnv }}\"}" {{ $elasticsearchURL }}/_security/user/${{ (.spec | fromJson).usernameEnv }}/_password
