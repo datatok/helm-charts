@@ -3,6 +3,18 @@ entries:
   es-proviz:
   - apiVersion: v2
     appVersion: 7.80.0
+    created: "2022-01-05T10:31:31.911290571Z"
+    description: Setup elasticsearch index template, ILM policy ...
+    digest: 22e5a4c13e64862cade4c37284b1b70832c76f603f82b41bc22ef8a443de01cb
+    maintainers:
+    - name: Thomas Decaux
+    name: es-proviz
+    type: application
+    urls:
+    - https://github.com/datatok/helm-charts/releases/download/es-proviz-0.1.0/es-proviz-0.1.0.tgz
+    version: 0.1.0
+  - apiVersion: v2
+    appVersion: 7.80.0
     created: "2021-12-24T15:56:28.107930023Z"
     description: Setup elasticsearch index template, ILM policy ...
     digest: bbb9f3c0cc80e8f78fb7866687842d3da6936b88413c7e8f39dfb958164f9e97
@@ -394,4 +406,4 @@ entries:
     urls:
     - https://github.com/ebuildy/helm-data-lake/releases/download/zeppelin-int-0.1.2/zeppelin-int-0.1.2.tgz
     version: 0.1.2
-generated: "2022-01-04T08:41:56.246721142Z"
+generated: "2022-01-05T10:31:31.911373972Z"
