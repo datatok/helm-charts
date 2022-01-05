@@ -65,7 +65,18 @@ extraJobSpec: {}
 ##
 # directory to mount resources
 ##
-actionResourcesDir: /opt/pagnol/files
+actionResourcesDir: /opt/datatok/es-proviz/files
+
+##
+# working dir to run curl
+# mount a emptyDir volume or by vault
+##
+workingDir: /opt/datatok/es-proviz/tmp
+
+vault:
+  enabled: false
+  volumePath: /opt/datatok/es-proviz/vault
+
 
 ##
 # list of actions to do

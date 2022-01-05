@@ -11,9 +11,24 @@ spec:
   {{- end }}
   template:
     metadata:
-      {{- with .Values.podAnnotations }}
+      {{- if or .Values.vault.enabled .Values.podAnnotations }}
       annotations:
-        {{- toYaml . | nindent 8 }}
+        {{- if .Values.vault.enabled }}
+        vault.hashicorp.com/agent-init-first: 'true'
+        vault.hashicorp.com/agent-inject: 'true'
+        vault.hashicorp.com/agent-inject-status: update
+        vault.hashicorp.com/agent-pre-populate-only: 'true'
+        vault.hashicorp.com/ca-cert: '/run/secrets/kubernetes.io/serviceaccount/ca.crt'
+        vault.hashicorp.com/secret-volume-path: {{ .Values.vault.volumePath }}
+        vault.hashicorp.com/role: {{ .Values.vault.role }}
+        {{- range .Values.actions }}
+        {{- if .vault }}
+        vault.hashicorp.com/agent-inject-secret-{{ .name }}: "{{ .vault.key }}"
+        vault.hashicorp.com/agent-inject-file-{{ .name }}: {{ include "es-proviz.actionFilename" . }}
+        {{- end }}
+        {{- end }}
+        {{- end }}
+        {{- toYaml .Values.podAnnotations | nindent 8 }}
       {{- end }}
       labels:
         {{- include "es-proviz.selectorLabels" . | nindent 8 }}
@@ -34,17 +49,24 @@ spec:
           {{- toYaml .Values.securityContext | nindent 12 }}
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
+        workingDir: {{ .Values.workingDir }}
         command:
         - sh
         args:
         - -c
-        - |
+        - |-
           alias http={{ quote .Values.curlAlias }}
 
           echo "Hello"
           http {{ $elasticsearchURL }}
 
-          cd {{ .Values.actionResourcesDir }}
+          # Copy config-map resources
+          cp {{ .Values.actionResourcesDir }}/. .
+
+          {{- if .Values.vault.enabled }}
+          # Copy vault generated resources
+          cp {{ .Values.vault.volumePath }}/. .
+          {{- end }}
 
           {{ range .Values.actions }}
           echo ""
@@ -113,7 +135,7 @@ spec:
         {{- if .Values.actions }}
         volumeMounts:
           - name: script-files
-            mountPath: /opt/pagnol/files/
+            mountPath: {{ .Values.actionResourcesDir }}
         {{- end }}
         {{- with .Values.extraEnvs }}
         env: {{ . | toYaml | nindent 10}}
