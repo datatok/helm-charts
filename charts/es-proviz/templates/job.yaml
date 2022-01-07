@@ -1,4 +1,3 @@
-{{- $elasticsearchURL := .Values.elasticsearchURL -}}
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -18,17 +17,21 @@ spec:
         vault.hashicorp.com/agent-inject: 'true'
         vault.hashicorp.com/agent-inject-status: update
         vault.hashicorp.com/agent-pre-populate-only: 'true'
-        vault.hashicorp.com/ca-cert: '/run/secrets/kubernetes.io/serviceaccount/ca.crt'
+        {{- with .Values.vault.ca }}vault.hashicorp.com/ca-cert: {{ .}}{{- end }}
         vault.hashicorp.com/secret-volume-path: {{ .Values.vault.volumePath }}
         vault.hashicorp.com/role: {{ .Values.vault.role }}
+        vault.hashicorp.com/agent-copy-volume-mounts: {{ .Chart.Name }}
         {{- range .Values.actions }}
         {{- if .vault }}
         vault.hashicorp.com/agent-inject-secret-{{ .name }}: "{{ .vault.key }}"
         vault.hashicorp.com/agent-inject-file-{{ .name }}: {{ include "es-proviz.actionFilename" . }}
+        vault.hashicorp.com/agent-inject-template-file-{{ .name }}:  {{ printf "%s/%s" $.Values.workingDir (include "es-proviz.actionFilename" .) }}
         {{- end }}
         {{- end }}
         {{- end }}
-        {{- toYaml .Values.podAnnotations | nindent 8 }}
+        {{- with .Values.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
       {{- end }}
       labels:
         {{- include "es-proviz.selectorLabels" . | nindent 8 }}
@@ -54,18 +57,19 @@ spec:
         - sh
         args:
         - -c
-        - |-
+        - |+
+          {{- $elasticsearchURL := .Values.elasticsearchURL }}
           alias http={{ quote .Values.curlAlias }}
-
+          
           echo "Hello"
           http {{ $elasticsearchURL }}
-
-          {{- if .Values.vault.enabled }}
-          # Copy vault generated resources
-          cp -r {{ .Values.vault.volumePath }}/. .
-          {{- end }}
-
+          
           {{ range .Values.actions }}
+
+          {{- $fileName := include "es-proviz.actionFilename" . -}}
+          {{- $filePath := hasKey . "vault" | ternary $.Values.vault.volumePath "." -}}
+          {{- $file := printf "%s/%s" $filePath $fileName -}}
+
           echo ""
           echo ""
 
@@ -75,50 +79,41 @@ spec:
           http -XDELETE {{ $elasticsearchURL }}/_template/{{ .name }}
           echo ""
           echo "Deploy index template {{ .name }}"
-          http -XPUT -d @{{ include "es-proviz.actionFilename" . }} {{ $elasticsearchURL }}/_template/{{ .name }}
+          http -XPUT -d @{{ $file }} {{ $elasticsearchURL }}/_template/{{ .name }}
           
           {{ else if eq .kind "livecycle_policy" }}
           # https://www.elastic.co/guide/en/elasticsearch/reference/7.16/ilm-put-lifecycle.html
-          echo "Removing ILM policy {{ .name }}"
-          http -XDELETE {{ $elasticsearchURL }}/_ilm/policy/{{ .name }}
-          echo ""
           echo "Deploy ILM policy {{ .name }}"
-          http -XPUT -d @{{ include "es-proviz.actionFilename" . }} {{ $elasticsearchURL }}/_ilm/policy/{{ .name }}
+          http -XPUT -d @{{ $file }} {{ $elasticsearchURL }}/_ilm/policy/{{ .name }}
           
           {{ else if eq .kind "snapshot_repository" }}
           # https://www.elastic.co/guide/en/elasticsearch/reference/current/put-snapshot-repo-api.html
-          echo "Removing snapshot repository {{ .name }}"
-          http -XDELETE {{ $elasticsearchURL }}/_snapshot/{{ .name }}
-          echo ""
           echo "Deploy snapshot repository {{ .name }}"
-          http -XPUT -d @{{ include "es-proviz.actionFilename" . }} {{ $elasticsearchURL }}/_snapshot/{{ .name }}
+          http -XPUT -d @{{ $file }} {{ $elasticsearchURL }}/_snapshot/{{ .name }}
           
           {{ else if eq .kind "slm_policy" }}
           # https://www.elastic.co/guide/en/elasticsearch/reference/master/slm-api-put-policy.html
-          echo "Removing SLM policy {{ .name }}"
-          http -XDELETE {{ $elasticsearchURL }}/_slm/policy/{{ .name }}
-          echo ""
           echo "Deploy SLM policy {{ .name }}"
-          http -XPUT -d @{{ include "es-proviz.actionFilename" . }} {{ $elasticsearchURL }}/_slm/policy/{{ .name }}
+          http -XPUT -d @{{ $file }} {{ $elasticsearchURL }}/_slm/policy/{{ .name }}
           
           {{ else if eq .kind "role" }}
           # https://www.elastic.co/guide/en/elasticsearch/reference/current/security-api-put-role.html
           echo "Deploy role {{ .name }}"
-          http -XPUT -d @{{ include "es-proviz.actionFilename" . }} {{ $elasticsearchURL }}/_security/role/{{ .name }}
+          http -XPUT -d @{{ $file }} {{ $elasticsearchURL }}/_security/role/{{ .name }}
           
           {{ else if eq .kind "role-mapping" }}
           # https://www.elastic.co/guide/en/elasticsearch/reference/7.16/security-api-put-role-mapping.html
           echo "Deploy role mapping {{ .name }}"
-          http -XPUT -d @{{ include "es-proviz.actionFilename" . }} {{ $elasticsearchURL }}/_security/role_mapping/{{ .name }}
+          http -XPUT -d @{{ $file }} {{ $elasticsearchURL }}/_security/role_mapping/{{ .name }}
           
           {{ else if eq .kind "user" }}
           # https://www.elastic.co/guide/en/elasticsearch/reference/current/security-api-put-user.html
           echo "Deploy user {{ .name }}"
-          http -XPOST -d @{{ include "es-proviz.actionFilename" . }} {{ $elasticsearchURL }}/_security/user/{{ .name }}
+          http -XPOST -d @{{ $file }} {{ $elasticsearchURL }}/_security/user/{{ .name }}
 
           {{ else if eq .kind "user_password" }}
           echo "Deploy user password {{ .name }}"
-          http -XPOST -d @{{ include "es-proviz.actionFilename" . }} {{ $elasticsearchURL }}/_security/user/{{ .name }}/_password
+          http -XPOST -d @{{ $file }} {{ $elasticsearchURL }}/_security/user/{{ .name }}/_password
 
           {{ else if eq .kind "user_password_via_env" }}
           echo "Deploy user password {{ .name }}"

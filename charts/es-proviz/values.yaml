@@ -17,13 +17,25 @@ serviceAccount:
   # If not set and create is true, a name is generated using the fullname template
   name: ""
 
+##
+# pod annotation. To use Vault, see vault values. 
+##
 podAnnotations: {}
 
+##
+# pod labels
+##
 podLabels: {}
 
+##
+# pod securityContext
+##
 podSecurityContext: {}
   # fsGroup: 2000
 
+##
+# container securityContext
+##
 securityContext: {}
   # capabilities:
   #   drop:
@@ -32,6 +44,9 @@ securityContext: {}
   # runAsNonRoot: true
   # runAsUser: 1000
 
+##
+# pod resources
+##
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
   # choice for the user. This also increases chances charts run on environments with little
@@ -44,6 +59,9 @@ resources: {}
   #   cpu: 100m
   #   memory: 128Mi
 
+##
+# specify extra pod env variables
+##
 extraEnvs:
  # - name: HTTP_AUTH_USERNAME
  #   valueFrom:
@@ -69,7 +87,21 @@ extraJobSpec: {}
 workingDir: /opt/datatok/es-proviz/files
 
 vault:
+  ##
+  # enable vault integration
+  ##
   enabled: false
+  ##
+  # vault role to use
+  ##
+  role: default
+  ##
+  # full path to mounted CA (by k8s)
+  ##
+  ca: /run/secrets/kubernetes.io/serviceaccount/ca.crt
+  ##
+  # where to store generated content
+  ##
   volumePath: /opt/datatok/es-proviz/vault
 
 

@@ -6,7 +6,14 @@ metadata:
   labels:
     {{- include "es-proviz.labels" . | nindent 4 }}
 data:
-  {{- range $key, $val := .Values.actions }}
-  {{ include "es-proviz.actionFilename" $val }}: {{ $val.spec | quote }}
-  {{- end }}
+  {{ range $key, $val := .Values.actions }}
+  {{ include "es-proviz.actionFilename" $val }}: |+
+    {{- if .vault }}
+    {{ "{{" }}- with secret "{{ .vault.key }}" -{{ "}}" }}
+    {{- end }}
+    {{- $val.spec | fromJson | toPrettyJson | nindent 4 }}
+    {{- if .vault }}
+    {{ "{{" }}- end {{ "}}" }}
+    {{- end }}
+  {{ end }}
 {{- end }}
