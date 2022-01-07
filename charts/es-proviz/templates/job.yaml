@@ -17,7 +17,7 @@ spec:
         vault.hashicorp.com/agent-inject: 'true'
         vault.hashicorp.com/agent-inject-status: update
         vault.hashicorp.com/agent-pre-populate-only: 'true'
-        {{- with .Values.vault.ca }}vault.hashicorp.com/ca-cert: {{ .}}{{- end }}
+        {{ with .Values.vault.ca }}vault.hashicorp.com/ca-cert: {{ .}}{{- end }}
         vault.hashicorp.com/secret-volume-path: {{ .Values.vault.volumePath }}
         vault.hashicorp.com/role: {{ .Values.vault.role }}
         vault.hashicorp.com/agent-copy-volume-mounts: {{ .Chart.Name }}
