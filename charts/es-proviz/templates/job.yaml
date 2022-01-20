@@ -74,12 +74,11 @@ spec:
           echo ""
 
           {{ if eq .kind "index_template" }}
-          # https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-templates-v1.html
           echo "Removing index template {{ .name }}"
-          http -XDELETE {{ $elasticsearchURL }}/_template/{{ .name }}
+          http -XDELETE {{ $elasticsearchURL }}/_index_template/{{ .name }}
           echo ""
           echo "Deploy index template {{ .name }}"
-          http -XPUT -d @{{ $file }} {{ $elasticsearchURL }}/_template/{{ .name }}
+          http -XPUT -d @{{ $file }} {{ $elasticsearchURL }}/_index_template/{{ .name }}
           
           {{ else if eq .kind "livecycle_policy" }}
           # https://www.elastic.co/guide/en/elasticsearch/reference/7.16/ilm-put-lifecycle.html
