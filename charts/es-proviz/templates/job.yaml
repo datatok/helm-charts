@@ -79,6 +79,10 @@ spec:
           echo ""
           echo "Deploy index template {{ .name }}"
           http -XPUT -d @{{ $file }} {{ $elasticsearchURL }}/_index_template/{{ .name }}
+
+          {{ else if eq .kind "ingest_pipeline" }}
+          echo "Deploy pipeline {{ .name }}"
+          http -XPUT -d @{{ $file }} {{ $elasticsearchURL }}/_ingest/pipeline/{{ .name }}
           
           {{ else if eq .kind "livecycle_policy" }}
           # https://www.elastic.co/guide/en/elasticsearch/reference/7.16/ilm-put-lifecycle.html
