@@ -58,13 +58,23 @@ spec:
         - name: spark-config-volume
           emptyDir: {}
         - name: zep-tmp
+          {{- if eq .Values.volumeTmp.type "emptyDir" }}
           emptyDir: {}
+          {{- else }}
+          persistentVolumeClaim:
+            claimName: {{ include "zeppelin.fullname" . }}-tmp
+          {{- end }}
         - name: zep-conf
           emptyDir: {}
         - name: zep-webapps
           emptyDir: {}
         - name: zep-notebooks
+          {{- if eq .Values.volumeNotebooks.type "emptyDir" }}
           emptyDir: {}
+          {{- else }}
+          persistentVolumeClaim:
+            claimName: {{ include "zeppelin.fullname" . }}-notebooks
+          {{- end }}
         - name: zep-logs
           emptyDir: {}
         - name: etc-hack
@@ -82,216 +92,19 @@ spec:
           emptyDir: {}
         {{- end }}
       initContainers:
-      - name: {{ .Chart.Name }}-config-init
-        securityContext: &containerSecurityContext
-          {{- toYaml .Values.securityContext | nindent 12 }}
-        image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
-        imagePullPolicy: {{ .Values.image.pullPolicy }}
-        command:
-        - '/bin/sh'
-        - '-c'
-        - >
-          cp conf/* prepared_conf;
-        resources: &initContainerResources
-          requests:
-            cpu: 10m
-            memory: 32Mi
-          limits:
-            cpu: 50m
-            memory: 64Mi
-        volumeMounts:
-        - name: zep-conf
-          mountPath: /opt/zeppelin/prepared_conf
-        - name: config
-          mountPath: /opt/zeppelin/conf/log4j.properties
-          subPath: log4j.properties
-        - name: site-config
-          mountPath: /opt/zeppelin/conf/zeppelin-site.xml
-          subPath: zeppelin-site.xml
-        - name: interpreter-config
-          mountPath: /opt/zeppelin/conf/interpreter.json
-          subPath: interpreter.json
+      - {{- include "zeppelin.container.config" . | nindent 8 }}
       {{- if eq .Values.spark.driver.mode "local" }}
-      - name: {{ .Chart.Name }}-spark-init
-        securityContext:
-          <<: *containerSecurityContext
-        {{- with .Values.spark.homeArtifacts.image }}
-        image: "{{ .registry }}/{{ .repository }}:{{ .tag }}"
-        imagePullPolicy: {{ .pullPolicy }}
-        {{- end }}
-        command: ["sh", "-c", "cp -r {{ .Values.spark.homeArtifacts.copyDirectory }}/* /spark/"]
-        resources:
-          <<: *initContainerResources
-        volumeMounts:
-        - name: spark-home
-          mountPath: /spark
+      - {{- include "zeppelin.container.spark-init" . | nindent 8 }}
       {{- with .Values.spark.dependencies }}
-      - name: {{ .Chart.Name }}-spark-dependencies
-        securityContext:
-          <<: *containerSecurityContext
-        {{- with .Values.spark.homeArtifacts.image }}
-        image: "{{ .registry }}/{{ .repository }}:{{ .tag }}"
-        imagePullPolicy: {{ .pullPolicy }}
-        {{- end }}
-        command:
-        - sh
-        - "-c"
-        - >+
-          
-        resources:
-          <<: *initContainerResources
-        - name: zep-repo
-          mountPath: /opt/zeppelin/local-repo
-        - name: zep-ivy
-          mountPath: /opt/zeppelin/.ivy2
+      - {{- include "zeppelin.container.spark-dep" . | nindent 8 }}
       {{- end }}
       {{- end }}
-      - name: {{ .Chart.Name }}-fix-user
-        securityContext:
-          {{- toYaml .Values.securityContext | nindent 12 }}
-        image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
-        imagePullPolicy: {{ .Values.image.pullPolicy }}
-        command:
-        - '/bin/sh'
-        - '-c'
-        - |+
-          myuid=$(id -u)
-          mygid=$(id -g)
-          uidentry=$(getent passwd $myuid)
-
-          cp /etc/passwd /opt/my-etc/passwd
-
-          if [ -z "$uidentry" ] ; then
-              if [ -w /opt/my-etc/passwd ] ; then
-                  echo "zeppelin:x:$myuid:$mygid:Zeppelin user:${PWD}:/bin/false" >> /opt/my-etc/passwd
-              else
-                  echo "Container ENTRYPOINT failed to add passwd entry for zeppelin UID"
-              fi
-          fi
-        resources:
-          <<: *initContainerResources
-        volumeMounts:
-        - name: etc-hack
-          mountPath: /opt/my-etc
+      - {{- include "zeppelin.container.fix-user" . | nindent 8 }}
       {{- if eq .Values.notebookStorage.type "git" }}
-      - name: {{ .Chart.Name }}-git-init
-        securityContext:
-          <<: *containerSecurityContext
-        image: "bitnami/git:2-debian-10"
-        imagePullPolicy: {{ .Values.image.pullPolicy }}
-        workingDir: /opt/zeppelin/notebook
-        command:
-        - '/bin/sh'
-        - '-c'
-        - |+
-          git clone ${REPO_URL} .
-          git config user.name "datahub zeppelin"
-          git config user.email "z.datahub@qwant.com"
-          git config pull.ff only
-        resources:
-          <<: *initContainerResources
-        volumeMounts:
-        - name: zep-notebooks
-          mountPath: /opt/zeppelin/notebook
-        env:
-        - name: GIT_SSL_NO_VERIFY
-          value: "true"
-        - name: REPO_URL
-          valueFrom:
-            secretKeyRef:
-              name: {{ .Values.notebookStorage.repositorySecret }}
-              key: url
+      - {{- include "zeppelin.container.git-init" . | nindent 8 }}
       {{- end }}
       containers:
-        - name: {{ .Chart.Name }}
-          securityContext:
-            <<: *containerSecurityContext
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
-          ports:
-          - name: http
-            containerPort: {{ .Values.service.port }}
-            protocol: TCP
-          - name: rpc
-            containerPort: {{ .Values.service.rpcPort }}
-            protocol: TCP
-          {{- if eq .Values.spark.driver.mode "local" }}
-          - name: spark-ui
-            containerPort: {{ .Values.spark.driver.uiPort }}
-            protocol: TCP
-          {{- end }}
-          livenessProbe:
-            httpGet:
-              path: /
-              port: http
-            initialDelaySeconds: 30
-            timeoutSeconds: 1
-          readinessProbe:
-            httpGet:
-              path: /
-              port: http
-            initialDelaySeconds: 30
-            timeoutSeconds: 1
-          resources:
-            {{- toYaml .Values.resources | nindent 12 }}
-          workingDir: /opt/zeppelin
-          env:
-          - name: ZEPPELIN_WAR_TEMPDIR
-            value: webapps/tmp_dir
-          - name: ZEPPELIN_MEM
-            value:  {{ .Values.zeppelin.server.jvmMemOptions }}
-          - name: POD_UID
-            valueFrom:
-              fieldRef:
-                apiVersion: v1
-                fieldPath: metadata.uid
-          - name: POD_NAME
-            valueFrom:
-              fieldRef:
-                apiVersion: v1
-                fieldPath: metadata.name
-          - name: SERVICE_DOMAIN
-            value: {{ .Values.zeppelin.serviceDomain }}
-          {{- if eq .Values.spark.driver.mode "local" }}
-          - name: SPARK_HOME
-            value: /spark
-          - name: SPARK_LOCAL_HOSTNAME
-            valueFrom:
-              fieldRef:
-                apiVersion: v1
-                fieldPath: status.podIP
-          - name: ZEPPELIN_RUN_MODE
-            value: local
-          {{- end }}
-          {{- with .Values.extraEnvVars }}
-            {{- toYaml . | nindent 10 }}
-          {{- end }}
-          volumeMounts:
-          - name: zep-tmp
-            mountPath: /tmp
-          - name: zep-conf
-            mountPath: /opt/zeppelin/conf
-          - name: zep-webapps
-            mountPath: /opt/zeppelin/webapps
-          - name: zep-notebooks
-            mountPath: /opt/zeppelin/notebook
-          - name: zep-logs
-            mountPath: /opt/zeppelin/logs
-          - name: etc-hack
-            mountPath: /etc/passwd
-            subPath: passwd
-          {{- if eq .Values.spark.driver.mode "local" }}
-          - name: spark-home
-            mountPath: /spark
-          - name: spark-hive-warehouse
-            mountPath: /opt/zeppelin/hive-warehouse
-          - name: spark-derby-home
-            mountPath: /opt/zeppelin/derby
-          - name: zep-repo
-            mountPath: /opt/zeppelin/local-repo
-          - name: zep-ivy
-            mountPath: /opt/zeppelin/.ivy2
-          {{- end }}
+      - {{- include "zeppelin.container.zeppelin" . | nindent 8 }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

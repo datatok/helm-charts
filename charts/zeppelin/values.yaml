@@ -3,7 +3,6 @@ replicaCount: 1
 
 image:
   repository: apache/zeppelin
-  tag: 0.9.0
   pullPolicy: IfNotPresent
 
 # -- To use private images
@@ -87,6 +86,24 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+
+## -- Define volume to store notebooks (emptyDir or pvc)
+volumeNotebooks:
+  type: emptyDir
+
+#volumeNotebooks:
+#  type: pvc
+#  spec:
+#    accessModes:
+#    - ReadWriteOnce
+#    resources:
+#      requests:
+#        storage: 8Gi
+#    storageClassName: rbd
+
+## -- Define volume to store tmp (emptyDir or pvc)
+volumeTmp:
+  type: emptyDir
 
 zeppelin:
   config:

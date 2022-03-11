@@ -1,0 +1,9 @@
+{{- if eq .Values.volumeNotebooks.type "pvc" }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "zeppelin.fullname" . }}-notebooks
+spec:
+  {{- toYaml .Values.volumeNotebooks.spec | nindent 2 }}
+{{- end }}
