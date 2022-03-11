@@ -12,6 +12,7 @@ command:
     if [ -d ".git" ]; then
         echo "/opt/zeppelin/notebook is not empty, skipping git init."
     else
+        rm -rf *
         git clone ${REPO_URL} .
         git config user.name "datahub zeppelin"
         git config user.email "z.datahub@qwant.com"
