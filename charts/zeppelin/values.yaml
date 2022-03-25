@@ -44,6 +44,19 @@ networkPolicy:
   # -- add extra NP ingress rules
   extraIngressRules: []
 
+# -- extraVolumes Array to add extra volumes
+extraVolumes: []
+#- name: toto
+#  emptyDir: {}
+
+# -- extraVolumeMounts Array to add extra mount
+extraVolumeMounts: []
+#- name: toto
+#  mountPath: /app/toto
+
+# -- extra env variables for zeppelin container
+extraEnvVars: {}
+
 service:
   type: ClusterIP
   # -- HTTP server port

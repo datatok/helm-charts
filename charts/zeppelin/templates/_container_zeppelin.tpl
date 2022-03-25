@@ -88,4 +88,7 @@ volumeMounts:
 -   name: zep-ivy
     mountPath: /opt/zeppelin/.ivy2
 {{- end }}
+{{- with .Values.extraVolumeMounts }}
+{{ . | toYaml }}
+{{- end }}
 {{- end }}
