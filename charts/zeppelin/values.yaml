@@ -182,13 +182,12 @@ spark:
     masterURL: ""
     # -- if mode is not local, deploy mode (client / cluster)
     deployMode: client
-    # -- if mode is not local, how many executors to deploy
-    count: 2
     # -- how many cores (* to use all CPUs)
     # -- in `local` mode, this is equivalent to master = local[cores]
     cores: "*"
   # -- Spark configuration
   config: {}
+  #  spark.master: local[*]
   #  spark.hadoop.hive.metastore.uris: thrift://XXXX:9083
   #  spark.executor.memory: 1G
   #  zeppelin.spark.concurrentSQL: "true"
