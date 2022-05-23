@@ -337,6 +337,27 @@ entries:
       category: Analytics
     apiVersion: v2
     appVersion: 0.10.1
+    created: "2022-05-23T18:28:39.289959848Z"
+    description: Apache Zeppelin with Apache Spark
+    digest: f4548edacb59343d6be05799edcc2004d9b8f33d534e710e44b7d949370a441d
+    home: https://github.com/ebuildy/helm-data-lake
+    keywords:
+    - zeppelin
+    - data-lake
+    - big-data
+    - spark
+    maintainers:
+    - email: ebuildy@gmail.com
+      name: Thomas Decaux
+    name: zeppelin
+    type: application
+    urls:
+    - https://github.com/datatok/helm-charts/releases/download/zeppelin-0.4.2/zeppelin-0.4.2.tgz
+    version: 0.4.2
+  - annotations:
+      category: Analytics
+    apiVersion: v2
+    appVersion: 0.10.1
     created: "2022-05-23T13:49:03.041113251Z"
     description: Apache Zeppelin with Apache Spark
     digest: 79abe41ec544071fa386a93fa415803e7b37c9564ca0e9d3f53726928008bf86
@@ -574,4 +595,4 @@ entries:
     urls:
     - https://github.com/ebuildy/helm-data-lake/releases/download/zeppelin-int-0.1.2/zeppelin-int-0.1.2.tgz
     version: 0.1.2
-generated: "2022-05-23T13:49:03.041642954Z"
+generated: "2022-05-23T18:28:39.290138949Z"
