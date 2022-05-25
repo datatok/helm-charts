@@ -11,7 +11,7 @@ ports:
 -   name: rpc
     containerPort: {{ .Values.service.rpcPort }}
     protocol: TCP
-{{- if eq .Values.spark.driver.mode "local" }}
+{{- if eq .Values.zeppelin.interpreter.mode "embedded" }}
 -   name: spark-ui
     containerPort: {{ .Values.spark.driver.uiPort }}
     protocol: TCP
@@ -48,7 +48,7 @@ env:
             fieldPath: metadata.name
 -   name: SERVICE_DOMAIN
     value: {{ .Values.zeppelin.serviceDomain }}
-{{- if eq .Values.spark.driver.mode "local" }}
+{{- if eq .Values.zeppelin.interpreter.mode "embedded" }}
 -   name: SPARK_HOME
     value: /spark
 -   name: SPARK_LOCAL_HOSTNAME
@@ -76,7 +76,7 @@ volumeMounts:
 -   name: etc-hack
     mountPath: /etc/passwd
     subPath: passwd
-{{- if eq .Values.spark.driver.mode "local" }}
+{{- if eq .Values.zeppelin.interpreter.mode "embedded" }}
 -   name: spark-home
     mountPath: /spark
 -   name: spark-hive-warehouse

@@ -119,7 +119,10 @@ volumeTmp:
   type: emptyDir
 
 zeppelin:
-  config:
+  partOf: data-lake
+  
+  # -- fill zeppelin-site.xml
+  properties:
     # -- IP to listen to (usually `0.0.0.0`)
     zeppelin.server.addr: 0.0.0.0
     # -- notebooks storage dir
@@ -132,13 +135,26 @@ zeppelin:
     zeppelin.notebook.homescreen.hide: false
     # -- Output message from interpreter exceeding the limit will be truncated
     zeppelin.interpreter.output.limit: 102400
+    # -- Interpreter process connect timeout in msec
+    zeppelin.interpreter.connect.timeout: 1200000
+  
   server:
     # -- Zeppelin Java process memory options
     jvmMemOptions: -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -XX:MaxRAMFraction=1 -Xms512m -Xmx512m -XX:MaxMetaspaceSize=512m
 
   interpreter:
-    enabled: true
+    # -- zeppelin interpreter inside zeppelin container or external
+    mode: embedded # external
     thriftPort: 10000
+
+  interpreters:
+  - id: 2CYM9BXZH
+    name: sh
+    group: sh
+    properties:
+    - name": "zeppelin.shell.principal"
+      value: ""
+      type: string
 
 logging:
   level: INFO

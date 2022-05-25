@@ -49,7 +49,7 @@ spec:
               path: zeppelin-site.xml
         - name: interpreter-config
           configMap:
-            name: {{ include "zeppelin.fullname" . }}-interpreter-config
+            name: {{ include "zeppelin.fullname" . }}-interpreter
             items:
             - key: interpreter.json
               path: interpreter.json
@@ -96,11 +96,8 @@ spec:
         {{- end }}
       initContainers:
       - {{- include "zeppelin.container.config" . | nindent 8 }}
-      {{- if eq .Values.spark.driver.mode "local" }}
+      {{- if eq .Values.zeppelin.interpreter.mode "embedded" }}
       - {{- include "zeppelin.container.spark-init" . | nindent 8 }}
-      {{- with .Values.spark.dependencies }}
-      - {{- include "zeppelin.container.spark-dep" . | nindent 8 }}
-      {{- end }}
       {{- end }}
       - {{- include "zeppelin.container.fix-user" . | nindent 8 }}
       {{- if eq .Values.notebookStorage.type "git" }}

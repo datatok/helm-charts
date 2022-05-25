@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "zeppelin.fullname" . }}-spark
+  labels:
+    {{- include "zeppelin.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+  - port: {{ .Values.spark.driver.uiPort }}
+    targetPort: spark-ui
+    protocol: TCP
+    name: spark-ui
+  selector:
+    {{- if eq .Values.zeppelin.interpreter.mode "local" }}
+    {{- include "zeppelin.selectorLabels" . | nindent 4 }}
+    {{- else }}
+    {{- end }}

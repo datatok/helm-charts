@@ -27,7 +27,7 @@ data:
 
     <configuration>
 
-    {{- range $k,$v := .Values.zeppelin.config }}
+    {{- range $k,$v := .Values.zeppelin.properties }}
     <property>
       <name>{{$k}}</name>
       <value>{{$v}}</value>
@@ -161,12 +161,6 @@ data:
       <name>zeppelin.interpreter.group.order</name>
       <value>spark,md,angular,sh,file,psql,python,elasticsearch,jdbc</value>
       <description></description>
-    </property>
-
-    <property>
-      <name>zeppelin.interpreter.connect.timeout</name>
-      <value>{{ .Values.interpreterConnectTimeout }}</value>
-      <description>Interpreter process connect timeout in msec.</description>
     </property>
 
     <property>

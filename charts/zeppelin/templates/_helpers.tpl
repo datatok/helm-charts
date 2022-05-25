@@ -36,6 +36,7 @@ Common labels
 {{- define "zeppelin.labels" -}}
 helm.sh/chart: {{ include "zeppelin.chart" . }}
 {{ include "zeppelin.selectorLabels" . }}
+{{ include "zeppelin.partOfLabels" . }}
 {{- if .Chart.AppVersion }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
@@ -49,6 +50,13 @@ Selector labels
 {{- define "zeppelin.selectorLabels" -}}
 app.kubernetes.io/name: {{ include "zeppelin.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}
+
+{{/*
+Stack selector labels
+*/}}
+{{- define "zeppelin.partOfLabels" -}}
+app.kubernetes.io/part-of: {{ .Values.zeppelin.partOf }}
 {{- end }}
 
 {{/*
