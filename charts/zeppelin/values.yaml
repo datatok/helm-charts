@@ -132,11 +132,11 @@ zeppelin:
     # -- id of notebook to be displayed in homescreen. ex) 2A94M5J1Z Empty value displays default home screen
     zeppelin.notebook.homescreen: ""
     # -- hide homescreen notebook from list when this value set to true
-    zeppelin.notebook.homescreen.hide: false
+    zeppelin.notebook.homescreen.hide: "false"
     # -- Output message from interpreter exceeding the limit will be truncated
-    zeppelin.interpreter.output.limit: 102400
+    zeppelin.interpreter.output.limit: "102400"
     # -- Interpreter process connect timeout in msec
-    zeppelin.interpreter.connect.timeout: 1200000
+    zeppelin.interpreter.connect.timeout: "120000"
   
   server:
     # -- Zeppelin Java process memory options
@@ -144,7 +144,10 @@ zeppelin:
 
   interpreter:
     # -- zeppelin interpreter inside zeppelin container or external
-    mode: embedded # external
+    mode: embedded 
+    #mode: external
+    # -- K8S config-map to define K8S template (must exist)
+    k8sTemplateCM: ""
     thriftPort: 10000
 
   interpreters:
@@ -155,6 +158,8 @@ zeppelin:
     - name": "zeppelin.shell.principal"
       value: ""
       type: string
+
+  
 
 logging:
   level: INFO
@@ -167,7 +172,8 @@ logging:
 
 notebookStorage:
   # -- Kind of storage for notebook
-  type: git
+  type: pvc
+  #type: git
   # -- if type is `git` , use this secret to get the repository URL (usually the URL contains an access token)
   repositorySecret: git-data-lake
 
@@ -184,23 +190,11 @@ notebookStorage:
 ##
 spark:
   driver:
-    # -- driver mode, `local` will run Zeppelin Spark interpreter in the same container, `external` will connect to an interpreter running in another pod
-    mode: local # external
-    # -- if mode is `local`, Spark UI port, usually 4040
+    # -- Spark UI port, usually 4040
     uiPort: 4040
-    # -- if mode is `local`, create an ingress to access to Spark UI
+    # -- Create an ingress to access to Spark UI
     ingress:
       enabled: false
-  executor:
-    # -- `local` will run executor in the same driver java process / cluster / k8s
-    mode: local
-    # -- if mode is not local, full master URL
-    masterURL: ""
-    # -- if mode is not local, deploy mode (client / cluster)
-    deployMode: client
-    # -- how many cores (* to use all CPUs)
-    # -- in `local` mode, this is equivalent to master = local[cores]
-    cores: "*"
   # -- Spark configuration
   config: {}
   #  spark.master: local[*]
@@ -210,13 +204,7 @@ spark:
   #  spark.app.name: zep
   #  zeppelin.spark.enableSupportedVersionCheck: false
   # -- if driver mode is `local`, set which Spark image (version) to use to copy Spark home
-  homeArtifacts:
-    image:
-      registry: docker.io
-      repository: bitnami/spark
-      pullPolicy: IfNotPresent
-      tag: 2.4.5
-    copyDirectory: /opt/bitnami/spark
+  homeArtifactsVolumeClaim: zep-spark-zeppelin-spark-artifacts-buffer
 
   # -- download dependencies via an init container to use proxy only for this
   dependencies: {}

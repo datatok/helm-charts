@@ -6,15 +6,17 @@ metadata:
     {{- include "zeppelin.labels" . | nindent 4 }}
 spec:
   replicas: {{ .Values.replicaCount }}
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       {{- include "zeppelin.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       annotations:
-        checksum/config: {{ include (print $.Template.BasePath "/config-basics.yaml") . | sha256sum }}
-        checksum/config-zep: {{ include (print $.Template.BasePath "/config-zeppelin-site.yaml") . | sha256sum }}
-        checksum/config-int: {{ include (print $.Template.BasePath "/config-interpreter-settings.yaml") . | sha256sum }}
+        checksum/config: {{ include (print $.Template.BasePath "/zeppelin-cm.yaml") . | sha256sum }}
+        checksum/config-zep: {{ include (print $.Template.BasePath "/zeppelin-site-cm.yaml") . | sha256sum }}
+        checksum/config-int: {{ include (print $.Template.BasePath "/interpreter-settings-cm.yaml") . | sha256sum }}
         {{- with .Values.podAnnotations}}
         {{- toYaml . | nindent 8 }}
         {{- end }}
@@ -79,9 +81,10 @@ spec:
           emptyDir: {}
         - name: etc-hack
           emptyDir: {}
-        {{- if eq .Values.spark.driver.mode "local" }}
+        {{- if eq .Values.zeppelin.interpreter.mode "embedded" }}
         - name: spark-home
-          emptyDir: {}
+          persistentVolumeClaim:
+            claimName: {{ .Values.spark.homeArtifactsVolumeClaim }}
         - name: spark-hive-warehouse
           emptyDir: {}
         - name: spark-derby-home
@@ -91,14 +94,16 @@ spec:
         - name: zep-ivy
           emptyDir: {}
         {{- end }}
+        {{- with .Values.zeppelin.interpreter.k8sTemplateCM }}
+        - name: zep-int-k8s-template
+          configMap:
+            name: {{ . }}
+        {{- end }}
         {{- with .Values.extraVolumes }}
         {{ . | toYaml | nindent 8 }}
         {{- end }}
       initContainers:
       - {{- include "zeppelin.container.config" . | nindent 8 }}
-      {{- if eq .Values.zeppelin.interpreter.mode "embedded" }}
-      - {{- include "zeppelin.container.spark-init" . | nindent 8 }}
-      {{- end }}
       - {{- include "zeppelin.container.fix-user" . | nindent 8 }}
       {{- if eq .Values.notebookStorage.type "git" }}
       - {{- include "zeppelin.container.git-init" . | nindent 8 }}

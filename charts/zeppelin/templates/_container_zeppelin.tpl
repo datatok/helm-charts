@@ -88,6 +88,10 @@ volumeMounts:
 -   name: zep-ivy
     mountPath: /opt/zeppelin/.ivy2
 {{- end }}
+{{- with .Values.zeppelin.interpreter.k8sTemplateCM }}
+-   name: zep-int-k8s-template
+    mountPath: /opt/zeppelin/k8s/interpreter
+{{- end }}
 {{- with .Values.extraVolumeMounts }}
 {{ . | toYaml }}
 {{- end }}

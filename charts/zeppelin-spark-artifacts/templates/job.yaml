@@ -1,0 +1,9 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "zeppelin-spark-artifacts.fullname" . }}
+  labels:
+    {{- include "zeppelin-spark-artifacts.labels" . | nindent 4 }}
+spec:
+  template:
+    {{- include "zeppelin-spark-artifacts.pod" . | nindent 4 }}
