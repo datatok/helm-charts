@@ -59,6 +59,8 @@ spec:
           emptyDir: {}
         - name: spark-config-volume
           emptyDir: {}
+        - name: zep-search-index
+          emptyDir: {}
         - name: zep-tmp
           {{- if eq .Values.volumeTmp.type "emptyDir" }}
           emptyDir: {}
@@ -94,7 +96,7 @@ spec:
         - name: zep-ivy
           emptyDir: {}
         {{- end }}
-        {{- with .Values.zeppelin.interpreter.k8sTemplateCM }}
+        {{- with .Values.zeppelin.interpreter.specTemplateConfigMap }}
         - name: zep-int-k8s-template
           configMap:
             name: {{ . }}

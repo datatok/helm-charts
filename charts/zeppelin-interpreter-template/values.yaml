@@ -1,5 +1,5 @@
 image:
-  repository: nginx
+  repository: apache/zeppelin
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: ""
@@ -8,9 +8,13 @@ imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
 
+##
+# https://github.com/apache/zeppelin/blob/master/zeppelin-plugins/launcher/k8s-standard/src/main/java/org/apache/zeppelin/interpreter/launcher/K8sRemoteInterpreterProcess.java#L142
+# <!> not forwarded
+## 
 serviceAccount:
   # Specifies whether a service account should be created
-  create: true
+  create: false
   # Annotations to add to the service account
   annotations: {}
   # The name of the service account to use.
@@ -22,19 +26,19 @@ podAnnotations: {}
 podLabels: {}
 
 # -- see https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
-podSecurityContext: {}
-#  runAsNonRoot: true
-#  runAsUser: 1000
-#  runAsGroup: 1000
-#  fsGroup: 1000
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 1000
+  runAsGroup: 1000
+  fsGroup: 1000
 
 # -- see https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
-securityContext: {}
-#  capabilities:
-#    drop:
-#     - ALL
-#  allowPrivilegeEscalation: false
-#  readOnlyRootFilesystem: true
+securityContext:
+  capabilities:
+    drop:
+    - ALL
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true
 
 # -- extraVolumes Array to add extra volumes
 extraVolumes: []
@@ -64,6 +68,20 @@ resources: {}
   # requests:
   #   cpu: 100m
   #   memory: 128Mi
+
+# -- spark home artifacts
+sparkHomeVolumeClaim: zep-spark-zeppelin-spark-artifacts-buffer
+
+# -- image to run spark workers
+sparkWorkerImage: apache/spark:v3.2.1
+
+sparkConfLogging:
+  # -- log level for root
+  rootLevel: debug
+  # -- log level for thrift server
+  thriftServerLevel: warn
+  # -- log level for repl
+  replLevel: warn
 
 nodeSelector: {}
 

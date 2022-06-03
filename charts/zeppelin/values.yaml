@@ -11,11 +11,11 @@ nameOverride: ""
 fullnameOverride: ""
 
 serviceAccount:
-  create: false
+  create: true
   annotations: {}
-  name: "default"
+  name: ""
   rbac:
-    create: false
+    create: true
 
 podAnnotations: {}
 
@@ -86,13 +86,21 @@ ingress:
   #      - chart-example.local
 
 # -- Resources, dont be greedy for memory, this is java :-) 
-resources: {}
+#resources: {}
 #  limits:
 #    cpu: 1000m
 #    memory: 1024Mi
 #  requests:
 #    cpu: 100m
 #    memory: 256Mi
+
+resources:
+  limits:
+    cpu: 2
+    memory: 2Gi
+  requests:
+    cpu: 1
+    memory: 256Mi
 
 nodeSelector: {}
 
@@ -137,6 +145,10 @@ zeppelin:
     zeppelin.interpreter.output.limit: "102400"
     # -- Interpreter process connect timeout in msec
     zeppelin.interpreter.connect.timeout: "120000"
+    # -- includes some interpreters
+    zeppelin.interpreter.include: spark,md,sh
+    # -- interpreter on k8s: service account
+    zeppelin.k8s.interpreter.serviceAccount: "zep-zeppelin"
   
   server:
     # -- Zeppelin Java process memory options
@@ -144,10 +156,11 @@ zeppelin:
 
   interpreter:
     # -- zeppelin interpreter inside zeppelin container or external
-    mode: embedded 
-    #mode: external
+    #mode: embedded 
+    mode: external
     # -- K8S config-map to define K8S template (must exist)
-    k8sTemplateCM: ""
+    specTemplateConfigMap: "zep-int-zeppelin-interpreter-template"
+    ## -- thrift port (default 10000)
     thriftPort: 10000
 
   interpreters:

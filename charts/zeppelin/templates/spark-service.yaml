@@ -12,7 +12,7 @@ spec:
     protocol: TCP
     name: spark-ui
   selector:
-    {{- if eq .Values.zeppelin.interpreter.mode "local" }}
+    {{- if eq .Values.zeppelin.interpreter.mode "embedded" }}
     {{- include "zeppelin.selectorLabels" . | nindent 4 }}
     {{- else }}
     {{- end }}

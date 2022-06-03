@@ -27,13 +27,20 @@ metadata:
         uid: {{`{{`}}zeppelin.k8s.server.uid{{`}}`}}
     {% endif %}
 spec:
+    restartPolicy: Never
     {{- with .Values.imagePullSecrets }}
     imagePullSecrets:
-        {{- toYaml . | nindent 4 }}
+        {{- toYaml . | nindent 6 }}
     {{- end }}
+    {{- if .Values.serviceAccount.create -}}
     serviceAccountName: {{ include "zeppelin-interpreter-template.serviceAccountName" . }}
+    {{- else }}
+    serviceAccountName: {{`{{`}} zeppelin.k8s.interpreter.serviceAccount {{`}}`}}
+    {{- end }}
+    {{- with .Values.podSecurityContext }}
     securityContext:
-        {{- toYaml .Values.podSecurityContext | nindent 4 }}
+        {{- toYaml . | nindent 6 }}
+    {{- end }}
     {% if zeppelin.k8s.interpreter.group.name == "spark" %}
     automountServiceAccountToken: true
     {% else %}
@@ -69,11 +76,13 @@ spec:
         -   name: ZEPPELIN_RUN_MODE
             value: k8s
         -   name: ZEPPELIN_K8S_SPARK_CONTAINER_IMAGE
-            value: "registry.qwant.ninja/product/analytic/docker/spark:3.2.1-3"
+            value: "{{ .Values.sparkWorkerImage }}"
     {% for key, value in zeppelin.k8s.envs.items() %}
         -   name: {{`{{`}}key{{`}}`}}
             value: {{`{{`}}value{{`}}`}}
     {% endfor %}
+        -   name: SPARK_HOME
+            value: /opt/spark
       {{- with .Values.extraEnvVars }}
       {{- toYaml . | nindent 4 }}
       {{- end }}
@@ -98,7 +107,11 @@ spec:
     {% if zeppelin.k8s.interpreter.group.name == "spark" %}
         volumeMounts:
         -   name: spark-home
-            mountPath: /spark
+            mountPath: /opt/spark
+        -   name: spark-conf
+            mountPath: /opt/spark/conf
+        -   name: spark-ivy
+            mountPath: /opt/spark/.ivy
         -   mountPath: /tmp
             name: tmp
         {{- with .Values.extraVolumeMounts }}
@@ -114,6 +127,12 @@ spec:
     {% endif %}
     volumes:
     -   name: spark-home
+        persistentVolumeClaim:
+            claimName: {{ .Values.sparkHomeVolumeClaim }}
+    -   name: spark-conf
+        configMap:
+            name: {{ include "zeppelin-interpreter-template.fullname" . }}-spark-conf
+    -   name: spark-ivy
         emptyDir: {}
     -   name: tmp
         emptyDir: {}
