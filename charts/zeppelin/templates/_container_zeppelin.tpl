@@ -11,7 +11,7 @@ ports:
 -   name: rpc
     containerPort: {{ .Values.service.rpcPort }}
     protocol: TCP
-{{- if eq .Values.spark.driver.mode "local" }}
+{{- if eq .Values.zeppelin.interpreter.mode "embedded" }}
 -   name: spark-ui
     containerPort: {{ .Values.spark.driver.uiPort }}
     protocol: TCP
@@ -34,6 +34,8 @@ workingDir: /opt/zeppelin
 env:
 -   name: ZEPPELIN_WAR_TEMPDIR
     value: webapps/tmp_dir
+-   name: ZEPPELIN_SEARCH_INDEX_PATH
+    value: /opt/zeppelin/search-index
 -   name: ZEPPELIN_MEM
     value:  {{ .Values.zeppelin.server.jvmMemOptions }}
 -   name: POD_UID
@@ -46,11 +48,17 @@ env:
         fieldRef:
             apiVersion: v1
             fieldPath: metadata.name
+-   name: ZEPPELIN_K8S_SERVICE_NAME
+    value: {{ include "zeppelin.fullname" . }}
 -   name: SERVICE_DOMAIN
     value: {{ .Values.zeppelin.serviceDomain }}
-{{- if eq .Values.spark.driver.mode "local" }}
 -   name: SPARK_HOME
-    value: /spark
+    value: /opt/spark
+{{- with .Values.spark.user }}
+-   name: SPARK_USER
+    value: {{ . }}
+{{- end }}
+{{- if eq .Values.zeppelin.interpreter.mode "embedded" }}
 -   name: SPARK_LOCAL_HOSTNAME
     valueFrom:
         fieldRef:
@@ -65,6 +73,8 @@ env:
 volumeMounts:
 -   name: zep-tmp
     mountPath: /tmp
+-   name: zep-search-index
+    mountPath: /opt/zeppelin/search-index
 -   name: zep-conf
     mountPath: /opt/zeppelin/conf
 -   name: zep-webapps
@@ -73,12 +83,10 @@ volumeMounts:
     mountPath: /opt/zeppelin/notebook
 -   name: zep-logs
     mountPath: /opt/zeppelin/logs
--   name: etc-hack
-    mountPath: /etc/passwd
-    subPath: passwd
-{{- if eq .Values.spark.driver.mode "local" }}
+{{- if eq .Values.zeppelin.interpreter.mode "embedded" }}
 -   name: spark-home
-    mountPath: /spark
+    mountPath: /opt/spark
+    readOnly: true
 -   name: spark-hive-warehouse
     mountPath: /opt/zeppelin/hive-warehouse
 -   name: spark-derby-home
@@ -87,6 +95,10 @@ volumeMounts:
     mountPath: /opt/zeppelin/local-repo
 -   name: zep-ivy
     mountPath: /opt/zeppelin/.ivy2
+{{- end }}
+{{- with .Values.zeppelin.interpreter.specTemplateConfigMap }}
+-   name: zep-int-k8s-template
+    mountPath: /opt/zeppelin/k8s/interpreter
 {{- end }}
 {{- with .Values.extraVolumeMounts }}
 {{ . | toYaml }}

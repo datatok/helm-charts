@@ -11,11 +11,11 @@ nameOverride: ""
 fullnameOverride: ""
 
 serviceAccount:
-  create: false
+  create: true
   annotations: {}
-  name: "default"
+  name: ""
   rbac:
-    create: false
+    create: true
 
 podAnnotations: {}
 
@@ -46,13 +46,13 @@ networkPolicy:
 
 # -- extraVolumes Array to add extra volumes
 extraVolumes: []
-#- name: toto
-#  emptyDir: {}
+# - name: toto
+#   emptyDir: {}
 
 # -- extraVolumeMounts Array to add extra mount
 extraVolumeMounts: []
-#- name: toto
-#  mountPath: /app/toto
+# - name: toto
+#   mountPath: /app/toto
 
 # -- extra env variables for zeppelin container
 extraEnvVars: {}
@@ -85,7 +85,7 @@ ingress:
   #    hosts:
   #      - chart-example.local
 
-# -- Resources, dont be greedy for memory, this is java :-) 
+# -- Resources, dont be greedy for memory, this is java :-)
 resources: {}
 #  limits:
 #    cpu: 1000m
@@ -100,26 +100,29 @@ tolerations: []
 
 affinity: {}
 
-## -- Define volume to store notebooks (emptyDir or pvc)
+# -- Define volume to store notebooks (emptyDir or pvc)
 volumeNotebooks:
   type: emptyDir
 
-#volumeNotebooks:
-#  type: pvc
-#  spec:
-#    accessModes:
-#    - ReadWriteOnce
-#    resources:
-#      requests:
-#        storage: 8Gi
-#    storageClassName: rbd
+# volumeNotebooks:
+#   type: pvc
+#   spec:
+#     accessModes:
+#     - ReadWriteOnce
+#     resources:
+#       requests:
+#         storage: 8Gi
+#     storageClassName: rbd
 
-## -- Define volume to store tmp (emptyDir or pvc)
+# -- Define volume to store tmp (emptyDir or pvc)
 volumeTmp:
   type: emptyDir
 
 zeppelin:
-  config:
+  partOf: data-lake
+
+  # -- fill zeppelin-site.xml
+  properties:
     # -- IP to listen to (usually `0.0.0.0`)
     zeppelin.server.addr: 0.0.0.0
     # -- notebooks storage dir
@@ -129,35 +132,57 @@ zeppelin:
     # -- id of notebook to be displayed in homescreen. ex) 2A94M5J1Z Empty value displays default home screen
     zeppelin.notebook.homescreen: ""
     # -- hide homescreen notebook from list when this value set to true
-    zeppelin.notebook.homescreen.hide: false
+    zeppelin.notebook.homescreen.hide: "false"
     # -- Output message from interpreter exceeding the limit will be truncated
-    zeppelin.interpreter.output.limit: 102400
+    zeppelin.interpreter.output.limit: "102400"
+    # -- Interpreter process connect timeout in msec
+    zeppelin.interpreter.connect.timeout: "120000"
+    # -- includes some interpreters
+    zeppelin.interpreter.include: spark,md,sh
+    # -- interpreter on k8s: service account
+    zeppelin.k8s.interpreter.serviceAccount: "zep-zeppelin"
+
   server:
     # -- Zeppelin Java process memory options
     jvmMemOptions: -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -XX:MaxRAMFraction=1 -Xms512m -Xmx512m -XX:MaxMetaspaceSize=512m
 
   interpreter:
-    enabled: true
+    # -- zeppelin interpreter inside zeppelin container or external
+    # mode: embedded
+    mode: external
+    # -- K8S config-map to define K8S template (must exist)
+    specTemplateConfigMap: "zep-int-zeppelin-interpreter-template"
+    ## -- thrift port (default 10000)
     thriftPort: 10000
+
+  interpreters:
+  - id: 2CYM9BXZH
+    name: sh
+    group: sh
+    properties:
+    - name": "zeppelin.shell.principal"
+      value: ""
+      type: string
 
 logging:
   level: INFO
   syslog: {}
-    #level: INFO
-    #host:
-    #port:
-    #facility:
-    #pattern:
+    # level: INFO
+    # host:
+    # port:
+    # facility:
+    # pattern:
 
 notebookStorage:
   # -- Kind of storage for notebook
-  type: git
+  type: pvc
+  # type: git
   # -- if type is `git` , use this secret to get the repository URL (usually the URL contains an access token)
   repositorySecret: git-data-lake
 
 ##
 # Several ways to run spark notebook code:
-# - driver (aka Zep' interpreter Spark application) can run 
+# - driver (aka Zep' interpreter Spark application) can run
 #   - within zeppelin pod (mode `local`)
 #   - as a separate Deployment (mode `external`, see zeppelin-int Helm chart)
 # - worker(s) can run:
@@ -167,24 +192,15 @@ notebookStorage:
 #   - k8s
 ##
 spark:
+  # -- Spark linux user name (must exist)
+  user: zeppelin
+  # -- Spark driver settings
   driver:
-    # -- driver mode, `local` will run Zeppelin Spark interpreter in the same container, `external` will connect to an interpreter running in another pod
-    mode: local # external
-    # -- if mode is `local`, Spark UI port, usually 4040
+    # -- Spark UI port, usually 4040
     uiPort: 4040
-    # -- if mode is `local`, create an ingress to access to Spark UI
+    # -- Create an ingress to access to Spark UI
     ingress:
       enabled: false
-  executor:
-    # -- `local` will run executor in the same driver java process / cluster / k8s
-    mode: local
-    # -- if mode is not local, full master URL
-    masterURL: ""
-    # -- if mode is not local, deploy mode (client / cluster)
-    deployMode: client
-    # -- how many cores (* to use all CPUs)
-    # -- in `local` mode, this is equivalent to master = local[cores]
-    cores: "*"
   # -- Spark configuration
   config: {}
   #  spark.master: local[*]
@@ -193,14 +209,8 @@ spark:
   #  zeppelin.spark.concurrentSQL: "true"
   #  spark.app.name: zep
   #  zeppelin.spark.enableSupportedVersionCheck: false
-  # -- if driver mode is `local`, set which Spark image (version) to use to copy Spark home
-  homeArtifacts:
-    image:
-      registry: docker.io
-      repository: bitnami/spark
-      pullPolicy: IfNotPresent
-      tag: 2.4.5
-    copyDirectory: /opt/bitnami/spark
+  # -- if driver mode is `embedded`, PVC to use to get spark home artifacts
+  homeArtifactsVolumeClaim: zeppelin-spark-artifacts
 
   # -- download dependencies via an init container to use proxy only for this
   dependencies: {}

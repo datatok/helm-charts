@@ -5,10 +5,6 @@ metadata:
   name: {{ template "zeppelin.fullname" . }}
   labels:
     {{- include "zeppelin.labels" . | nindent 4 }}
-  {{- with .Values.ingress.annotations }}
-  annotations:
-    {{- toYaml . | nindent 4 }}
-  {{- end }}
 spec:
   podSelector:
     matchLabels:
@@ -17,41 +13,21 @@ spec:
   - Ingress
   - Egress
   ingress:
-  # Zeppelin server
+  # Zeppelin server web UI
   - ports:
     - protocol: TCP
       port: {{ .Values.service.port }}
-  {{- if eq .Values.spark.driver.mode "local" }}
+  {{- if eq .Values.zeppelin.interpreter.mode "embedded" }}
   # Spark web UI
   - ports:
     - protocol: TCP
       port: 4040
   {{- end }}
-  {{- if .Values.zeppelin.interpreter.enabled }}
-  # Zeppelin RPC API
-  - ports:
-    - protocol: TCP
-      port: {{ .Values.service.rpcPort }}
-    from:
-    - podSelector:
-        matchLabels:
-          zeppelin.apache.org/{{ template "zeppelin.fullname" . }}-interpreter: "true"
-  {{- end }}
   {{- with .Values.networkPolicy.extraIngressRules }}
   {{- toYaml . | nindent 2 }}
   {{- end }}
-  egress:
-  {{- if .Values.zeppelin.interpreter.enabled }}
-  # Zeppelin interpreter thrift
-  - ports:
-    - protocol: TCP
-      port: {{ .Values.zeppelin.interpreter.thriftPort }}
-    to:
-    - podSelector:
-        matchLabels:
-          zeppelin.apache.org/{{ template "zeppelin.fullname" . }}-interpreter: "true"
-  {{- end }}
   {{- with .Values.networkPolicy.extraEgressRules }}
+  egress:
   {{- toYaml . | nindent 2 }}
   {{- end }}
 {{- end }}

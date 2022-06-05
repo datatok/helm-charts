@@ -1,7 +1,7 @@
 {{/*
 Expand the name of the chart.
 */}}
-{{- define "zeppelin.name" -}}
+{{- define "zeppelin-interpreter-template.name" -}}
 {{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
@@ -10,7 +10,7 @@ Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 If release name contains chart name it will be used as a full name.
 */}}
-{{- define "zeppelin.fullname" -}}
+{{- define "zeppelin-interpreter-template.fullname" -}}
 {{- if .Values.fullnameOverride }}
 {{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" }}
 {{- else }}
@@ -26,45 +26,36 @@ If release name contains chart name it will be used as a full name.
 {{/*
 Create chart name and version as used by the chart label.
 */}}
-{{- define "zeppelin.chart" -}}
+{{- define "zeppelin-interpreter-template.chart" -}}
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
 {{/*
 Common labels
 */}}
-{{- define "zeppelin.labels" -}}
-helm.sh/chart: {{ include "zeppelin.chart" . }}
-{{ include "zeppelin.selectorLabels" . }}
-{{ include "zeppelin.partOfLabels" . }}
+{{- define "zeppelin-interpreter-template.labels" -}}
+helm.sh/chart: {{ include "zeppelin-interpreter-template.chart" . }}
+{{ include "zeppelin-interpreter-template.selectorLabels" . }}
 {{- if .Chart.AppVersion }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
-app.kubernetes.io/component: notebook
 {{- end }}
 
 {{/*
 Selector labels
 */}}
-{{- define "zeppelin.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "zeppelin.name" . }}
+{{- define "zeppelin-interpreter-template.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "zeppelin-interpreter-template.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
-{{- end }}
-
-{{/*
-Stack selector labels
-*/}}
-{{- define "zeppelin.partOfLabels" -}}
-app.kubernetes.io/part-of: {{ .Values.zeppelin.partOf }}
 {{- end }}
 
 {{/*
 Create the name of the service account to use
 */}}
-{{- define "zeppelin.serviceAccountName" -}}
+{{- define "zeppelin-interpreter-template.serviceAccountName" -}}
 {{- if .Values.serviceAccount.create }}
-{{- default (include "zeppelin.fullname" .) .Values.serviceAccount.name }}
+{{- default (include "zeppelin-interpreter-template.fullname" .) .Values.serviceAccount.name }}
 {{- else }}
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}

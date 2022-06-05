@@ -75,42 +75,42 @@ rabbitmq:
 
   # -- Define queues (name is the real queue name)
   queues: []
-  #- name: events
-  #  spec:
-  #    durable: true
+  # - name: events
+  #   spec:
+  #     durable: true
 
   # -- Define exchanges (name is the real exchange name)
   exchanges: []
-  #- name: fanout
-  #  spec:
-  #    type: fanout
-  #    autoDelete: false
-  #    durable: true
+  # - name: fanout
+  #    spec:
+  #      type: fanout
+  #     autoDelete: false
+  #     durable: true
 
   # -- Define bindings (name only for K8S object)
   bindings: []
-  #- name: events
-  #  spec:
-  #    source: fanout
-  #    destination: events
-  #    destinationType: queue
+  # - name: events
+  #    spec:
+  #      source: fanout
+  #     destination: events
+  #     destinationType: queue
 
   # -- Define permissions (name only for K8S object)
   permissions: []
-  #- name: user1
-  #  spec:
-  #    user: "user1"
-  #    permissions:
-  #      write: ".*"
-  #      configure: ".*"
-  #      read: ".*"
+  # - name: user1
+  #    spec:
+  #      user: "user1"
+  #     permissions:
+  #        write: ".*"
+  #       configure: ".*"
+  #       read: ".*"
 
   # -- Define users (name only for K8S object)
   users: []
-  #- name: user1
-  #  spec:
-  #    tags: ["monitoring"]
-  #  secret: toto
+  # - name: user1
+  #    spec:
+  #      tags: ["monitoring"]
+  #   secret: toto
 
 operator:
   # -- namespace where is the operator (used by network-policy)

@@ -1,0 +1,7 @@
+{% for interpreter in interpreters %}
+- id: {{ interpreter.id }}
+  name: {{ interpreter.name }}
+  group: {{ interpreter.group }}
+  properties:
+  
+{% endfor %}

@@ -15,7 +15,7 @@ type: application
 # This is the chart version. This version number should be incremented each time you make changes
 # to the chart and its templates, including the app version.
 # Versions are expected to follow Semantic Versioning (https://semver.org/)
-version: 0.1.7
+version: 0.1.8
 
 # This is the version number of the application being deployed. This version number should be
 # incremented each time you make changes to the application. Versions are not expected to
@@ -23,5 +23,12 @@ version: 0.1.7
 # It is recommended to use it with quotes.
 appVersion: "7.80.0"
 
+home: https://github.com/datatok/helm-data-lake
+
 maintainers:
-- name: Thomas Decaux
+- name: ebuildy
+  email: ebuildy@gmail.com
+
+keywords:
+- elasticsearch
+- provisionning

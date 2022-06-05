@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "zeppelin-spark-artifacts.fullname" . }}-buffer
+  labels:
+    {{- include "zeppelin-spark-artifacts.labels" . | nindent 4 }}
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.sparkVolume.size | default "1Gi" }}
+  storageClassName: {{ .Values.sparkVolume.storageClassName | quote }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "zeppelin-spark-artifacts.fullname" . }}
+  labels:
+    {{- include "zeppelin-spark-artifacts.labels" . | nindent 4 }}
+spec:
+  dataSource:
+    name: {{ include "zeppelin-spark-artifacts.fullname" . }}-buffer
+    kind: PersistentVolumeClaim
+  accessModes:
+  - ReadOnlyMany
+  resources:
+    requests:
+      storage: {{ .Values.sparkVolume.size | default "1Gi" }}
+  storageClassName: {{ .Values.sparkVolume.storageClassName | quote }}
