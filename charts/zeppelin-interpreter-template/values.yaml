@@ -11,7 +11,7 @@ fullnameOverride: ""
 ##
 # https://github.com/apache/zeppelin/blob/master/zeppelin-plugins/launcher/k8s-standard/src/main/java/org/apache/zeppelin/interpreter/launcher/K8sRemoteInterpreterProcess.java#L142
 # <!> not forwarded
-## 
+##
 serviceAccount:
   # Specifies whether a service account should be created
   create: false
@@ -42,13 +42,13 @@ securityContext:
 
 # -- extraVolumes Array to add extra volumes
 extraVolumes: []
-#- name: toto
-#  emptyDir: {}
+# - name: toto
+#   emptyDir: {}
 
 # -- extraVolumeMounts Array to add extra mount
 extraVolumeMounts: []
-#- name: toto
-#  mountPath: /app/toto
+# - name: toto
+#   mountPath: /app/toto
 
 # -- extra env variables for zeppelin container
 extraEnvVars: {}

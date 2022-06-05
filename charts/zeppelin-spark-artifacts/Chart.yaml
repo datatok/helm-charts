@@ -4,3 +4,15 @@ description: Fill a PVC with Apache Spark home artifacts
 type: application
 version: 0.1.0
 appVersion: "3.2.1"
+
+home: https://github.com/datatok/helm-data-lake
+
+maintainers:
+- name: ebuildy
+  email: ebuildy@gmail.com
+
+keywords:
+- zeppelin
+- data-lake
+- big-data
+- spark

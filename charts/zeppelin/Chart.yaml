@@ -7,9 +7,9 @@ type: application
 version: 0.5.0
 appVersion: 0.10.1
 engine: gotpl
-home: https://github.com/ebuildy/helm-data-lake
+home: https://github.com/datatok/helm-data-lake
 maintainers:
-- name: Thomas Decaux
+- name: ebuildy
   email: ebuildy@gmail.com
 keywords:
 - zeppelin

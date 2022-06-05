@@ -7,3 +7,15 @@ type: application
 version: 0.1.0
 
 appVersion: 0.10.1
+
+home: https://github.com/datatok/helm-data-lake
+
+maintainers:
+- name: ebuildy
+  email: ebuildy@gmail.com
+
+keywords:
+- zeppelin
+- data-lake
+- big-data
+- spark
