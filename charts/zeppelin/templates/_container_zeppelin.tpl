@@ -54,6 +54,10 @@ env:
     value: {{ .Values.zeppelin.serviceDomain }}
 -   name: SPARK_HOME
     value: /opt/spark
+{{- with .Values.spark.user }}
+-   name: SPARK_USER
+    value: {{ . }}
+{{- end }}
 {{- if eq .Values.zeppelin.interpreter.mode "embedded" }}
 -   name: SPARK_LOCAL_HOSTNAME
     valueFrom:
@@ -79,10 +83,6 @@ volumeMounts:
     mountPath: /opt/zeppelin/notebook
 -   name: zep-logs
     mountPath: /opt/zeppelin/logs
--   name: etc-hack
-    mountPath: /etc/passwd
-    subPath: passwd
-    readOnly: true
 {{- if eq .Values.zeppelin.interpreter.mode "embedded" }}
 -   name: spark-home
     mountPath: /opt/spark

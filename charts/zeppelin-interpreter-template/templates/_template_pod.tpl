@@ -32,7 +32,7 @@ spec:
     imagePullSecrets:
         {{- toYaml . | nindent 6 }}
     {{- end }}
-    {{- if .Values.serviceAccount.create -}}
+    {{- if or .Values.serviceAccount.create .Values.serviceAccount.name }}
     serviceAccountName: {{ include "zeppelin-interpreter-template.serviceAccountName" . }}
     {{- else }}
     serviceAccountName: {{`{{`}} zeppelin.k8s.interpreter.serviceAccount {{`}}`}}

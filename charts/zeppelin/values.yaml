@@ -86,21 +86,13 @@ ingress:
   #      - chart-example.local
 
 # -- Resources, dont be greedy for memory, this is java :-) 
-#resources: {}
+resources: {}
 #  limits:
 #    cpu: 1000m
 #    memory: 1024Mi
 #  requests:
 #    cpu: 100m
 #    memory: 256Mi
-
-resources:
-  limits:
-    cpu: 2
-    memory: 2Gi
-  requests:
-    cpu: 1
-    memory: 256Mi
 
 nodeSelector: {}
 
@@ -202,6 +194,9 @@ notebookStorage:
 #   - k8s
 ##
 spark:
+  # -- Spark linux user name (must exist)
+  user: zeppelin
+  # -- Spark driver settings
   driver:
     # -- Spark UI port, usually 4040
     uiPort: 4040
@@ -216,8 +211,8 @@ spark:
   #  zeppelin.spark.concurrentSQL: "true"
   #  spark.app.name: zep
   #  zeppelin.spark.enableSupportedVersionCheck: false
-  # -- if driver mode is `local`, set which Spark image (version) to use to copy Spark home
-  homeArtifactsVolumeClaim: zep-spark-zeppelin-spark-artifacts-buffer
+  # -- if driver mode is `embedded`, PVC to use to get spark home artifacts
+  homeArtifactsVolumeClaim: zeppelin-spark-artifacts
 
   # -- download dependencies via an init container to use proxy only for this
   dependencies: {}

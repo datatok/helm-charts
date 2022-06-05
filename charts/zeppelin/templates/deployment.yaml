@@ -81,8 +81,6 @@ spec:
           {{- end }}
         - name: zep-logs
           emptyDir: {}
-        - name: etc-hack
-          emptyDir: {}
         {{- if eq .Values.zeppelin.interpreter.mode "embedded" }}
         - name: spark-home
           persistentVolumeClaim:
@@ -106,7 +104,6 @@ spec:
         {{- end }}
       initContainers:
       - {{- include "zeppelin.container.config" . | nindent 8 }}
-      - {{- include "zeppelin.container.fix-user" . | nindent 8 }}
       {{- if eq .Values.notebookStorage.type "git" }}
       - {{- include "zeppelin.container.git-init" . | nindent 8 }}
       {{- end }}
