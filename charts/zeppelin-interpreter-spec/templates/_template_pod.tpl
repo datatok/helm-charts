@@ -122,11 +122,11 @@ spec:
     {{- with .Values.extraVolumeMounts }}
     {{- toYaml . | nindent 4 }}
     {{- end }}
-  ports:
-  -   name: http
+    ports:
+    - name: http
       containerPort: 8080
       protocol: TCP
-  -   name: spark-driver
+    - name: spark-driver
       containerPort: 4040
       protocol: TCP
   {% endif %}

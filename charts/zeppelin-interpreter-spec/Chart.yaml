@@ -4,7 +4,7 @@ description: Generate config map to hold spec template to run zeppelin interpret
 
 type: application
 
-version: 0.1.1
+version: 0.1.2
 
 appVersion: 0.10.1
 
