@@ -309,6 +309,26 @@ entries:
     urls:
     - https://github.com/ebuildy/helm-data-lake/releases/download/spark-6.0.1/spark-6.0.1.tgz
     version: 6.0.1
+  spark-artifacts:
+  - apiVersion: v2
+    appVersion: 3.2.1
+    created: "2022-06-06T10:19:09.953696426Z"
+    description: Fill a PVC with Apache Spark home artifacts
+    digest: 2a02c01813c1f1ba8983ae017780d7eaad8175e49fd3faae5e80dc67a0094dfa
+    home: https://github.com/datatok/helm-data-lake
+    keywords:
+    - zeppelin
+    - data-lake
+    - big-data
+    - spark
+    maintainers:
+    - email: ebuildy@gmail.com
+      name: ebuildy
+    name: spark-artifacts
+    type: application
+    urls:
+    - https://github.com/datatok/helm-charts/releases/download/spark-artifacts-0.1.1/spark-artifacts-0.1.1.tgz
+    version: 0.1.1
   spark-master:
   - apiVersion: v2
     appVersion: 2.4.5
@@ -729,4 +749,4 @@ entries:
     urls:
     - https://github.com/datatok/helm-charts/releases/download/zeppelin-spark-artifacts-0.1.0/zeppelin-spark-artifacts-0.1.0.tgz
     version: 0.1.0
-generated: "2022-06-06T08:52:20.753859548Z"
+generated: "2022-06-06T10:19:09.953972543Z"
