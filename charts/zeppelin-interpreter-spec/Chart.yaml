@@ -1,10 +1,10 @@
 apiVersion: v2
-name: zeppelin-interpreter-template
+name: zeppelin-interpreter-spec
 description: Generate config map to hold spec template to run zeppelin interpreter on kubernetes
 
 type: application
 
-version: 0.1.0
+version: 0.1.1
 
 appVersion: 0.10.1
 
