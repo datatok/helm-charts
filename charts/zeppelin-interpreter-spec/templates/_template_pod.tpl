@@ -110,7 +110,17 @@ spec:
     {% if zeppelin.k8s.interpreter.group.name == "spark" %}
     volumeMounts:
     - name: spark-home
-      mountPath: /opt/spark
+      mountPath: /opt/spark/bin
+      subPath: bin
+      readOnly: true
+    - name: spark-home
+      mountPath: /opt/spark/jars
+      subPath: jars
+      readOnly: true
+    - name: spark-home
+      mountPath: /opt/spark/sbin
+      subPath: sbin
+      readOnly: true
     - name: spark-conf
       mountPath: /opt/spark/conf
     - name: spark-ivy
