@@ -1,6 +1,9 @@
 nameOverride: ""
 fullnameOverride: ""
 
+image:
+  pullPolicy: IfNotPresent
+
 ##
 # https://github.com/apache/zeppelin/blob/master/zeppelin-plugins/launcher/k8s-standard/src/main/java/org/apache/zeppelin/interpreter/launcher/K8sRemoteInterpreterProcess.java#L142
 # <!> not forwarded
