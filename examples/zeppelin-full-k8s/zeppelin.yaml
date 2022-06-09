@@ -1,0 +1,83 @@
+resources:
+  requests:
+    cpu: 1
+    memory: 512Mi
+  limits:
+    cpu: 2
+    memory: 800Mi
+
+volumeNotebooks:
+  type: pvc
+  spec:
+    accessModes:
+    - ReadWriteOnce
+    resources:
+      requests:
+        storage: 32Mi
+    storageClassName: standard
+
+volumeConf:
+  type: pvc
+  spec:
+    accessModes:
+    - ReadWriteOnce
+    resources:
+      requests:
+        storage: 32Mi
+    storageClassName: standard
+
+spark:
+  config:
+    spark.app.name: zep
+
+    # Deployment
+    spark.master: k8s://https://kubernetes.default.svc
+    spark.submit.deployMode: client
+
+    # K8S
+    spark.kubernetes.namespace: default
+
+    spark.kubernetes.authenticate.driver.serviceAccountName: zep-zeppelin
+    spark.kubernetes.driver.podTemplateFile: /opt/spark/k8s/executor-pod-template/pod.yaml
+    spark.kubernetes.driver.limit.cores: 1
+
+    spark.kubernetes.executor.podTemplateFile: /opt/spark/k8s/executor-pod-template/pod.yaml
+    spark.kubernetes.executor.limit.cores: 1
+
+    spark.kubernetes.container.image: spark:latest
+    spark.kubernetes.file.upload.path: hdfs://10.100.42.2:8020/tmp/zep-spark-k8s/
+
+    spark.kubernetes.authenticate.submission.clientKeyFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+    spark.kubernetes.driver.deleteOnTermination: false
+    spark.kubernetes.executor.podNamePrefix: zep
+    
+    # Driver
+    spark.driver.cores: 1
+    spark.driver.memory: 500M
+    #spark.driver.extraJavaOptions: -Dhttp.proxyHost=10.100.9.1 -Dhttp.proxyPort=2001
+    #  -Dhttps.proxyHost=10.100.9.1 -Dhttps.proxyPort=2001 -Dhttp.noProxy=10.100.*
+    
+    # Executor
+    spark.executor.cores: 1
+    spark.executor.memory: 500M
+
+    # FS
+    spark.hadoop.dfs.nameservices: 10.100.42.2:8020
+    spark.hadoop.fs.defaultFS: hdfs://10.100.42.2:8020
+    spark.hadoop.hive.metastore.uris: thrift://10.100.42.1:9083
+    spark.hive.metastore.uris: thrift://10.100.42.1:9083
+    #spark.jars.packages: org.elasticsearch:elasticsearch-spark-30_2.12:7.17.1
+    
+    # Config
+    spark.memory.fraction: 0.1
+    spark.sql.shuffle.partitions: 10
+    spark.eventLog.enabled: 'false'
+
+  int:
+    zeppelin.spark.concurrentSQL: 'true'
+    zeppelin.spark.enableSupportedVersionCheck: 'false'
+    zeppelin.interpreter.connect.timeout: 600000
+
+    zeppelin.k8s.interpreter.serviceAccount: workflow
+    zeppelin.k8s.interpreter.cores: 2
+    zeppelin.k8s.interpreter.memory: 4Gi

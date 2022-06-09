@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: spark-spec-explore
+spec:
+  terminationGracePeriodSeconds: 1
+  containers:
+  - name: alpine
+    image: alpine:latest
+    command: ['sleep', 'infinity']
+    volumeMounts:
+    - name: mypvc
+      mountPath: /data
+  volumes:
+  - name: mypvc
+    persistentVolumeClaim:
+      claimName: zep-spark-spark-artifacts-buffer

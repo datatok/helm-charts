@@ -50,8 +50,8 @@ extraVolumeMounts: []
 volumeSparkIvy: |-
   emptyDir: {}
 
-# -- spec for spark work volume (string template)
-volumeSparkWork: |-
+# -- spec for zeppelin work volume, also for spark driver (string template)
+volumeZeppelinWork: |-
   emptyDir: {}
 
 # -- spec for tmp volume (string template)
@@ -78,18 +78,16 @@ resources: {}
   #   memory: 128Mi
 
 # -- spark home artifacts
-sparkHomeVolumeClaim: zep-spark-zeppelin-spark-artifacts-buffer
+sparkHomeVolumeClaim: zep-spark-spark-artifacts
 
 # -- image to run spark workers
 sparkWorkerImage: apache/spark:v3.2.1
 
-sparkConfLogging:
-  # -- log level for root
-  rootLevel: debug
-  # -- log level for thrift server
-  thriftServerLevel: warn
-  # -- log level for repl
-  replLevel: warn
+# -- config-map to use to define spark executor pod template (must exist)
+sparkExecutorPodTemplateConfigMap: ""
+
+# -- config-map to define spark conf files (logging, spark-defaults etc...)
+sparkConfConfigMap: ""
 
 nodeSelector: {}
 

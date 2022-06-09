@@ -56,7 +56,7 @@ spec:
         {{- toYaml .Values.securityContext | nindent 12 }}
     image: {{`{{`}}zeppelin.k8s.interpreter.container.image{{`}}`}}
     imagePullPolicy: {{ .Values.image.pullPolicy }}
-    workingDir: /opt/spark/work
+    workingDir: /opt/zeppelin/work
     args:
     - "$(ZEPPELIN_HOME)/bin/interpreter.sh"
     - "-d"
@@ -121,14 +121,20 @@ spec:
       mountPath: /opt/spark/sbin
       subPath: sbin
       readOnly: true
+    {{- if .Values.sparkConfConfigMap }}
     - name: spark-conf
       mountPath: /opt/spark/conf
+    {{- end }}
     - name: spark-ivy
       mountPath: /opt/spark/.ivy
-    - name: spark-work
-      mountPath: /opt/spark/work
+    - name: zeppelin-work
+      mountPath: /opt/zeppelin/work
     - name: tmp
       mountPath: /tmp
+    {{- if .Values.sparkExecutorPodTemplateConfigMap }}
+    - name: spark-executor-pod-template
+      mountPath: /opt/spark/k8s/executor-pod-template
+    {{- end }}
     {{- with .Values.extraVolumeMounts }}
     {{- toYaml . | nindent 4 }}
     {{- end }}
@@ -144,15 +150,22 @@ spec:
   - name: spark-home
     persistentVolumeClaim:
       claimName: {{ .Values.sparkHomeVolumeClaim }}
+  {{- with .Values.sparkConfConfigMap }}
   - name: spark-conf
     configMap:
-       name: {{ include "zeppelin-interpreter-template.fullname" . }}-spark-conf
+       name: {{ . }}
+  {{- end }}
   - name: spark-ivy
     {{- .Values.volumeSparkIvy | nindent 4 }}
-  - name: spark-work
-    {{- .Values.volumeSparkWork | nindent 4 }}
+  - name: zeppelin-work
+    {{- .Values.volumeZeppelinWork | nindent 4 }}
   - name: tmp
     {{- .Values.volumeTmp | nindent 4 }}
+  {{- if .Values.sparkExecutorPodTemplateConfigMap }}
+  - name: spark-executor-pod-template
+    configMap:
+      name: {{ .Values.sparkExecutorPodTemplateConfigMap }}
+  {{- end }}
   {{- with .Values.extraVolumes }}
   {{- toYaml . | nindent 2 }}
   {{- end }}

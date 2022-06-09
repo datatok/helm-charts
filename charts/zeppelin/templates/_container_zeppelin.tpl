@@ -50,6 +50,8 @@ env:
             fieldPath: metadata.name
 -   name: ZEPPELIN_K8S_SERVICE_NAME
     value: {{ include "zeppelin.fullname" . }}
+-   name: ZEPPELIN_K8S_CONTAINER_IMAGE
+    value: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
 -   name: SERVICE_DOMAIN
     value: {{ .Values.zeppelin.serviceDomain }}
 -   name: SPARK_HOME
@@ -77,6 +79,9 @@ volumeMounts:
     mountPath: /opt/zeppelin/search-index
 -   name: zep-conf
     mountPath: /opt/zeppelin/conf
+-   name: interpreters-settings
+    mountPath: /opt/zeppelin/interpreter/spark/interpreter-setting.json
+    subPath: spark.json
 -   name: zep-webapps
     mountPath: /opt/zeppelin/webapps
 -   name: zep-notebooks
