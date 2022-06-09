@@ -1,0 +1,9 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: {{ include "spark-spec.fullname" . }}-pod-template
+  labels:
+    {{- include "spark-spec.labels" . | nindent 4 }}
+data:
+  pod.yaml: |
+    {{- include "spark-spec.pod" . | nindent 4 }}

@@ -25,7 +25,4 @@ volumeMounts:
 -   name: site-config
     mountPath: /opt/zeppelin/conf/zeppelin-site.xml
     subPath: zeppelin-site.xml
--   name: interpreter-config
-    mountPath: /opt/zeppelin/conf/interpreter.json
-    subPath: interpreter.json
 {{- end }}

@@ -1,0 +1,9 @@
+{{- if eq .Values.volumeConf.type "pvc" }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "zeppelin.fullname" . }}-conf
+spec:
+  {{- toYaml .Values.volumeConf.spec | nindent 2 }}
+{{- end }}

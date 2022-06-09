@@ -49,12 +49,9 @@ spec:
             items:
             - key: zeppelin-site.xml
               path: zeppelin-site.xml
-        - name: interpreter-config
+        - name: interpreters-settings
           configMap:
             name: {{ include "zeppelin.fullname" . }}-interpreter
-            items:
-            - key: interpreter.json
-              path: interpreter.json
         - name: config-volume
           emptyDir: {}
         - name: spark-config-volume
@@ -69,7 +66,12 @@ spec:
             claimName: {{ include "zeppelin.fullname" . }}-tmp
           {{- end }}
         - name: zep-conf
+          {{- if eq .Values.volumeConf.type "emptyDir" }}
           emptyDir: {}
+          {{- else }}
+          persistentVolumeClaim:
+            claimName: {{ include "zeppelin.fullname" . }}-conf
+          {{- end }}
         - name: zep-webapps
           emptyDir: {}
         - name: zep-notebooks

@@ -1,9 +1,9 @@
 kind: ConfigMap
 apiVersion: v1
 metadata:
-  name: {{ include "zeppelin-interpreter-template.fullname" . }}-spark-conf
+  name: {{ include "spark-spec.fullname" . }}-spark-conf
   labels:
-    {{- include "zeppelin-interpreter-template.labels" . | nindent 4 }}
+    {{- include "spark-spec.labels" . | nindent 4 }}
 data:
   log4j.properties: |
     rootLogger.level = {{ .Values.sparkConfLogging.rootLevel }}
@@ -50,3 +50,4 @@ data:
 
   spark-defaults.conf: |
     spark.jars.ivy=/opt/spark/.ivy
+    {{- .Values.sparkExtraDefaults | nindent 4 }}
