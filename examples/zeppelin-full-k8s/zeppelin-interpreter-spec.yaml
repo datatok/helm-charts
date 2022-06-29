@@ -2,7 +2,9 @@ sparkExecutorPodTemplateConfigMap: spark-spec-pod-template
 
 sparkConfConfigMap: spark-spec-spark-conf
 
-sparkHomeVolumeClaim: zep-spark-spark-artifacts-buffer
+sparkHomePVC: zep-spark-spark-artifacts-buffer
 
 serviceAccount:
     name: zep-zeppelin
+
+zeppelinConfigPVC: zep-zeppelin-conf

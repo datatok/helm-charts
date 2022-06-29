@@ -10,3 +10,5 @@ securityContext:
     - ALL
   allowPrivilegeEscalation: false
   readOnlyRootFilesystem: true
+
+sparkConfConfigMap: zep-spark-conf
