@@ -135,15 +135,15 @@ zeppelin:
     # -- Context Path of the Web Application (usually `/`)
     zeppelin.server.context.path: /
     # -- id of notebook to be displayed in homescreen. ex) 2A94M5J1Z Empty value displays default home screen
-    zeppelin.notebook.homescreen: ""
+    zeppelin.notebook.homescreen: "2H6ZG3C3D"
     # -- hide homescreen notebook from list when this value set to true
     zeppelin.notebook.homescreen.hide: "false"
     # -- Output message from interpreter exceeding the limit will be truncated
     zeppelin.interpreter.output.limit: "102400"
     # -- Interpreter process connect timeout in msec
-    zeppelin.interpreter.connect.timeout: "120000"
+    zeppelin.interpreter.connect.timeout: "1200000"
     # -- includes some interpreters
-    zeppelin.interpreter.include: spark,md,sh
+    zeppelin.interpreter.include: spark
 
   server:
     # -- Zeppelin Java process memory options
@@ -203,8 +203,51 @@ spark:
   #  spark.app.name: zep
   # -- Spark Zeppelin interpreter properties
   interpreterProperties:
-    enableSupportedVersionCheck: false
-    useHiveContext: false
+    spark.webui.yarn.useProxy:
+      description: whether use yarn proxy url as spark weburl, e.g. http://localhost:8088/proxy/application_1583396598068_0004
+      type: checkbox
+      value: false
+    zeppelin.spark.deprecatedMsg.show:
+      description: Whether show the spark deprecated message, spark 2.2 and before are
+        deprecated. Zeppelin will display warning message by default
+      type: checkbox
+      value: true
+    zeppelin.spark.enableSupportedVersionCheck:
+      description: Whether checking supported spark version. Developer only setting, not
+        for production use
+      type: checkbox
+      value: true
+    zeppelin.spark.maxResult:
+      description: Max number of Spark SQL result to display.
+      type: number
+      value: '1000'
+    zeppelin.spark.printREPLOutput:
+      description: Print scala REPL output
+      type: checkbox
+      value: true
+    zeppelin.spark.run.asLoginUser:
+      description: Whether run spark job as the zeppelin login user, it is only applied
+        when running spark job in hadoop yarn cluster and shiro is enabled
+      type: checkbox
+      value: true
+    zeppelin.spark.scala.color:
+      description: Whether enable color output of spark scala interpreter
+      type: checkbox
+      value: true
+    zeppelin.spark.ui.hidden:
+      description: Whether hide spark ui in zeppelin ui
+      type: checkbox
+      value: false
+    zeppelin.spark.uiWebUrl:
+      description: 'Override Spark UI default URL. In Kubernetes mode, value can be Jinja
+        template string with 3 template variables ''PORT'', ''SERVICE_NAME'' and ''SERVICE_DOMAIN''. '
+      type: string
+      value: ''
+    zeppelin.spark.useHiveContext:
+      description: Use HiveContext instead of SQLContext if it is true. Enable hive for
+        SparkSession.
+      type: checkbox
+      value: true
   # zeppelin.spark.concurrentSQL: "true"
   # -- if driver mode is `embedded`, PVC to use to get spark home artifacts
   homeArtifactsVolumeClaim: zeppelin-spark-artifacts

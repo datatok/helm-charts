@@ -10,82 +10,24 @@
         "{{ $k }}": {
             "propertyName": "{{$k}}",
             "defaultValue": "{{$v}}",
-            "type": "string"
+            "type": "string",
+            "description" : "From spark.confg"
         },
         {{- end }}
-        "zeppelin.spark.useHiveContext": {
-          "envName": null,
-          "propertyName": "zeppelin.spark.useHiveContext",
-          "defaultValue": {{- default .Values.spark.interpreterProperties.useHiveContext true }},
-          "description": "Use HiveContext instead of SQLContext if it is true. Enable hive for SparkSession.",
-          "type": "checkbox"
+        {{- range $k, $v := .Values.spark.interpreterProperties }}
+        "{{ $k }}": {
+            "propertyName": "{{$k}}",
+            "defaultValue": "{{$v.value}}",
+            "type": "{{$v.type}}",
+            "description" : "{{$v.description}} (from spark.interpreterProperties)"
         },
-  
-        "zeppelin.spark.run.asLoginUser": {
-          "envName": null,
-          "propertyName": "zeppelin.spark.run.asLoginUser",
-          "defaultValue": true,
-          "description": "Whether run spark job as the zeppelin login user, it is only applied when running spark job in hadoop yarn cluster and shiro is enabled",
-          "type": "checkbox"
-        },
-    
-        "zeppelin.spark.printREPLOutput": {
-          "envName": null,
-          "propertyName": "zeppelin.spark.printREPLOutput",
-          "defaultValue": true,
-          "description": "Print scala REPL output",
-          "type": "checkbox"
-        },
-        "zeppelin.spark.maxResult": {
-          "envName": null,
-          "propertyName": "zeppelin.spark.maxResult",
-          "defaultValue": "1000",
-          "description": "Max number of Spark SQL result to display.",
-          "type": "number"
-        },
-  
-        "zeppelin.spark.enableSupportedVersionCheck": {
-          "envName": null,
-          "propertyName": "zeppelin.spark.enableSupportedVersionCheck",
-          "defaultValue": true,
-          "description": "Whether checking supported spark version. Developer only setting, not for production use",
-          "type": "checkbox"
-        },
-        "zeppelin.spark.uiWebUrl": {
-          "envName": null,
-          "propertyName": "zeppelin.spark.uiWebUrl",
-          "defaultValue": "",
-          "description": "Override Spark UI default URL. In Kubernetes mode, value can be Jinja template string with 3 template variables 'PORT', 'SERVICE_NAME' and 'SERVICE_DOMAIN'. ",
-          "type": "string"
-        },
-        "zeppelin.spark.ui.hidden": {
-          "envName": null,
-          "propertyName": "zeppelin.spark.ui.hidden",
-          "defaultValue": false,
-          "description": "Whether hide spark ui in zeppelin ui",
-          "type": "checkbox"
-        },
-        "spark.webui.yarn.useProxy": {
-          "envName": null,
+        {{- end }}
+        "" : {
           "propertyName": "",
-          "defaultValue": false,
-          "description": "whether use yarn proxy url as spark weburl, e.g. http://localhost:8088/proxy/application_1583396598068_0004",
-          "type": "checkbox"
-        },
-        "zeppelin.spark.scala.color": {
-          "envName": null,
-          "propertyName": "zeppelin.spark.scala.color",
-          "defaultValue": true,
-          "description": "Whether enable color output of spark scala interpreter",
-          "type": "checkbox"
-        },
-        "zeppelin.spark.deprecatedMsg.show": {
-          "envName": null,
-          "propertyName": "zeppelin.spark.deprecatedMsg.show",
-          "defaultValue": true,
-          "description": "Whether show the spark deprecated message, spark 2.2 and before are deprecated. Zeppelin will display warning message by default",
-          "type": "checkbox"
-        }
+          "defaultValue": "",
+          "type": "string",
+          "description" : "dummy"
+      }
     }
   },
   {
