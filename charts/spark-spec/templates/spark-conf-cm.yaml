@@ -1,3 +1,4 @@
+{{- if .Values.sparkConf.enabled -}}
 kind: ConfigMap
 apiVersion: v1
 metadata:
@@ -6,7 +7,7 @@ metadata:
     {{- include "spark-spec.labels" . | nindent 4 }}
 data:
   log4j.properties: |
-    rootLogger.level = {{ .Values.sparkConfLogging.rootLevel }}
+    rootLogger.level = {{ .Values.sparkConf.logging.rootLevel }}
     rootLogger.appenderRef.stdout.ref = console
 
     appender.console.type = Console
@@ -16,10 +17,10 @@ data:
     appender.console.layout.pattern = %d{yy/MM/dd HH:mm:ss} %p %c{1}: %m%n%ex
 
     logger.repl.name = org.apache.spark.repl.Main
-    logger.repl.level = {{ .Values.sparkConfLogging.replLevel }}
+    logger.repl.level = {{ .Values.sparkConf.logging.replLevel }}
 
     logger.thriftserver.name = org.apache.spark.sql.hive.thriftserver.SparkSQLCLIDriver
-    logger.thriftserver.level = {{ .Values.sparkConfLogging.thriftServerLevel }}
+    logger.thriftserver.level = {{ .Values.sparkConf.logging.thriftServerLevel }}
 
     # Settings to quiet third party logs that are too verbose
     logger.jetty1.name = org.sparkproject.jetty
@@ -50,4 +51,5 @@ data:
 
   spark-defaults.conf: |
     spark.jars.ivy=/opt/spark/.ivy
-    {{- .Values.sparkExtraDefaults | nindent 4 }}
+    {{- .Values.sparkConf.defaults | nindent 4 }}
+{{- end }}
