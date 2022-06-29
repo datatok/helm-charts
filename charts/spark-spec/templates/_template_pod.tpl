@@ -1,5 +1,5 @@
 {{- define "spark-spec.pod" }}
-apiVersion: apps/v1
+apiVersion: v1
 kind: Pod
 metadata:
   {{- with .Values.podAnnotations }}
@@ -16,13 +16,17 @@ spec:
   imagePullSecrets:
     {{- toYaml . | nindent 4 }}
   {{- end }}
+  {{- with .Values.podSecurityContext }}
   securityContext:
-    {{- toYaml .Values.podSecurityContext | nindent 4 }}
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
   containers:
     - name: spark
       workingDir: /opt/spark/work
+      {{- with .Values.securityContext }}
       securityContext:
-        {{- toYaml .Values.securityContext | nindent 8 }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       imagePullPolicy: {{ .Values.image.pullPolicy }}
       ports:
         - name: http

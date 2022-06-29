@@ -1,14 +1,13 @@
 image:
-  repository: nginx
   pullPolicy: IfNotPresent
-  # Overrides the image tag whose default is the chart appVersion.
-  tag: ""
 
 imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
 
 podAnnotations: {}
+
+podLabels: {}
 
 podSecurityContext: {}
   # fsGroup: 2000
@@ -52,31 +51,21 @@ tolerations: []
 
 affinity: {}
 
-sparkConfLogging:
-  # -- log level for root
-  rootLevel: debug
-  # -- log level for thrift server
-  thriftServerLevel: warn
-  # -- log level for repl
-  replLevel: warn
+# -- to create a config-map with spark conf, to share with spark driver
+sparkConf:
+  # -- enable or not config-map with spark conf
+  enabled: false
 
-sparkExtraDefaults: |
-  spark.master: k8s://https://kubernetes.default.svc
-  spark.submit.deployMode: client
+  # -- logging stuff
+  logging:
+    # -- log level for root
+    rootLevel: info
+    # -- log level for thrift server
+    thriftServerLevel: warn
+    # -- log level for repl
+    replLevel: warn
 
-  # K8S
-  spark.kubernetes.namespace: dev-steam
-
-  spark.kubernetes.authenticate.driver.serviceAccountName: zep-zeppelin
-  spark.kubernetes.driver.podTemplateFile: /opt/spark/k8s/executor-pod-template/pod.yaml
-  spark.kubernetes.driver.limit.cores: 1
-
-  spark.kubernetes.executor.podTemplateFile: /opt/spark/k8s/executor-pod-template/pod.yaml
-  spark.kubernetes.executor.limit.cores: 2
-
-  spark.kubernetes.container.image: spark:latest
-  spark.kubernetes.file.upload.path: hdfs://10.100.42.2:8020/tmp/zep-spark-k8s/
-
-  spark.kubernetes.authenticate.submission.clientKeyFile: /var/run/secrets/kubernetes.io/serviceaccount/token
-  spark.kubernetes.driver.deleteOnTermination: false
-  spark.kubernetes.executor.podNamePrefix: zep
+  # -- edit spark-defaults.conf
+  defaults: |
+    spark.master: k8s://https://kubernetes.default.svc
+    spark.submit.deployMode: client
