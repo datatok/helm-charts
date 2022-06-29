@@ -312,6 +312,25 @@ entries:
   spark-artifacts:
   - apiVersion: v2
     appVersion: 3.2.1
+    created: "2022-06-29T17:15:50.496300433Z"
+    description: Fill a PVC with Apache Spark home artifacts
+    digest: 8d9725e97ea66583a8d58afdbcccadf7783b1312ff89d2c6111b908721303bfd
+    home: https://github.com/datatok/helm-data-lake
+    keywords:
+    - zeppelin
+    - data-lake
+    - big-data
+    - spark
+    maintainers:
+    - email: ebuildy@gmail.com
+      name: ebuildy
+    name: spark-artifacts
+    type: application
+    urls:
+    - https://github.com/datatok/helm-charts/releases/download/spark-artifacts-0.1.2/spark-artifacts-0.1.2.tgz
+    version: 0.1.2
+  - apiVersion: v2
+    appVersion: 3.2.1
     created: "2022-06-06T10:19:09.953696426Z"
     description: Fill a PVC with Apache Spark home artifacts
     digest: 2a02c01813c1f1ba8983ae017780d7eaad8175e49fd3faae5e80dc67a0094dfa
@@ -362,6 +381,23 @@ entries:
     urls:
     - https://github.com/ebuildy/helm-data-lake/releases/download/spark-master-0.1.0/spark-master-0.1.0.tgz
     version: 0.1.0
+  spark-spec:
+  - apiVersion: v2
+    appVersion: 3.3.0
+    created: "2022-06-29T17:15:50.632275452Z"
+    description: 'Generate a configMap with pod template spec to run Spark on kubernetes. '
+    digest: 4af677dc9fe4df4a7d04c19f070e6173fbf7d36306af242630056dc40d651f3f
+    home: https://github.com/datatok/helm-charts
+    keywords:
+    - spark
+    maintainers:
+    - email: ebuildy@gmail.com
+      name: ebuildy
+    name: spark-spec
+    type: application
+    urls:
+    - https://github.com/datatok/helm-charts/releases/download/spark-spec-0.2.0/spark-spec-0.2.0.tgz
+    version: 0.2.0
   spark-worker:
   - apiVersion: v2
     appVersion: 2.4.5
@@ -384,6 +420,27 @@ entries:
     - https://github.com/ebuildy/helm-data-lake/releases/download/spark-worker-0.1.0/spark-worker-0.1.0.tgz
     version: 0.1.0
   zeppelin:
+  - annotations:
+      category: Analytics
+    apiVersion: v2
+    appVersion: 0.10.1
+    created: "2022-06-29T17:15:50.76334113Z"
+    description: Apache Zeppelin with Apache Spark
+    digest: 859cc93d08f914a89d439b5dbffca588f50e6f1c93dc822868a3ab250c27fe9c
+    home: https://github.com/datatok/helm-data-lake
+    keywords:
+    - zeppelin
+    - data-lake
+    - big-data
+    - spark
+    maintainers:
+    - email: ebuildy@gmail.com
+      name: ebuildy
+    name: zeppelin
+    type: application
+    urls:
+    - https://github.com/datatok/helm-charts/releases/download/zeppelin-0.5.1/zeppelin-0.5.1.tgz
+    version: 0.5.1
   - annotations:
       category: Analytics
     apiVersion: v2
@@ -670,6 +727,26 @@ entries:
   zeppelin-interpreter-spec:
   - apiVersion: v2
     appVersion: 0.10.1
+    created: "2022-06-29T17:15:50.910035458Z"
+    description: Generate config map to hold spec template to run zeppelin interpreter
+      on kubernetes
+    digest: 8973c29261aefaaddfc278e32fa484acbf1631dfb371023d67132311a278a505
+    home: https://github.com/datatok/helm-charts
+    keywords:
+    - zeppelin
+    - data-lake
+    - big-data
+    - spark
+    maintainers:
+    - email: ebuildy@gmail.com
+      name: ebuildy
+    name: zeppelin-interpreter-spec
+    type: application
+    urls:
+    - https://github.com/datatok/helm-charts/releases/download/zeppelin-interpreter-spec-0.1.5/zeppelin-interpreter-spec-0.1.5.tgz
+    version: 0.1.5
+  - apiVersion: v2
+    appVersion: 0.10.1
     created: "2022-06-06T10:38:48.208214616Z"
     description: Generate config map to hold spec template to run zeppelin interpreter
       on kubernetes
@@ -769,4 +846,4 @@ entries:
     urls:
     - https://github.com/datatok/helm-charts/releases/download/zeppelin-spark-artifacts-0.1.0/zeppelin-spark-artifacts-0.1.0.tgz
     version: 0.1.0
-generated: "2022-06-06T10:38:48.208370819Z"
+generated: "2022-06-29T17:15:50.910258064Z"
