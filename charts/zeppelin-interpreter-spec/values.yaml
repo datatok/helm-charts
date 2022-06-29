@@ -77,11 +77,11 @@ resources: {}
   #   cpu: 100m
   #   memory: 128Mi
 
-# -- spark home artifacts
-sparkHomeVolumeClaim: zep-spark-spark-artifacts
+# -- Zeppelin configuration PVC (site.xml etc...) PVC (must exist)
+zeppelinConfigPVC: ""
 
-# -- image to run spark workers
-sparkWorkerImage: apache/spark:v3.2.1
+# -- spark home artifacts PVC (must exist)
+sparkHomePVC: zep-spark-spark-artifacts
 
 # -- config-map to use to define spark executor pod template (must exist)
 sparkExecutorPodTemplateConfigMap: ""

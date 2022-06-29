@@ -4,11 +4,11 @@ description: Generate config map to hold spec template to run zeppelin interpret
 
 type: application
 
-version: 0.1.4
+version: 0.1.5
 
 appVersion: 0.10.1
 
-home: https://github.com/datatok/helm-data-lake
+home: https://github.com/datatok/helm-charts
 
 maintainers:
 - name: ebuildy

@@ -78,8 +78,6 @@ spec:
       value: 'true'
     - name: ZEPPELIN_RUN_MODE
       value: k8s
-    - name: ZEPPELIN_K8S_SPARK_CONTAINER_IMAGE
-      value: "{{ .Values.sparkWorkerImage }}"
     {% for key, value in zeppelin.k8s.envs.items() %}
     - name: {{`{{`}}key{{`}}`}}
       value: {{`{{`}}value{{`}}`}}
@@ -127,6 +125,10 @@ spec:
     {{- end }}
     - name: spark-ivy
       mountPath: /opt/spark/.ivy
+    {{- with .Values.zeppelinConfigPVC }}
+    - name: zep-conf
+      mountPath: /opt/zeppelin/conf
+    {{- end }}
     - name: zeppelin-work
       mountPath: /opt/zeppelin/work
     - name: tmp
@@ -149,7 +151,7 @@ spec:
   volumes:
   - name: spark-home
     persistentVolumeClaim:
-      claimName: {{ .Values.sparkHomeVolumeClaim }}
+      claimName: {{ .Values.sparkHomePVC }}
   {{- with .Values.sparkConfConfigMap }}
   - name: spark-conf
     configMap:
@@ -159,6 +161,11 @@ spec:
     {{- .Values.volumeSparkIvy | nindent 4 }}
   - name: zeppelin-work
     {{- .Values.volumeZeppelinWork | nindent 4 }}
+  {{- with .Values.zeppelinConfigPVC }}
+  - name: zep-conf
+    persistentVolumeClaim:
+      claimName: {{ . }}
+  {{- end }}
   - name: tmp
     {{- .Values.volumeTmp | nindent 4 }}
   {{- if .Values.sparkExecutorPodTemplateConfigMap }}
