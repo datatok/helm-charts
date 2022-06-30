@@ -28,18 +28,6 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       imagePullPolicy: {{ .Values.image.pullPolicy }}
-      ports:
-        - name: http
-          containerPort: 8081
-          protocol: TCP
-      livenessProbe:
-        httpGet:
-          path: /
-          port: http
-      readinessProbe:
-        httpGet:
-          path: /
-          port: http
       env:
       - name: SPARK_HOME
         value: /opt/spark

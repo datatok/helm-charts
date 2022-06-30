@@ -3,7 +3,7 @@ name: spark-spec
 description: |
     Generate a configMap with pod template spec to run Spark on kubernetes.
 type: application
-version: 0.2.0
+version: 0.2.1
 appVersion: "3.3.0"
 engine: gotpl
 home: https://github.com/datatok/helm-charts
