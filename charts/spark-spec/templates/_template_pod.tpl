@@ -44,7 +44,7 @@ spec:
       - name: tmp
         mountPath: /tmp
       {{- with .Values.extraVolumeMounts }}
-      {{- toYaml . | nindent 4 }}
+      {{- toYaml . | nindent 6 }}
       {{- end }}
   volumes:
   - name: spark-ivy
