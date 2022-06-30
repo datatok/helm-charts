@@ -384,6 +384,22 @@ entries:
   spark-spec:
   - apiVersion: v2
     appVersion: 3.3.0
+    created: "2022-06-30T08:21:23.49839156Z"
+    description: 'Generate a configMap with pod template spec to run Spark on kubernetes. '
+    digest: aa1a9cbc17f518a3491a5647c1cc3a225876b74cf426cbfffe34e02cf902c33f
+    home: https://github.com/datatok/helm-charts
+    keywords:
+    - spark
+    maintainers:
+    - email: ebuildy@gmail.com
+      name: ebuildy
+    name: spark-spec
+    type: application
+    urls:
+    - https://github.com/datatok/helm-charts/releases/download/spark-spec-0.2.2/spark-spec-0.2.2.tgz
+    version: 0.2.2
+  - apiVersion: v2
+    appVersion: 3.3.0
     created: "2022-06-30T05:13:46.274776036Z"
     description: 'Generate a configMap with pod template spec to run Spark on kubernetes. '
     digest: 7d60e8c8c51c3b2b702866d6911aee1c104f805f948651accb487d1be2fe84d9
@@ -862,4 +878,4 @@ entries:
     urls:
     - https://github.com/datatok/helm-charts/releases/download/zeppelin-spark-artifacts-0.1.0/zeppelin-spark-artifacts-0.1.0.tgz
     version: 0.1.0
-generated: "2022-06-30T05:13:46.274982739Z"
+generated: "2022-06-30T08:21:23.498589862Z"
