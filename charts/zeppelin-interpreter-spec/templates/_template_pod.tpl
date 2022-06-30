@@ -119,12 +119,14 @@ spec:
       mountPath: /opt/spark/sbin
       subPath: sbin
       readOnly: true
-    {{- if .Values.sparkConfConfigMap }}
+    {{- if .Values.sparkConfCM }}
     - name: spark-conf
       mountPath: /opt/spark/conf
     {{- end }}
     - name: spark-ivy
       mountPath: /opt/spark/.ivy
+    - name: spark-ivy
+      mountPath: /opt/zeppelin/.ivy
     {{- with .Values.zeppelinConfigPVC }}
     - name: zep-conf
       mountPath: /opt/zeppelin/conf
@@ -133,7 +135,7 @@ spec:
       mountPath: /opt/zeppelin/work
     - name: tmp
       mountPath: /tmp
-    {{- if .Values.sparkExecutorPodTemplateConfigMap }}
+    {{- if .Values.sparkExecutorPodTemplateCM }}
     - name: spark-executor-pod-template
       mountPath: /opt/spark/k8s/executor-pod-template
     {{- end }}
@@ -152,7 +154,7 @@ spec:
   - name: spark-home
     persistentVolumeClaim:
       claimName: {{ .Values.sparkHomePVC }}
-  {{- with .Values.sparkConfConfigMap }}
+  {{- with .Values.sparkConfCM }}
   - name: spark-conf
     configMap:
        name: {{ . }}
@@ -168,10 +170,10 @@ spec:
   {{- end }}
   - name: tmp
     {{- .Values.volumeTmp | nindent 4 }}
-  {{- if .Values.sparkExecutorPodTemplateConfigMap }}
+  {{- if .Values.sparkExecutorPodTemplateCM }}
   - name: spark-executor-pod-template
     configMap:
-      name: {{ .Values.sparkExecutorPodTemplateConfigMap }}
+      name: {{ .Values.sparkExecutorPodTemplateCM }}
   {{- end }}
   {{- with .Values.extraVolumes }}
   {{- toYaml . | nindent 2 }}

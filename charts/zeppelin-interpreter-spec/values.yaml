@@ -84,10 +84,10 @@ zeppelinConfigPVC: ""
 sparkHomePVC: zep-spark-spark-artifacts
 
 # -- config-map to use to define spark executor pod template (must exist)
-sparkExecutorPodTemplateConfigMap: ""
+sparkExecutorPodTemplateCM: ""
 
 # -- config-map to define spark conf files (logging, spark-defaults etc...)
-sparkConfConfigMap: ""
+sparkConfCM: ""
 
 nodeSelector: {}
 

@@ -1,6 +1,6 @@
-sparkExecutorPodTemplateConfigMap: spark-spec-pod-template
+sparkExecutorPodTemplateCM: spark-spec-pod-template
 
-sparkConfConfigMap: spark-spec-spark-conf
+sparkConfCM: spark-spec-spark-conf
 
 sparkHomePVC: zep-spark-spark-artifacts-buffer
 
