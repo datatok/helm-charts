@@ -41,7 +41,7 @@ spec:
   {{- end }}
   {{- with .Values.podSecurityContext }}
   securityContext:
-    {{- toYaml . | nindent 2 }}
+    {{- toYaml . | nindent 4 }}
   {{- end }}
   {% if zeppelin.k8s.interpreter.group.name == "spark" %}
   automountServiceAccountToken: true
@@ -53,7 +53,7 @@ spec:
   containers:
   - name: {{`{{`}}zeppelin.k8s.interpreter.container.name{{`}}`}}
     securityContext:
-        {{- toYaml .Values.securityContext | nindent 12 }}
+      {{- toYaml .Values.securityContext | nindent 6 }}
     image: {{`{{`}}zeppelin.k8s.interpreter.container.image{{`}}`}}
     imagePullPolicy: {{ .Values.image.pullPolicy }}
     workingDir: /opt/zeppelin/work

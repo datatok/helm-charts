@@ -65,6 +65,17 @@ service:
   type: ClusterIP
   port: 80
 
+# -- ingress is only for spark interpreter, port 4040
+ingress:
+  # -- Enable ingress
+  enabled: false
+  # -- host suffix
+  hostSuffix: ""
+  # -- Annotations to use cert-manager and sticky sessions
+  annotations: {}
+    #kubernetes.io/ingress.class: nginx
+    #kubernetes.io/tls-acme: 'true'
+
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
   # choice for the user. This also increases chances charts run on environments with little
@@ -81,9 +92,11 @@ resources: {}
 zeppelinConfigPVC: ""
 
 # -- spark home artifacts PVC (must exist)
+# -- in case: spark master = any (local, k8s)
 sparkHomePVC: zep-spark-spark-artifacts
 
 # -- config-map to use to define spark executor pod template (must exist)
+# -- in case: spark master = k8s
 sparkExecutorPodTemplateCM: ""
 
 # -- config-map to define spark conf files (logging, spark-defaults etc...)

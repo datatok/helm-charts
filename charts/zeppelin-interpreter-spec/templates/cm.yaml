@@ -10,3 +10,7 @@ data:
     {{- include "zeppelin-interpreter-template.service" . | nindent 6 }}
     ---
     {{- include "zeppelin-interpreter-template.pod" . | nindent 6 }}
+    {{- if .Values.ingress.enabled }}
+    ---
+    {{- include "zeppelin-interpreter-template.ingress" . | nindent 6 }}
+    {{- end }}
