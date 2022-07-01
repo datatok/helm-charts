@@ -8,6 +8,9 @@ metadata:
   labels:
     {{- include "zeppelin-interpreter-template.labels" . | nindent 4 }}
   annotations:
+    {{- with .Values.ingress.annotations }}
+    {{- . | toYaml | nindent 4 }}
+    {{- end }}
     cert-manager.io/common-name: {{`{{`}}zeppelin.k8s.interpreter.pod.name{{`}}`}}{{ .Values.ingress.hostSuffix }}
   {% if zeppelin.k8s.server.uid is defined %}
   ownerReferences:
