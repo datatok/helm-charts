@@ -127,6 +127,10 @@ spec:
       mountPath: /opt/spark/.ivy
     - name: spark-ivy
       mountPath: /opt/zeppelin/.ivy
+    - name: spark-ivy
+      mountPath: /opt/spark/.ivy2
+    - name: spark-ivy
+      mountPath: /opt/zeppelin/.ivy2
     {{- with .Values.zeppelinConfigPVC }}
     - name: zep-conf
       mountPath: /opt/zeppelin/conf
