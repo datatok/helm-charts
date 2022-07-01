@@ -759,6 +759,26 @@ entries:
   zeppelin-interpreter-spec:
   - apiVersion: v2
     appVersion: 0.10.1
+    created: "2022-07-01T07:29:29.710722654Z"
+    description: Generate config map to hold spec template to run zeppelin interpreter
+      on kubernetes
+    digest: c46391e5aca02fac81f8fd26f652e37ddc832ae27a09f9f3dc2caea8abcf155d
+    home: https://github.com/datatok/helm-charts
+    keywords:
+    - zeppelin
+    - data-lake
+    - big-data
+    - spark
+    maintainers:
+    - email: ebuildy@gmail.com
+      name: ebuildy
+    name: zeppelin-interpreter-spec
+    type: application
+    urls:
+    - https://github.com/datatok/helm-charts/releases/download/zeppelin-interpreter-spec-0.2.0/zeppelin-interpreter-spec-0.2.0.tgz
+    version: 0.2.0
+  - apiVersion: v2
+    appVersion: 0.10.1
     created: "2022-07-01T06:20:09.222076141Z"
     description: Generate config map to hold spec template to run zeppelin interpreter
       on kubernetes
@@ -918,4 +938,4 @@ entries:
     urls:
     - https://github.com/datatok/helm-charts/releases/download/zeppelin-spark-artifacts-0.1.0/zeppelin-spark-artifacts-0.1.0.tgz
     version: 0.1.0
-generated: "2022-07-01T06:20:09.22222025Z"
+generated: "2022-07-01T07:29:29.710862254Z"
