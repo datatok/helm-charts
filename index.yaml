@@ -456,6 +456,27 @@ entries:
       category: Analytics
     apiVersion: v2
     appVersion: 0.10.1
+    created: "2022-07-19T21:30:06.381632083Z"
+    description: Apache Zeppelin with Apache Spark
+    digest: 5df0f809ba55bfabb42cf954d10e8af309582fde3a2b13db613772a8b98961db
+    home: https://github.com/datatok/helm-data-lake
+    keywords:
+    - zeppelin
+    - data-lake
+    - big-data
+    - spark
+    maintainers:
+    - email: ebuildy@gmail.com
+      name: ebuildy
+    name: zeppelin
+    type: application
+    urls:
+    - https://github.com/datatok/helm-charts/releases/download/zeppelin-0.5.2/zeppelin-0.5.2.tgz
+    version: 0.5.2
+  - annotations:
+      category: Analytics
+    apiVersion: v2
+    appVersion: 0.10.1
     created: "2022-06-29T17:15:50.76334113Z"
     description: Apache Zeppelin with Apache Spark
     digest: 859cc93d08f914a89d439b5dbffca588f50e6f1c93dc822868a3ab250c27fe9c
@@ -759,6 +780,26 @@ entries:
   zeppelin-interpreter-spec:
   - apiVersion: v2
     appVersion: 0.10.1
+    created: "2022-07-19T21:30:06.534185117Z"
+    description: Generate config map to hold spec template to run zeppelin interpreter
+      on kubernetes
+    digest: 7c1f8bd0cdecf2305eef4ea222f65da0075c54bc9620466911e0ba72c32ea4b7
+    home: https://github.com/datatok/helm-charts
+    keywords:
+    - zeppelin
+    - data-lake
+    - big-data
+    - spark
+    maintainers:
+    - email: ebuildy@gmail.com
+      name: ebuildy
+    name: zeppelin-interpreter-spec
+    type: application
+    urls:
+    - https://github.com/datatok/helm-charts/releases/download/zeppelin-interpreter-spec-0.3.0/zeppelin-interpreter-spec-0.3.0.tgz
+    version: 0.3.0
+  - apiVersion: v2
+    appVersion: 0.10.1
     created: "2022-07-01T07:37:53.43060753Z"
     description: Generate config map to hold spec template to run zeppelin interpreter
       on kubernetes
@@ -958,4 +999,4 @@ entries:
     urls:
     - https://github.com/datatok/helm-charts/releases/download/zeppelin-spark-artifacts-0.1.0/zeppelin-spark-artifacts-0.1.0.tgz
     version: 0.1.0
-generated: "2022-07-01T07:37:53.430774429Z"
+generated: "2022-07-19T21:30:06.53441112Z"
