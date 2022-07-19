@@ -16,10 +16,10 @@ spec:
   - from:
     - podSelector:
         matchLabels:
-          {{- include "zeppelin.partOfLabels" . | nindent 8 }}
+          {{- include "zeppelin.partOfLabels" . | nindent 10 }}
   egress:
   - to:
     - podSelector:
         matchLabels:
-          {{- include "zeppelin.partOfLabels" . | nindent 8 }}
+          {{- include "zeppelin.partOfLabels" . | nindent 10 }}
 {{- end }}

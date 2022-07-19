@@ -56,7 +56,9 @@ extraVolumeMounts: []
 #   mountPath: /app/toto
 
 # -- extra env variables for zeppelin container
-extraEnvVars: {}
+extraEnvVars: #{}
+- name: hello
+  value: world
 
 service:
   type: ClusterIP
@@ -142,8 +144,6 @@ zeppelin:
     zeppelin.interpreter.output.limit: "102400"
     # -- Interpreter process connect timeout in msec
     zeppelin.interpreter.connect.timeout: "1200000"
-    # -- includes some interpreters
-    zeppelin.interpreter.include: spark
 
   server:
     # -- Zeppelin Java process memory options

@@ -15,4 +15,6 @@ spec:
     {{- if eq .Values.zeppelin.interpreter.mode "embedded" }}
     {{- include "zeppelin.selectorLabels" . | nindent 4 }}
     {{- else }}
+    {{- include "zeppelin.partOfLabels" . | nindent 4 }}
+    interpreterSettingName: spark
     {{- end }}
