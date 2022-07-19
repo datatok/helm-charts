@@ -105,8 +105,8 @@ spec:
         {{`{{`}}zeppelin.k8s.interpreter.gpu.type{{`}}`}}: "{{`{{`}}zeppelin.k8s.interpreter.gpu.nums{{`}}`}}"
     {% endif %}
     {% endif %}
-    {% if zeppelin.k8s.interpreter.group.name == "spark" %}
     volumeMounts:
+    {% if zeppelin.k8s.interpreter.group.name == "spark" %}
     - name: spark-home
       mountPath: /opt/spark/bin
       subPath: bin
@@ -143,6 +143,10 @@ spec:
     - name: spark-executor-pod-template
       mountPath: /opt/spark/k8s/executor-pod-template
     {{- end }}
+    {% else %}
+    - name: tmp-empty-dir
+      mountPath: /tmp
+    {% endif %}
     {{- with .Values.extraVolumeMounts }}
     {{- toYaml . | nindent 4 }}
     {{- end }}
@@ -153,7 +157,6 @@ spec:
     - name: spark-driver
       containerPort: 4040
       protocol: TCP
-  {% endif %}
   volumes:
   - name: spark-home
     persistentVolumeClaim:
@@ -174,6 +177,8 @@ spec:
   {{- end }}
   - name: tmp
     {{- .Values.volumeTmp | nindent 4 }}
+  - name: tmp-empty-dir
+    emptyDir: {}
   {{- if .Values.sparkExecutorPodTemplateCM }}
   - name: spark-executor-pod-template
     configMap:
