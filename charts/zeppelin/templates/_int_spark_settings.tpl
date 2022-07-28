@@ -9,7 +9,7 @@
         {{- range $k, $v := .Values.spark.config }}
         "{{ $k }}": {
             "propertyName": "{{$k}}",
-            "defaultValue": "{{$v}}",
+            "defaultValue": {{$v | quote}},
             "type": "string",
             "description" : "From spark.confg"
         },
@@ -17,7 +17,7 @@
         {{- range $k, $v := .Values.spark.interpreterProperties }}
         "{{ $k }}": {
             "propertyName": "{{$k}}",
-            "defaultValue": "{{$v.value}}",
+            "defaultValue": {{$v.value | quote}},
             "type": "{{$v.type}}",
             "description" : "{{$v.description}} (from spark.interpreterProperties)"
         },
