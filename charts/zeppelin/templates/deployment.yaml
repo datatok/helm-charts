@@ -35,6 +35,14 @@ spec:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       enableServiceLinks: false
       volumes:
+        {{- if eq .Values.notebookStorage.type "git" }}
+        - name: git-config
+          configMap:
+            name: {{ include "zeppelin.fullname" . }}-gitconfig
+            items:
+            - key: .gitconfig
+              path: .gitconfig
+        {{- end }}
         - name: config
           configMap:
             name: {{ include "zeppelin.fullname" . }}-config

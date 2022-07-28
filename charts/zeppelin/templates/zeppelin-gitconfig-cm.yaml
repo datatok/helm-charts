@@ -1,0 +1,13 @@
+{{- if eq .Values.notebookStorage.type "git" }}
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: {{ template "zeppelin.fullname" . }}-gitconfig
+data:
+  .gitconfig: |-
+    [user]
+      email = {{ .Values.notebookStorage.userEmail }}
+      name = {{ .Values.notebookStorage.userName }}
+    [safe]
+      directory = /opt/zeppelin/notebook
+{{- end }}

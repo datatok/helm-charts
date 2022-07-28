@@ -14,8 +14,6 @@ command:
     else
         rm -rf *
         git clone ${REPO_URL} .
-        git config user.name "datahub zeppelin"
-        git config user.email "z.datahub@qwant.com"
         git config pull.ff only
     fi
 resources:
@@ -28,6 +26,9 @@ resources:
 volumeMounts:
 -   name: zep-notebooks
     mountPath: /opt/zeppelin/notebook
+-   name: git-config
+    mountPath: /opt/zeppelin/.gitconfig
+    subPath: .gitconfig
 env:
 -   name: GIT_SSL_NO_VERIFY
     value: "true"

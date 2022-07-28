@@ -169,10 +169,13 @@ logging:
 
 notebookStorage:
   # -- Kind of storage for notebook
-  type: pvc
-  # type: git
+  type: git
   # -- if type is `git` , use this secret to get the repository URL (usually the URL contains an access token)
   repositorySecret: git-data-lake
+  # -- git user name
+  userName: zeppelin
+  # -- git user email
+  userEmail: zeppelin@apache.org
 
 ##
 # Several ways to run spark notebook code:

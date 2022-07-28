@@ -105,6 +105,11 @@ volumeMounts:
 -   name: zep-int-k8s-template
     mountPath: /opt/zeppelin/k8s/interpreter
 {{- end }}
+{{- if eq .Values.notebookStorage.type "git" }}
+-   name: git-config
+    mountPath: /opt/zeppelin/.gitconfig
+    subPath: .gitconfig
+{{- end }}
 {{- with .Values.extraVolumeMounts }}
 {{ . | toYaml }}
 {{- end }}
