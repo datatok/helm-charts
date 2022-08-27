@@ -106,7 +106,7 @@ spec:
     {% endif %}
     {% endif %}
     volumeMounts:
-    {% if zeppelin.k8s.interpreter.group.name == "spark" %}
+    {% if zeppelin.k8s.interpreter.group.name == "spark" or zeppelin.k8s.interpreter.group.name == "r" %}
     - name: spark-home
       mountPath: /opt/spark/bin
       subPath: bin
@@ -114,6 +114,10 @@ spec:
     - name: spark-home
       mountPath: /opt/spark/jars
       subPath: jars
+      readOnly: true
+    - name: spark-home
+      mountPath: /opt/spark/R
+      subPath: R
       readOnly: true
     - name: spark-home
       mountPath: /opt/spark/sbin
