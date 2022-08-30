@@ -4,8 +4,8 @@ apiVersion: v2
 name: zeppelin
 description: Apache Zeppelin with Apache Spark
 type: application
-version: 0.5.4
-appVersion: 0.10.1
+version: 0.6.0
+appVersion: v0.10.1-2
 engine: gotpl
 home: https://github.com/datatok/helm-data-lake
 maintainers:

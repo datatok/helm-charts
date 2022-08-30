@@ -2,9 +2,9 @@
 replicaCount: 1
 
 image:
-  repository: ghcr.io/datatok/zeppelin
+  repository: ghcr.io/datatok/zeppelin-server
   pullPolicy: IfNotPresent
-  tag: v0.10.1-1
+  tag: ""
 
 # -- To use private images
 imagePullSecrets: []
@@ -153,6 +153,11 @@ zeppelin:
     # -- zeppelin interpreter inside zeppelin container or external
     # mode: embedded
     mode: external
+    # -- K8S interpreter container image
+    # -- see https://github.com/orgs/datatok/packages?repo_name=docker-zeppelin
+    image:
+      repository: ghcr.io/datatok/zeppelin-interpreter-spark
+      tag: "0.10.1-edge"
     # -- K8S config-map to define K8S template (must exist)
     specTemplateConfigMap: "zep-int-zeppelin-interpreter-spec"
     ## -- thrift port (default 10000)

@@ -50,8 +50,10 @@ env:
             fieldPath: metadata.name
 -   name: ZEPPELIN_K8S_SERVICE_NAME
     value: {{ include "zeppelin.fullname" . }}
+{{- if eq .Values.zeppelin.interpreter.mode "external" }}
 -   name: ZEPPELIN_K8S_CONTAINER_IMAGE
-    value: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+    value: "{{ .Values.zeppelin.interpreter.image.repository }}:{{ .Values.zeppelin.interpreter.image.tag | default .Chart.AppVersion }}"
+{{- end }}
 -   name: SERVICE_DOMAIN
     value: {{ .Values.zeppelin.serviceDomain }}
 -   name: SPARK_HOME
