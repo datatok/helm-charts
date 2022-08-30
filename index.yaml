@@ -455,6 +455,27 @@ entries:
   - annotations:
       category: Analytics
     apiVersion: v2
+    appVersion: v0.10.1-2
+    created: "2022-08-30T12:02:18.429455842Z"
+    description: Apache Zeppelin with Apache Spark
+    digest: 4eb90ccd081de1af3e11762d5db9ddd434cdca718a57e99085f6395219b87199
+    home: https://github.com/datatok/helm-data-lake
+    keywords:
+    - zeppelin
+    - data-lake
+    - big-data
+    - spark
+    maintainers:
+    - email: ebuildy@gmail.com
+      name: ebuildy
+    name: zeppelin
+    type: application
+    urls:
+    - https://github.com/datatok/helm-charts/releases/download/zeppelin-0.6.0/zeppelin-0.6.0.tgz
+    version: 0.6.0
+  - annotations:
+      category: Analytics
+    apiVersion: v2
     appVersion: 0.10.1
     created: "2022-07-28T10:30:10.313000861Z"
     description: Apache Zeppelin with Apache Spark
@@ -822,6 +843,26 @@ entries:
   zeppelin-interpreter-spec:
   - apiVersion: v2
     appVersion: 0.10.1
+    created: "2022-08-30T12:02:18.591029229Z"
+    description: Generate config map to hold spec template to run zeppelin interpreter
+      on kubernetes
+    digest: a593f86e7719c8a4ea7f4502de1db65c28c595ebe36b5d4285237219b4f3006b
+    home: https://github.com/datatok/helm-charts
+    keywords:
+    - zeppelin
+    - data-lake
+    - big-data
+    - spark
+    maintainers:
+    - email: ebuildy@gmail.com
+      name: ebuildy
+    name: zeppelin-interpreter-spec
+    type: application
+    urls:
+    - https://github.com/datatok/helm-charts/releases/download/zeppelin-interpreter-spec-0.4.0/zeppelin-interpreter-spec-0.4.0.tgz
+    version: 0.4.0
+  - apiVersion: v2
+    appVersion: 0.10.1
     created: "2022-07-19T21:30:06.534185117Z"
     description: Generate config map to hold spec template to run zeppelin interpreter
       on kubernetes
@@ -1041,4 +1082,4 @@ entries:
     urls:
     - https://github.com/datatok/helm-charts/releases/download/zeppelin-spark-artifacts-0.1.0/zeppelin-spark-artifacts-0.1.0.tgz
     version: 0.1.0
-generated: "2022-07-28T10:30:10.313317573Z"
+generated: "2022-08-30T12:02:18.591711542Z"
