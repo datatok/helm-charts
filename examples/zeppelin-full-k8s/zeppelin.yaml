@@ -1,3 +1,7 @@
+image:
+  repository: ghcr.io/datatok/zeppelin-server
+  tag: 0.10.1-edge
+
 resources:
   requests:
     cpu: 128m
@@ -5,6 +9,10 @@ resources:
   limits:
     cpu: 2
     memory: 800Mi
+
+notebookStorage:
+  # -- Kind of storage for notebook
+  type: fs
 
 volumeNotebooks:
   type: pvc
@@ -27,7 +35,13 @@ volumeConf:
     storageClassName: standard
 
 logging:
-  level: DEBUG
+  level: INFO
+
+zeppelin:
+  interpreter:
+    image:
+      repository: zep-int-r # ghcr.io/datatok/zeppelin-interpreter-r
+      tag: latest # 0.10.1-edge
 
 spark:
   config:
