@@ -22,6 +22,7 @@ metadata:
     uid: {{`{{`}}zeppelin.k8s.server.uid{{`}}`}}
   {% endif %}
 spec:
+  ingressClassName: {{ .Values.ingress.className }}
   tls:
   - hosts:
       - {{`{{`}}zeppelin.k8s.interpreter.pod.name{{`}}`}}{{ .Values.ingress.hostSuffix }}

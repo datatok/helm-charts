@@ -69,11 +69,12 @@ service:
 ingress:
   # -- Enable ingress
   enabled: false
+  # -- The class name
+  className: nginx
   # -- host suffix
   hostSuffix: ""
   # -- Annotations to use cert-manager and sticky sessions
   annotations: {}
-    #kubernetes.io/ingress.class: nginx
     #kubernetes.io/tls-acme: 'true'
 
 resources: {}
