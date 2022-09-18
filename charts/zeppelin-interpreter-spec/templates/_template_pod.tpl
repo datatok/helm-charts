@@ -120,6 +120,10 @@ spec:
       subPath: R
       readOnly: true
     - name: spark-home
+      mountPath: /opt/spark/python
+      subPath: python
+      readOnly: true
+    - name: spark-home
       mountPath: /opt/spark/sbin
       subPath: sbin
       readOnly: true
