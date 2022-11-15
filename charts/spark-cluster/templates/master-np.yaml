@@ -1,0 +1,32 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "spark-cluster.serviceAccountName" . }}-master
+spec:
+  podSelector:
+    matchLabels:
+      {{- include "spark-cluster.selectorLabels" . | nindent 6 }}
+      {{- include "spark-cluster-master.labels" . | nindent 6 }}
+  ingress:
+    # cluster
+    - from:
+      - podSelector:
+          matchLabels:
+            {{- include "spark-cluster.sparkClientLabels" . | nindent 12 }}
+    # web UI
+    - ports:
+      - protocol: TCP
+        port: 8080
+    # cluster master ingress
+    - ports:
+      - protocol: TCP
+        port: 7077
+  egress:
+    # cluster
+    - to:
+      - podSelector:
+          matchLabels:
+            {{- include "spark-cluster.sparkClientLabels" . | nindent 12 }}
+    # egress to driver
+  policyTypes:
+    - Ingress

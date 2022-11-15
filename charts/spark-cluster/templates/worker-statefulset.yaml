@@ -1,0 +1,97 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "spark-cluster.fullname" . }}-worker
+  labels:
+    {{- include "spark-cluster.labels" . | nindent 4 }}
+    {{- include "spark-cluster-worker.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  serviceName: {{ include "spark-cluster.fullname" . }}-worker
+  selector:
+    matchLabels:
+      {{- include "spark-cluster.selectorLabels" . | nindent 6 }}
+      {{- include "spark-cluster-worker.labels" . | nindent 6 }}
+  volumeClaimTemplates:
+  - metadata:
+      name: {{ include "spark-cluster.fullname" . }}-worker-work
+    spec:
+      {{- toYaml .Values.worker.work.volumeClaimTemplate | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "spark-cluster.selectorLabels" . | nindent 8 }}
+        {{- include "spark-cluster-worker.labels" . | nindent 8 }}
+        {{- with .Values.worker.podLabels }}
+        {{- . | toYaml | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "spark-cluster.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      volumes:
+      - name: tmp
+        emptyDir: {}
+      - name: spark-logs
+        emptyDir: {}
+      - name: spark-work
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ["/bin/sh"]
+          args: ["-c", "${SPARK_HOME}/sbin/start-worker.sh --host 0.0.0.0 spark://{{ include "spark-cluster.fullname" . }}-master:{{ .Values.cluster.port }}"]
+          ports:
+            - name: http
+              containerPort: 8081
+              protocol: TCP
+          env:
+          - name: SPARK_NO_DAEMONIZE
+            value: "yes"
+          - name: SPARK_LOCAL_HOSTNAME
+            valueFrom:
+              fieldRef:
+                fieldPath: status.podIP
+          volumeMounts:
+          - name: tmp
+            mountPath: /tmp
+          - name: spark-logs
+            mountPath: /opt/spark/logs
+          - name: spark-work
+            mountPath: {{ .Values.worker.work.path }}
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 20
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 20
+            periodSeconds: 10
+          resources:
+            {{- toYaml .Values.worker.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

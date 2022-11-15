@@ -1,0 +1,9 @@
+apiVersion: v2
+name: spark-cluster
+description: Deploy a standalone Spark cluster on kubernetes
+
+type: application
+
+version: 0.1.0
+
+appVersion: "3.3.1"
