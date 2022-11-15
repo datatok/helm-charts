@@ -348,6 +348,17 @@ entries:
     urls:
     - https://github.com/datatok/helm-charts/releases/download/spark-artifacts-0.1.1/spark-artifacts-0.1.1.tgz
     version: 0.1.1
+  spark-cluster:
+  - apiVersion: v2
+    appVersion: 3.3.1
+    created: "2022-11-15T15:47:48.560273478Z"
+    description: Deploy a standalone Spark cluster on kubernetes
+    digest: 2f858825c08c5b2a6eb1faf9e41ec9cf37df5f395fa6810c78ab26912fa49f1b
+    name: spark-cluster
+    type: application
+    urls:
+    - https://github.com/datatok/helm-charts/releases/download/spark-cluster-0.1.0/spark-cluster-0.1.0.tgz
+    version: 0.1.0
   spark-master:
   - apiVersion: v2
     appVersion: 2.4.5
@@ -1122,4 +1133,4 @@ entries:
     urls:
     - https://github.com/datatok/helm-charts/releases/download/zeppelin-spark-artifacts-0.1.0/zeppelin-spark-artifacts-0.1.0.tgz
     version: 0.1.0
-generated: "2022-09-18T23:08:49.893816019Z"
+generated: "2022-11-15T15:47:48.560497591Z"
