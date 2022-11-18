@@ -1,13 +1,9 @@
-# Default values for spark-history.
-# This is a YAML-formatted file.
-# Declare variables to be passed into your templates.
-
 replicaCount: 1
 
 image:
-  repository: bitnami/spark
+  repository: ghcr.io/datatok/spark
   pullPolicy: IfNotPresent
-  tag: 3.1.2
+  tag: v3.3.1-edge
 
 imagePullSecrets: []
 nameOverride: ""
@@ -25,7 +21,7 @@ serviceAccount:
 podAnnotations: {}
 
 podSecurityContext:
-  fsGroup: 1001
+  fsGroup: 1000
 
 securityContext:
   capabilities:
@@ -34,8 +30,8 @@ securityContext:
   allowPrivilegeEscalation: false
   readOnlyRootFilesystem: true
   runAsNonRoot: true
-  runAsUser: 1001
-  runAsGroup: 0
+  runAsUser: 1000
+  runAsGroup: 1000
 
 service:
   type: ClusterIP
@@ -59,18 +55,11 @@ ingress:
 
 resources:
   limits:
-    cpu: 100m
-    memory: 512Mi
+    cpu: 1000m
+    memory: 800Mi
   requests:
-     cpu: 10m
+     cpu: 250m
      memory: 256Mi
-
-autoscaling:
-  enabled: false
-  minReplicas: 1
-  maxReplicas: 100
-  targetCPUUtilizationPercentage: 80
-  # targetMemoryUtilizationPercentage: 80
 
 nodeSelector: {}
 
@@ -78,30 +67,22 @@ tolerations: []
 
 affinity: {}
 
-sparkEventLogStorage:
-  cloudProvider: ""
-  logDirectory: ""
-  secretName: ""
+##
+# From https://spark.apache.org/docs/latest/monitoring.html#spark-history-server-configuration-options
+##
+sparkConf:
+  spark.history.provider: org.apache.spark.deploy.history.FsHistoryProvider
+  spark.history.fs.logDirectory: "file:///mnt/spark/history"
+  spark.history.fs.update.interval: 5s
+  spark.history.retainedApplications: 100
+  spark.history.ui.port: 18080
+  spark.history.store.maxDiskUsage: 10g
+  spark.history.custom.executor.log.url.applyIncompleteApplication: true
 
-  awsAccessKeyId: ""
-  awsSecretAccessKey: ""
-
-  aliAccessKeyId: ""
-  aliSecretAccessKey: ""
-
-  aliOssEndpoint: ""
-  aliOssRegion: ""
-
-  azureStorageAccessKey: ""
-  azureStorageAccountName: ""
-
-  googleJson: ""
-
-  oracleRegion: ""
-  oracleHost: ""
-  apiKey: ""
-  oracleTenancyId: ""
-  oracleUserId: ""
-  oracleApiKeyFingerprint: ""
-  oracleNamespace: ""
-  
+##
+# local mode with existing PVC
+##
+sparkHistoryStorage:
+  pvc:
+    name: spark-history
+    mountPath: /mnt/spark/history
