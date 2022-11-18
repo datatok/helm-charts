@@ -20,6 +20,8 @@ serviceAccount:
 
 podAnnotations: {}
 
+podLabels: {}
+
 podSecurityContext:
   fsGroup: 1000
 
@@ -52,6 +54,9 @@ ingress:
   #  - secretName: chart-example-tls
   #    hosts:
   #      - chart-example.local
+
+networkPolicy:
+  enabled: true
 
 resources:
   limits:
