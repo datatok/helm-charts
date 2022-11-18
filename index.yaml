@@ -362,6 +362,16 @@ entries:
   spark-history:
   - apiVersion: v2
     appVersion: 3.3.1
+    created: "2022-11-18T20:02:11.575784521Z"
+    description: Deploy the spark-history web UI
+    digest: 4fd6706e69da38a0370c168a86edc5842b4c43858cd0fc91590fa06d0689b515
+    name: spark-history
+    type: application
+    urls:
+    - https://github.com/datatok/helm-charts/releases/download/spark-history-0.2.1/spark-history-0.2.1.tgz
+    version: 0.2.1
+  - apiVersion: v2
+    appVersion: 3.3.1
     created: "2022-11-18T19:44:00.267107512Z"
     description: Deploy the spark-history web UI
     digest: a94eea2ffc3e882a28b6b3aa4887552e9e275eba1fdbcf4be0ecd37ca2a33e72
@@ -1144,4 +1154,4 @@ entries:
     urls:
     - https://github.com/datatok/helm-charts/releases/download/zeppelin-spark-artifacts-0.1.0/zeppelin-spark-artifacts-0.1.0.tgz
     version: 0.1.0
-generated: "2022-11-18T19:44:00.26744472Z"
+generated: "2022-11-18T20:02:11.576007621Z"
