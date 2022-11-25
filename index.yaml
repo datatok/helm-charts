@@ -3,6 +3,23 @@ entries:
   es-proviz:
   - apiVersion: v2
     appVersion: 7.80.0
+    created: "2022-11-25T19:21:09.743501328Z"
+    description: Setup elasticsearch index template, ILM policy ...
+    digest: a6647632ff80a730261be926b3f4fd752cd84541e152eb4f37364f3b4d610bf0
+    home: https://github.com/datatok/helm-data-lake
+    keywords:
+    - elasticsearch
+    - provisionning
+    maintainers:
+    - email: ebuildy@gmail.com
+      name: ebuildy
+    name: es-proviz
+    type: application
+    urls:
+    - https://github.com/datatok/helm-charts/releases/download/es-proviz-0.2.0/es-proviz-0.2.0.tgz
+    version: 0.2.0
+  - apiVersion: v2
+    appVersion: 7.80.0
     created: "2022-06-05T19:51:23.538254441Z"
     description: Setup elasticsearch index template, ILM policy ...
     digest: 11864aedb54dc6d15662d525a794693f7a959fbd7f0bfb2e35eed7d700360b1b
@@ -1154,4 +1171,4 @@ entries:
     urls:
     - https://github.com/datatok/helm-charts/releases/download/zeppelin-spark-artifacts-0.1.0/zeppelin-spark-artifacts-0.1.0.tgz
     version: 0.1.0
-generated: "2022-11-18T20:02:11.576007621Z"
+generated: "2022-11-25T19:21:09.743749231Z"
