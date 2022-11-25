@@ -1,0 +1,24 @@
+actions:
+  snap-apm-s3:
+    kind: snapshot_repository
+    name: apm-s3
+    spec: |
+      {
+        "type": "s3",
+        "settings": {
+          "bucket": "hot-apm-es",
+          "client": "default",
+          "max_restore_bytes_per_sec": "800mb",
+          "max_snapshot_bytes_per_sec": "800mb"
+        }
+      }
+
+  template-component-set:
+    kind: component_template
+    name: single-shard
+    spec: |
+      {
+        "settings" : {
+          "number_of_shards" : 1
+        }
+      }

@@ -64,7 +64,8 @@ spec:
           echo "Hello"
           http {{ $elasticsearchURL }}
           
-          {{ range .Values.actions }}
+          {{- range $index, $action := .Values.actions }}
+          {{- with $action }}
 
           {{- $fileName := include "es-proviz.actionFilename" . -}}
           {{- $filePath := hasKey . "vault" | ternary $.Values.vault.volumePath "." -}}
@@ -79,6 +80,11 @@ spec:
           echo ""
           echo "Deploy index template {{ .name }}"
           http -XPUT -d @{{ $file }} {{ $elasticsearchURL }}/_index_template/{{ .name }}
+
+          {{ else if eq .kind "component_template" }}
+          # https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-component-template.html
+          echo "Deploy component index template {{ .name }}"
+          http -XPUT -d @{{ $file }} {{ $elasticsearchURL }}/_component_template/{{ .name }}
 
           {{ else if eq .kind "ingest_pipeline" }}
           echo "Deploy pipeline {{ .name }}"
@@ -122,6 +128,7 @@ spec:
           echo "Deploy user password {{ .name }}"
           http -XPOST -d "{\"password\" : \"${{ (.spec | fromJson).passwordEnv }}\"}" {{ $elasticsearchURL }}/_security/user/${{ (.spec | fromJson).usernameEnv }}/_password
           
+          {{- end }}
           {{- end }}
 
           {{- end }}
